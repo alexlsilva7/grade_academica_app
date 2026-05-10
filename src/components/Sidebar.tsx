@@ -1,0 +1,182 @@
+import React, { RefObject } from 'react';
+import { ArrowLeft, Upload, Search, X, CheckCircle2 } from 'lucide-react';
+import { Discipline } from '../types';
+import { DAYS } from '../constants';
+
+interface SidebarProps {
+  mobileTab: string;
+  setView: (view: 'home' | 'schedule') => void;
+  gradeTitle: string;
+  fileInputRef: RefObject<HTMLInputElement>;
+  handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isProcessingPdf: boolean;
+  periods: number[];
+  selectedPeriod: number;
+  setSelectedPeriod: (p: number) => void;
+  searchQuery: string;
+  setSearchQuery: (q: string) => void;
+  disciplinesList: Discipline[];
+  displayedDisciplines: Discipline[];
+  isDisciplineScheduled: (id: string) => boolean;
+  toggleDiscipline: (disc: Discipline) => void;
+}
+
+export function Sidebar({
+  mobileTab,
+  setView,
+  gradeTitle,
+  fileInputRef,
+  handleFileUpload,
+  isProcessingPdf,
+  periods,
+  selectedPeriod,
+  setSelectedPeriod,
+  searchQuery,
+  setSearchQuery,
+  disciplinesList,
+  displayedDisciplines,
+  isDisciplineScheduled,
+  toggleDiscipline
+}: SidebarProps) {
+  return (
+    <div className={`w-full md:w-80 bg-white border-r border-slate-200 flex-col h-full overflow-hidden ${mobileTab === 'disciplines' ? 'flex' : 'hidden md:flex'}`}>
+      <div className="h-16 flex items-center justify-between border-b border-slate-200 px-4 md:px-6 shrink-0 w-full bg-slate-50 relative">
+        <button 
+          onClick={() => setView('home')} 
+          className="flex items-center justify-center p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-200 rounded-full transition-colors mr-2 shrink-0"
+          title="Voltar ao Início"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <div className="flex items-center gap-3 overflow-hidden flex-1">
+          <h1 className="text-sm font-semibold tracking-tight text-slate-800 truncate" title={gradeTitle}>
+            {gradeTitle || "Grade Acadêmica"}
+          </h1>
+        </div>
+        <div className="ml-2 shrink-0">
+          <input
+            type="file"
+            accept="application/pdf"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isProcessingPdf}
+            className="flex items-center justify-center w-8 h-8 md:w-auto md:px-3 md:bg-indigo-50 text-indigo-700 md:hover:bg-indigo-100 disabled:opacity-50 text-sm font-medium rounded-md transition-colors"
+            title="Importar outro PDF"
+          >
+            <Upload className="w-4 h-4 md:mr-2" />
+            <span className="hidden md:inline">{isProcessingPdf ? '...' : 'PDF'}</span>
+          </button>
+        </div>
+      </div>
+      <div className="p-4 border-b border-slate-100 flex flex-col gap-3 shrink-0">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Períodos</h2>
+        </div>
+        {periods.length > 0 && (
+          <div className="flex gap-1 bg-slate-100 p-1 rounded-md overflow-x-auto scrollbar-hide flex-shrink-0">
+            {periods.map(period => (
+              <button
+                key={period}
+                onClick={() => {
+                  setSelectedPeriod(period);
+                  setSearchQuery('');
+                }}
+                className={`flex-1 min-w-[36px] py-1.5 px-3 text-xs font-medium rounded transition-colors whitespace-nowrap ${
+                  selectedPeriod === period && !searchQuery
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-500 bg-transparent hover:text-slate-700'
+                }`}
+              >
+                {period}º
+              </button>
+            ))}
+          </div>
+        )}
+        
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Pesquisar disciplina ou professor..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-slate-100 border-none rounded-md py-2 pl-9 pr-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors placeholder:text-slate-400"
+          />
+          {searchQuery && (
+            <button 
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 pb-24 md:pb-4">
+        {disciplinesList.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center px-4">
+            <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center mb-3">
+              <Upload className="w-6 h-6 text-indigo-500" />
+            </div>
+            <h3 className="text-sm font-semibold text-slate-800 mb-1">Nenhuma disciplina</h3>
+            <p className="text-xs text-slate-500 mb-4">Importe o PDF com a grade para começar a montar o seu horário.</p>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors"
+              disabled={isProcessingPdf}
+            >
+              {isProcessingPdf ? 'Processando...' : 'Importar PDF'}
+            </button>
+          </div>
+        ) : displayedDisciplines.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-sm text-slate-500">Nenhuma disciplina encontrada.</p>
+          </div>
+        ) : (
+          displayedDisciplines.map(disc => {
+            const scheduled = isDisciplineScheduled(disc.id);
+            return (
+              <div
+                key={disc.id}
+                onClick={() => toggleDiscipline(disc)}
+                className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                  scheduled
+                    ? 'bg-indigo-50 border-indigo-200'
+                    : 'border-slate-200 bg-white hover:border-slate-300'
+                }`}
+              >
+                <div className="flex justify-between items-start">
+                  <h4 className={`text-sm ${scheduled ? 'font-semibold text-indigo-900' : 'font-medium text-slate-700'}`}>
+                    {disc.name}
+                  </h4>
+                  {scheduled ? (
+                    <div className="w-4 h-4 bg-indigo-600 rounded-full flex items-center justify-center shrink-0 ml-2 mt-0.5 shadow-sm shadow-indigo-200">
+                      <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />
+                    </div>
+                  ) : (
+                    <div className="w-4 h-4 rounded-full border border-slate-300 shrink-0 ml-2 mt-0.5 bg-slate-50" />
+                  )}
+                </div>
+                <div className={`text-xs mt-1 ${scheduled ? 'text-indigo-700' : 'text-slate-500'}`}>
+                  {disc.professor}
+                </div>
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {disc.sessions.map((session, i) => (
+                    <span key={i} className={`inline-flex items-center text-[9px] uppercase font-bold px-1.5 py-0.5 rounded ${scheduled ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-500'}`}>
+                      {DAYS.find(d => d.id === session.day)?.name.substring(0, 3)} {session.time}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
