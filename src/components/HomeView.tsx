@@ -67,7 +67,7 @@ export function HomeView({ loadPredefinedGrade, handleFileUpload, isProcessingPd
                 {isProcessingPdf ? (
                   <>
                     <Upload className="w-5 h-5 text-indigo-400 animate-bounce" />
-                    <span className="text-sm font-medium text-indigo-600">Processando IA...</span>
+                    <span className="text-sm font-medium text-indigo-600">Processando...</span>
                   </>
                 ) : (
                   <>

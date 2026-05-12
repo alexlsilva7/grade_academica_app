@@ -119,35 +119,54 @@ export function useSchedule() {
       });
 
       if (response.text) {
-        const newDisciplines = JSON.parse(response.text) as Discipline[];
-        const sanitizedDisciplines = newDisciplines.map(d => ({
-          ...d,
-          period: (d.period === null || d.period === undefined || d.period < 0) ? 0 : d.period,
-          sessions: d.sessions.filter(s => 
-            [1, 2, 3, 4, 5].includes(s.day) && 
-            TIMESLOTS.includes(s.time as TimeSlot)
-          )
-        }));
-        
-        setDisciplinesList(sanitizedDisciplines);
-        setGradeTitle(file.name.replace('.pdf', ''));
-        setSchedule([]);
-        if (sanitizedDisciplines.length > 0) {
-          const availablePeriods = Array.from(new Set(sanitizedDisciplines.map(d => d.period))).sort((a, b) => {
-            const pA = a as number;
-            const pB = b as number;
-            if (pA === 0) return 1;
-            if (pB === 0) return -1;
-            return pA - pB;
-          });
-          setSelectedPeriod(availablePeriods[0] as number);
+        let textResponse = response.text;
+        // Strip out markdown code blocks if the response includes them
+        if (textResponse.startsWith('```')) {
+          textResponse = textResponse.replace(/^```(json)?\n?/i, '').replace(/\n?```$/i, '');
         }
-        setView('schedule');
+        
+        try {
+          const newDisciplines = JSON.parse(textResponse) as Discipline[];
+          if (!Array.isArray(newDisciplines) || newDisciplines.length === 0) {
+            throw new Error("Formato inválido ou nenhuma disciplina encontrada.");
+          }
+
+          const sanitizedDisciplines = newDisciplines.map(d => ({
+            ...d,
+            period: (d.period === null || d.period === undefined || d.period < 0) ? 0 : d.period,
+            sessions: d.sessions ? d.sessions.filter(s => 
+              [1, 2, 3, 4, 5].includes(s.day) && 
+              TIMESLOTS.includes(s.time as TimeSlot)
+            ) : []
+          }));
+          
+          setDisciplinesList(sanitizedDisciplines);
+          setGradeTitle(file.name.replace('.pdf', ''));
+          setSchedule([]);
+          if (sanitizedDisciplines.length > 0) {
+            const availablePeriods = Array.from(new Set(sanitizedDisciplines.map(d => d.period))).sort((a, b) => {
+              const pA = a as number;
+              const pB = b as number;
+              if (pA === 0) return 1;
+              if (pB === 0) return -1;
+              return pA - pB;
+            });
+            setSelectedPeriod(availablePeriods[0] as number);
+          }
+          setView('schedule');
+        } catch (parseError) {
+          console.error("Parse error:", parseError, textResponse);
+          setConflictMsg("O PDF não contém uma grade válida ou o formato não foi reconhecido.");
+          setTimeout(() => setConflictMsg(null), 5000);
+        }
+      } else {
+        setConflictMsg("Não foi possível extrair conteúdo do PDF.");
+        setTimeout(() => setConflictMsg(null), 5000);
       }
     } catch (e) {
-      console.error(e);
-      setConflictMsg("Erro ao processar o PDF. Tente novamente.");
-      setTimeout(() => setConflictMsg(null), 4000);
+      console.error("Generation error:", e);
+      setConflictMsg("Erro ao processar o PDF. Certifique-se de que é um documento válido.");
+      setTimeout(() => setConflictMsg(null), 5000);
     } finally {
       setIsProcessingPdf(false);
       if (fileInputRef.current) fileInputRef.current.value = '';

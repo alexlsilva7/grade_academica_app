@@ -1,6 +1,6 @@
 {
-  "name": "grade_academica_app",
-  "description": "",
+  "name": "bcc app",
+  "description": "Aplicativo para gerenciar a grade horária do BCC",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }
