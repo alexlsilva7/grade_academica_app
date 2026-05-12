@@ -1,5 +1,5 @@
 import React, { RefObject } from 'react';
-import { ArrowLeft, Upload, Search, X, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Upload, Search, X, CheckCircle2, Info } from 'lucide-react';
 import { Discipline } from '../types';
 import { DAYS } from '../constants';
 
@@ -19,6 +19,8 @@ interface SidebarProps {
   displayedDisciplines: Discipline[];
   isDisciplineScheduled: (id: string) => boolean;
   toggleDiscipline: (disc: Discipline) => void;
+  onShowDetails: (disc: Discipline) => void;
+  hasApiKey: boolean;
 }
 
 export function Sidebar({
@@ -36,7 +38,9 @@ export function Sidebar({
   disciplinesList,
   displayedDisciplines,
   isDisciplineScheduled,
-  toggleDiscipline
+  toggleDiscipline,
+  onShowDetails,
+  hasApiKey
 }: SidebarProps) {
   return (
     <div className={`w-full md:w-80 bg-white border-r border-slate-200 flex-col h-full overflow-hidden ${mobileTab === 'disciplines' ? 'flex' : 'hidden md:flex'}`}>
@@ -53,24 +57,27 @@ export function Sidebar({
             {gradeTitle || "Grade Acadêmica"}
           </h1>
         </div>
-        <div className="ml-2 shrink-0">
-          <input
-            type="file"
-            accept="application/pdf"
-            className="hidden"
-            ref={fileInputRef}
-            onChange={handleFileUpload}
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isProcessingPdf}
-            className="flex items-center justify-center w-8 h-8 md:w-auto md:px-3 md:bg-indigo-50 text-indigo-700 md:hover:bg-indigo-100 disabled:opacity-50 text-sm font-medium rounded-md transition-colors"
-            title="Importar outro PDF"
-          >
-            <Upload className="w-4 h-4 md:mr-2" />
-            <span className="hidden md:inline">{isProcessingPdf ? '...' : 'PDF'}</span>
-          </button>
-        </div>
+        
+        {hasApiKey && (
+          <div className="ml-2 shrink-0">
+            <input
+              type="file"
+              accept="application/pdf"
+              className="hidden"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isProcessingPdf}
+              className="flex items-center justify-center w-8 h-8 md:w-auto md:px-3 md:bg-indigo-50 text-indigo-700 md:hover:bg-indigo-100 disabled:opacity-50 text-sm font-medium rounded-md transition-colors"
+              title="Importar outro PDF"
+            >
+              <Upload className="w-4 h-4 md:mr-2" />
+              <span className="hidden md:inline">{isProcessingPdf ? '...' : 'PDF'}</span>
+            </button>
+          </div>
+        )}
       </div>
       <div className="p-4 border-b border-slate-100 flex flex-col gap-3 shrink-0">
         <div className="flex justify-between items-center">
@@ -91,7 +98,7 @@ export function Sidebar({
                     : 'text-slate-500 bg-transparent hover:text-slate-700'
                 }`}
               >
-                {period}º
+                {period === 0 ? 'Optativa' : `${period}º`}
               </button>
             ))}
           </div>
@@ -124,14 +131,16 @@ export function Sidebar({
               <Upload className="w-6 h-6 text-indigo-500" />
             </div>
             <h3 className="text-sm font-semibold text-slate-800 mb-1">Nenhuma disciplina</h3>
-            <p className="text-xs text-slate-500 mb-4">Importe o PDF com a grade para começar a montar o seu horário.</p>
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors"
-              disabled={isProcessingPdf}
-            >
-              {isProcessingPdf ? 'Processando...' : 'Importar PDF'}
-            </button>
+            <p className="text-xs text-slate-500 mb-4">Acesse as configurações ou volte ao Menu Iniciar para carregar as disciplinas.</p>
+            {hasApiKey && (
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors"
+                disabled={isProcessingPdf}
+              >
+                {isProcessingPdf ? 'Processando...' : 'Importar PDF'}
+              </button>
+            )}
           </div>
         ) : displayedDisciplines.length === 0 ? (
           <div className="text-center py-8">
@@ -154,18 +163,34 @@ export function Sidebar({
                   <h4 className={`text-sm ${scheduled ? 'font-semibold text-indigo-900' : 'font-medium text-slate-700'}`}>
                     {disc.name}
                   </h4>
-                  {scheduled ? (
-                    <div className="w-4 h-4 bg-indigo-600 rounded-full flex items-center justify-center shrink-0 ml-2 mt-0.5 shadow-sm shadow-indigo-200">
-                      <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />
-                    </div>
-                  ) : (
-                    <div className="w-4 h-4 rounded-full border border-slate-300 shrink-0 ml-2 mt-0.5 bg-slate-50" />
-                  )}
+                  <div className="flex gap-2 items-center ml-2 shrink-0">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onShowDetails(disc);
+                      }}
+                      className="p-0.5 text-slate-400 hover:text-indigo-600 rounded transition-colors"
+                      title="Ver Detalhes"
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>
+                    {scheduled ? (
+                      <div className="w-4 h-4 bg-indigo-600 rounded-full flex items-center justify-center shadow-sm shadow-indigo-200">
+                        <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />
+                      </div>
+                    ) : (
+                      <div className="w-4 h-4 rounded-full border border-slate-300 bg-slate-50" />
+                    )}
+                  </div>
                 </div>
                 <div className={`text-xs mt-1 ${scheduled ? 'text-indigo-700' : 'text-slate-500'}`}>
                   {disc.professor}
                 </div>
-                <div className="flex flex-wrap gap-1 mt-2">
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                   <span className={`inline-flex items-center text-[9px] uppercase font-black px-1.5 py-0.5 rounded shadow-sm ${scheduled ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-white'}`}>
+                    {disc.period === 0 ? 'Opt' : `${disc.period}º`}
+                  </span>
+                  <div className="h-3 w-[1px] bg-slate-300" />
                   {disc.sessions.map((session, i) => (
                     <span key={i} className={`inline-flex items-center text-[9px] uppercase font-bold px-1.5 py-0.5 rounded ${scheduled ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-500'}`}>
                       {DAYS.find(d => d.id === session.day)?.name.substring(0, 3)} {session.time}

@@ -1,0 +1,3787 @@
+{
+  "export_date": "2026-05-10T12:09:30.758119",
+  "subjects": [
+    {
+      "code": "CCMP3006",
+      "name": "ALGORITMOS E ESTRUTURA DE DADOS I",
+      "type": "Obrigatório",
+      "period": "2",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00027",
+          "name": "ALGORITMOS E ESTRUTURAS DE DADOS I"
+        }
+      ],
+      "ementa": "Resolução de problemas e desenvolvimento de algoritmos. Conceitos de C: Modularização\nde programas e tratamento de arquivo. Tipo de dado abstrato. Algoritmos de Ordenação e\nBusca. Estruturas de dados elaboradas (lista, fila e pilha) e seus algoritmos. Análise do problema,\nestratégias de solução, representação e documentação."
+    },
+    {
+      "code": "CCMP3016",
+      "name": "ALGORITMOS E ESTRUTURA DE DADOS II",
+      "type": "Obrigatório",
+      "period": "3",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00028",
+          "name": "ALGORITMOS E ESTRUTURAS DE DADOS II"
+        }
+      ],
+      "ementa": "Formas de representação e abstração de dados em memória\nDispositivos e técnicas para armazenamento de dados\nEstruturas Abstratas de Dados: - Lista –Pilha – Fila\nMétodos de busca e classificação de dados em memória secundária de computadores\nParâmetros físicos e lógicos dos dispositivos para armazenagem de dados.\nMétodos de representação e abstração de dados\nMétodos de acesso a arquivos\n- sequenciais,\n- sequenciais indexadas,\n- indexadas e diretas.\nEstruturas árvores-B e “hashing”, Árvore binária, Árvore Balanceada, Heap Grafo."
+    },
+    {
+      "code": "CCMP3010",
+      "name": "ARQUITETURA DE COMPUTADORES",
+      "type": "Obrigatório",
+      "period": "4",
+      "credits": 4,
+      "workload": {
+        "teorica": 45,
+        "pratica": 15,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3058",
+          "name": "SISTEMAS DIGITAIS"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Organização de Computadores; Conjunto de Instruções, Mecanismos de Interrupção e de\nExceção; Barramento, Comunicações; Interfaces e Periféricos, Hierarquia de Memória; Multiprocessadores; Multicomputadores; Arquiteturas Paralelas;"
+    },
+    {
+      "code": "MATM3031",
+      "name": "CÁLCULO PARA COMPUTAÇÃO I",
+      "type": "Obrigatório",
+      "period": "1",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00043",
+          "name": "CÁLCULO I"
+        },
+        {
+          "code": "MATM3005",
+          "name": "CÁLCULO I C"
+        },
+        {
+          "code": "MATM3012",
+          "name": "CÁLCULO I E"
+        },
+        {
+          "code": "MATM3030",
+          "name": "CÁLCULO I"
+        }
+      ],
+      "ementa": "Conjuntos numéricos. Funções elementares: linear, afim, quadrática, modular. Funções\ndiretas e inversas. Funções exponenciais e logarítmicas. Introdução à trigonometria. Funções\ntrigonométricas. Limite e continuidade. Derivadas e aplicações."
+    },
+    {
+      "code": "MATM3032",
+      "name": "CÁLCULO PARA COMPUTAÇÃO II",
+      "type": "Obrigatório",
+      "period": "2",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "MATM3031",
+          "name": "CÁLCULO PARA COMPUTAÇÃO I"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00029",
+          "name": "CÁLCULO II"
+        },
+        {
+          "code": "MATM3006",
+          "name": "CÁLCULO II"
+        },
+        {
+          "code": "MATM3013",
+          "name": "CÁLCULO II E"
+        }
+      ],
+      "ementa": "Integrais indefinidas, definidas e Integrais impróprias. Seqüências e séries numéricas. Série\nde potência. Curvas planas e coordenadas polares. Funções reais de várias variáveis, Limites e\ncontinuidade de funções de várias variáveis, derivadas parciais, diferenciabilidade, máximos e\nmínimos de funções. Integrais múltiplas."
+    },
+    {
+      "code": "FISC3004",
+      "name": "FÍSICA PARA COMPUTAÇÃO",
+      "type": "Obrigatório",
+      "period": "2",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "MATM3031",
+          "name": "CÁLCULO PARA COMPUTAÇÃO I"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "EAL00033",
+          "name": "FÍSICA GERAL III A"
+        },
+        {
+          "code": "FISC3007",
+          "name": "FÍSICA GERAL III E"
+        }
+      ],
+      "ementa": "Conceito de: (a) Carga elétrica, (b) Campo elétrico, (c) Potencial elétrico, (d) corrente\nelétrica, (e) potência elétrica; Resistência elétrica e lei de Ohm; associação de resistores: associação\nem série e em paralelo, transformação estrela-triângulo; bateria elétrica; circuitos resistivos\ne leis de Kirchhoff; Capacitor e circuitos RC; Fontes do campo magnético, solenóide e\nimãs; Indutor, auto-indução, indutância mútua, circuitos RL; Corrente alternada, circuitos RLC,\ntransformadores, motores e geradores elétricos; Espectro eletromagnético, propagação de ondas\neletromagnéticas, lasers; Metais, isolantes e semicondutores; Diodo e circuitos com diodos;\nTransistor e circuitos com transistor; Circuitos eletrônicos básicos."
+    },
+    {
+      "code": "MATM3021",
+      "name": "GEOMETRIA ANALÍTICA A",
+      "type": "Obrigatório",
+      "period": "1",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00022",
+          "name": "GEOMETRIA ANALÍTICA"
+        },
+        {
+          "code": "MATM3011",
+          "name": "GEOMETRIA ANALÍTICA E ÁLGEBRA LINEAR A"
+        }
+      ],
+      "ementa": "Vetores no R2; Produto interno no R2; Estudo da reta no R2; Lugares geométricos no R2\n(circunferência, elipse, parábola e hipérbole); Vetores no R3; Produto interno no R3, vetorial e\nmisto; Aplicações: áreas e volumes; Equação da reta no R3 e equação do plano; Equação da\nsuperfície esférica."
+    },
+    {
+      "code": "CCMP3056",
+      "name": "INTRODUÇÃO À COMPUTAÇÃO C",
+      "type": "Obrigatório",
+      "period": "1",
+      "credits": 2,
+      "workload": {
+        "teorica": 30,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 30
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00023",
+          "name": "INTRODUÇÃO À COMPUTAÇÃO"
+        },
+        {
+          "code": "CCMP3003",
+          "name": "INTRODUÇÃO À CIÊNCIA DA COMPUTAÇÃO"
+        }
+      ],
+      "ementa": "Introdução à Ciência da Computação: a ciência, o curso e a profissão. História e evolução da\nCiência da Computação. Conceitos básicos. Classificação de sistemas computacionais. Noções\nde sistemas operacionais, redes, tipos de linguagens, compiladores e interpretadores. Tópicos\ncomplementares. Seminário."
+    },
+    {
+      "code": "CCMP3057",
+      "name": "INTRODUÇÃO À PROGRAMAÇÃO",
+      "type": "Obrigatório",
+      "period": "1",
+      "credits": 6,
+      "workload": {
+        "teorica": 45,
+        "pratica": 45,
+        "extensao": 0,
+        "total": 90
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00024",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO I"
+        },
+        {
+          "code": "CCMP3004",
+          "name": "LINGUAGEM DE PROGRAMAÇÃO I"
+        },
+        {
+          "code": "CCMP3005",
+          "name": "LABORATÓRIO DE INFORMÁTICA I"
+        },
+        {
+          "code": "CCMP3004",
+          "name": "LINGUAGEM DE PROGRAMAÇÃO I"
+        },
+        {
+          "code": "CCMP3060",
+          "name": "LABORATÓRIO DE INFORMÁTICA"
+        }
+      ],
+      "ementa": "Introdução a algoritmos e pseudocódigos. Introdução à programação imperativa: variáveis,\nconstantes e expressões. Controle de fluxo de execução e repetição. Estruturas triviais de\ndados: vetores, matrizes e registros. Noções de funções. Comandos de atribuição e declaração\nde constantes, variáveis e tipos de dados. Expressões. Ponteiros. Instruções condicionais de\ncontrole de fluxo. Bibliotecas definidas pelo usuário. Recursividade. Alocação dinâmica de\nmemória."
+    },
+    {
+      "code": "MATM3008",
+      "name": "LÓGICA MATEMÁTICA",
+      "type": "Obrigatório",
+      "period": "1",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00025",
+          "name": "LÓGICA MATEMÁTICA I"
+        }
+      ],
+      "ementa": "Proposições e conectivos; Operações lógicas sobre proposições; Construção de tabelasverdade;\nTautologias, contradições e contingencias; Implicação lógica; Equivalência lógica; Álgebra\ndas proposições; Método dedutivo; Argumentos, regras de inferência; Validade mediante\ntabela verdade; Validade mediante regras de inferência; Métodos de demonstrações; Sentenças\nabertas; Operações lógicas sobre sentenças abertas; Quantificadores."
+    },
+    {
+      "code": "CCMP3059",
+      "name": "MATEMÁTICA DISCRETA",
+      "type": "Obrigatório",
+      "period": "3",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "MATM3008",
+          "name": "LÓGICA MATEMÁTICA"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00030",
+          "name": "MATEMÁTICA DISCRETA I"
+        },
+        {
+          "code": "MATM3009",
+          "name": "FUNDAMENTOS DE MATEMÁTICA DISCRETA PARA COMPUTAÇÃO"
+        }
+      ],
+      "ementa": "Grafos e árvores. Álgebra de boole. Inteiros, divisores e primos"
+    },
+    {
+      "code": "CCMP3065",
+      "name": "PARADIGMAS DE LINGUAGENS DE PROGRAMAÇÃO",
+      "type": "Obrigatório",
+      "period": "4",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        },
+        {
+          "code": "CCMP3016",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS II"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00033",
+          "name": "PARADIGMAS DE LINGUAGENS DE PROGRAMAÇÃO I"
+        }
+      ],
+      "ementa": "Valores e Tipos; Variáveis e Armazenamento; Associações e Escopo; Abstração de Procedimentos;\nAbstração de Dados; Abstração Genérica; Sistema de tipos; Controle de Fluxo;\nConcorrência; Paradigma Imperativo; Paradigma Orientado a Objetos; Paradigma Concorrente;\nParadigma Funcional; Paradigma Lógico; Paradigma Scripting."
+    },
+    {
+      "code": "PRBE3006",
+      "name": "PROBABILIDADE E ESTATÍSTICA",
+      "type": "Obrigatório",
+      "period": "3",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "MATM3031",
+          "name": "CÁLCULO PARA COMPUTAÇÃO I"
+        },
+        {
+          "code": "MATM3032",
+          "name": "CÁLCULO PARA COMPUTAÇÃO II"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "PRBE3004",
+          "name": "ESTATÍSTICA BÁSICA"
+        }
+      ],
+      "ementa": "Análise combinatória. Planejamento de uma pesquisa. Análise exploratória de dados. Probabilidade.\nVariáveis aleatórias discretas e contínuas. Principais modelos teóricos. Estimação\nde parâmetros. Testes de hipóteses."
+    },
+    {
+      "code": "CCMP3017",
+      "name": "PROGRAMAÇÃO ORIENTADA AO OBJETO",
+      "type": "Obrigatório",
+      "period": "2",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00044",
+          "name": "PROGRAMAÇÃO ORIENTADA A OBJETOS"
+        }
+      ],
+      "ementa": "Contextualização de Programação Orientada a Objetos. Conceitos de orientação a Objetos:\nObjetos, Operações, Mensagens, Métodos e Estados. Ambientes de Desenvolvimento de Software\nOrientado a Objetos. Classes, Métodos e Objetos. Tipo de Entrada de Dados. Tipo de\nSaída de Dados. Estruturas de Controle e Repetição. Modificadores de Classe e de Métodos.\nConstrutores e Finalizadores. Herança Simples e Múltipla: Super e sub classes. Polimorfismo,\nAbstrações e Generalizações. Diagramas UML. Interface Gráfica com Usuário."
+    },
+    {
+      "code": "CCMP3064",
+      "name": "PROJETO E ANÁLISE DE ALGORITMOS",
+      "type": "Obrigatório",
+      "period": "4",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        },
+        {
+          "code": "CCMP3016",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS II"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00034",
+          "name": "PROJETO E ANÁLISE DE ALGORITMOS I"
+        },
+        {
+          "code": "CCMP3012",
+          "name": "TEORIA DOS GRAFOS E ANÁLISE DE ALGORITMOS"
+        }
+      ],
+      "ementa": "Corretude de Algoritmos Recursivos e Iterativos. Notação e Análise Assintótica. Eficiência\nde Algoritmos Recursivos e Não-Recursivos. Análise Empírica. Grafos e Sub-grafos; Isomorfismo,\nMatrizes de Adjacência e Incidência, Caminhos e Ciclos. Árvores: Caracterização de\nÁrvores, Cortes de Arestas, Cortes de Vértices. Conectividade: Conectividade de Vértices e\nArestas; Ciclos Eulerianos e Hamiltonianos. Emparelhamentos. Coloração de Vértices e de\nArestas. Planaridade. Redes de Fluxo. Algoritmos Gulosos. Programação Dinâmica. Backtracking.\nBranch-and-Bound. NP-Completude."
+    },
+    {
+      "code": "CCMP3067",
+      "name": "SISTEMAS DE INFORMAÇÃO E TECNOLOGIAS",
+      "type": "Obrigatório",
+      "period": "5",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3017",
+          "name": "PROGRAMAÇÃO ORIENTADA AO OBJETO"
+        },
+        {
+          "code": "CCMP3018",
+          "name": "ENGENHARIA DE SOFTWARE"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "ADMT3001",
+          "name": "ADMINISTRAÇÃO COMPUTACIONAL"
+        },
+        {
+          "code": "BCC00040",
+          "name": "SISTEMAS DE INFORMAÇÃO E TECNOLOGIAS I"
+        }
+      ],
+      "ementa": "A organização. Configuração estrutural. A TI na empresa e a Revolução da Web.Visão\nsistêmica de estratégias integradoras de áreas e informação como apoio ao processo decisório.\nAplicações organizacionais; Planejamento. Elementos da Tomada de decisão numa organização.\nDecisão e controle. Sistemas de Informação Transacionais, Gerenciais e de Apoio às\nOperações e à Decisão. ERPs. CRMs. SCMs. Business intellligence. Gestão do conhecimento.\nA importância do planejamento em TI. Tendências em TI nas organizações."
+    },
+    {
+      "code": "CCMP3058",
+      "name": "SISTEMAS DIGITAIS",
+      "type": "Obrigatório",
+      "period": "3",
+      "credits": 4,
+      "workload": {
+        "teorica": 45,
+        "pratica": 15,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "CCMP3007",
+          "name": "CIRCUITOS DIGITAIS"
+        }
+      ],
+      "ementa": "Sistemas de Numeração e Códigos; Aritmética Binária; Porta Lógicas; Análise e Projeto de\nCircuitos Combinacionais; Minimização por Mapa de Karnaugh; Somadores; Decodificadores;\nCodificadores; Multiplexadores; Demultiplexadores; Análise e Síntese de Circuitos Sequenciais;\nLatches e Flip-Flops; Minimização de Estado; Registradores; Registradores de Deslocamento;\nDispositivos Lógicos Programáveis; Memória);"
+    },
+    {
+      "code": "CCMP3009",
+      "name": "SISTEMAS OPERACIONAIS",
+      "type": "Obrigatório",
+      "period": "5",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3010",
+          "name": "ARQUITETURA DE COMPUTADORES"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Estrutura de um Sistema Operacional. Processos Concorrentes. Escalonamento. Gerenciamento\nde Memória. Memória Virtual. Gerenciamento de Disco. Sistemas de Arquivos.\nProteção e Segurança. Sistemas Distribuídos. Estudos de Caso."
+    },
+    {
+      "code": "CCMP3068",
+      "name": "TEORIA DA COMPUTAÇÃO",
+      "type": "Obrigatório",
+      "period": "5",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3059",
+          "name": "MATEMÁTICA DISCRETA"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "CCMP3011",
+          "name": "LINGUAGENS FORMAIS E AUTÔMATOS"
+        }
+      ],
+      "ementa": "Conceitos Básicos. Alfabetos e Linguagens. Gramáticas. Autômatos Finitos; Linguagens\nRegulares. Linguagens Livres de Contexto; Autômato de Pilhas; Gramáticas Livre de Contexto\nAmbígua. Formas Normais. Linguagens Recursivamente Enumeráveis e Sensíveis ao Contexto.\nHierarquia de Chomsky. Indecidibilidade."
+    },
+    {
+      "code": "MATM3019",
+      "name": "ÁLGEBRA LINEAR I",
+      "type": "Obrigatório",
+      "period": "2",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "MATM3021",
+          "name": "GEOMETRIA ANALÍTICA A"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00026",
+          "name": "ÁLGEBRA LINEAR"
+        },
+        {
+          "code": "MATM3010",
+          "name": "ÁLGEBRA LINEAR COMPUTACIONAL"
+        }
+      ],
+      "ementa": "Vetores; Matrizes; Operações elementares e sistemas de equações; Espaços vetorias (subespaços,\ndependência e independência linear, base e dimensão, espaço linha, espaço coluna e posto, dimensão do conjunto solução de um sistema linear); Determinantes; Transformações lineares (núcleo e imagem,\nrepresentação por matrizes, mudança de base, auto valor, auto vetor e diagonalização)."
+    },
+    {
+      "code": "CCMP3066",
+      "name": "BANCO DE DADOS I",
+      "type": "Obrigatório",
+      "period": "4",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3016",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS II"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00031",
+          "name": "BANCO DE DADOS"
+        },
+        {
+          "code": "CCMP3022",
+          "name": "FUNDAMENTOS DE BANCO DE DADOS"
+        }
+      ],
+      "ementa": "Conceituação. Arquitetura de SGDB. Modelagem de dados: modelo E-R e suas variações,\nabstrações por agregação e generalização. Modelos de representação (relacional, hierárquico\ne redes). Normalização e manutenção da integridade. Arquitetura de Sistemas de Bancos de\nDados, SQL"
+    },
+    {
+      "code": "CCMP3020",
+      "name": "COMPILADORES",
+      "type": "Obrigatório",
+      "period": "6",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        },
+        {
+          "code": "CCMP3016",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS II"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        },
+        {
+          "code": "CCMP3059",
+          "name": "MATEMÁTICA DISCRETA"
+        },
+        {
+          "code": "CCMP3068",
+          "name": "TEORIA DA COMPUTAÇÃO"
+        },
+        {
+          "code": "MATM3008",
+          "name": "LÓGICA MATEMÁTICA"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Processadores de linguagem: compilador e interpretador. Introdução à compilação. Fases\nda compilação. Relações sobre gramáticas. Análise léxica. Análise sintática ascendente e\ndescendente. Tabelas de símbolos. Esquemas de tradução. Análise semântica. Geração de\ncódigo intermediário. Ambientes de execução. Introdução à otimização de código."
+    },
+    {
+      "code": "CCMP3071",
+      "name": "COMPUTADORES E SOCIEDADE",
+      "type": "Obrigatório",
+      "period": "7",
+      "credits": 2,
+      "workload": {
+        "teorica": 30,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 30
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "CONSEQÜÊNCIAS DA INFORMATIZAÇÃO DA SOCIEDADE: A informatização e o\naspecto educacional; Efeitos políticos e econômicos; Impactos sociais; Informatização e privacidade;\nPOLÍTICA NACIONAL DE INFORMÁTICA: Indústria nacional de informática;\nO papel do analista e sistemas na sociedade; AUTOMAÇÃO DE ATIVIDADES: Comerciais;\nIndustriais; Escritórios; APLICAÇÕES DA INFORMÁTICA: Científica; Administrativa;\nJurídica; Humanística; Educação; ERGONOMIA E DOENÇAS PROFISSIONAIS: Tipos; Características."
+    },
+    {
+      "code": "CCMP3019",
+      "name": "COMPUTAÇÃO GRÁFICA",
+      "type": "Obrigatório",
+      "period": "6",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        },
+        {
+          "code": "MATM3019",
+          "name": "ÁLGEBRA LINEAR I"
+        },
+        {
+          "code": "MATM3021",
+          "name": "GEOMETRIA ANALÍTICA A"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Introdução à computação gráfica. Biblioteca gráfica OpenGL. Representação de objetos.\nDispositivos periféricos gráficos. Processo de visualização. Curvas e superfícies paramétricas.\nEliminação de superfícies ocultas. Geração de imagens com realismo. Tópicos complementares\nem computação gráfica."
+    },
+    {
+      "code": "BCC00003",
+      "name": "EMPREENDEDORISMO I",
+      "type": "Obrigatório",
+      "period": "6",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "ADMT3003",
+          "name": "EMPREENDEDORISMO"
+        },
+        {
+          "code": "ADMT3018",
+          "name": "EMPREENDIMENTOS EM TIC"
+        }
+      ],
+      "ementa": "Apresentar os principais conceitos sobre empreendedorismo destacando sua importância e contribuições. Apresentar o cenário do empreendedorismo e inovação no Brasil, suas características e suas perspectivas. Fazer uma introdução da inovação destacando seus principais tipos.Abordar a definição do problema, introduzir os conceitos de funil de Ideias, SCAMPER e outras. Apresentar o Design Thinking, a Matriz CSD, o Lean Canvas. Definir o MVP e o Pitch.\nDefinir o que é uma startup. Apresentar o modelo de Plano de Negócios. Abordar o Investimento anjo, o ambientes de inovação, os tipos de fomento à inovação, o ecossistema de inovação, a tríplice-hélice e outros."
+    },
+    {
+      "code": "CCMP3018",
+      "name": "ENGENHARIA DE SOFTWARE",
+      "type": "Obrigatório",
+      "period": "4",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3017",
+          "name": "PROGRAMAÇÃO ORIENTADA AO OBJETO"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00032",
+          "name": "ENGENHARIA DE SOFTWARE I"
+        }
+      ],
+      "ementa": "Contextualização da Engenharia de Software; Fundamentação dos Princípios da Engenharia\nde Software; Conceituação de Produto e Processo de Software; Tipos de Processos de Software;\nComparação entre os Paradigmas de Desenvolvimento Software; Caracterização do Projeto de\nSoftware; UML; Gerenciamento de Projetos; Gerenciamento Ágil; Processo de Engenharia\nde Requisito; Requisitos; Testes de Software; Estilos Arquiteturais; Evolução e Refatoração;\nDefinição de Qualidade de Software."
+    },
+    {
+      "code": "CCMP3061",
+      "name": "ESTÁGIO SUPERVISIONADO OBRIGATÓRIO - BACH COMPUTAÇÃO",
+      "type": "Obrigatório",
+      "period": "9",
+      "credits": 20,
+      "workload": {
+        "teorica": 0,
+        "pratica": 300,
+        "extensao": 0,
+        "total": 300
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Não encontrada"
+    },
+    {
+      "code": "LETR3020",
+      "name": "INGLÊS",
+      "type": "Obrigatório",
+      "period": "3",
+      "credits": 2,
+      "workload": {
+        "teorica": 30,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 30
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "LETR3000",
+          "name": "INGLÊS INSTRUMENTAL"
+        }
+      ],
+      "ementa": "Leitura de textos em inglês, visando o desenvolvimento de estratégias globais de leitura e\nde análise linguística."
+    },
+    {
+      "code": "CCMP3014",
+      "name": "INTELIGÊNCIA ARTIFICIAL",
+      "type": "Obrigatório",
+      "period": "5",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3016",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS II"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00035",
+          "name": "INTELIGÊNCIA ARTIFICIAL I"
+        }
+      ],
+      "ementa": "Introdução. Sistemas especialistas. Agentes Inteligentes. Resolução de problemas por meio\nde busca. Problema de satisfação de restrição. Linguagens Simbólicas. Esquemas para representação\ndo conhecimento: lógicos, em rede, estruturados, procedurais. Formalismos para a\nrepresentação de conhecimento incerto. Redes Bayesianas. Conjuntos e lógica Fuzzy. Introdução\nà Computação Evolucionária. Algoritmos Genéticos. Ajuste de parâmetros em algoritmos\ngenéticos. Projeto."
+    },
+    {
+      "code": "CCMP3070",
+      "name": "INTERAÇÃO HUMANO-COMPUTADOR",
+      "type": "Obrigatório",
+      "period": "7",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3017",
+          "name": "PROGRAMAÇÃO ORIENTADA AO OBJETO"
+        },
+        {
+          "code": "CCMP3018",
+          "name": "ENGENHARIA DE SOFTWARE"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00036",
+          "name": "INTERAÇÃO HUMANO-COMPUTADOR I"
+        },
+        {
+          "code": "CCMP3036",
+          "name": "INTERFACE HUMANO-MÁQUINA"
+        }
+      ],
+      "ementa": "Conhecer os fundamentos de fatores humanos em IHC, os modelos mentais (metáforas),\nos paradigmas de IHC (engenharia semiótica e cognitiva) e os métodos, técnicas, suporte e\navaliação de design de interação."
+    },
+    {
+      "code": "CIEN3005",
+      "name": "METODOLOGIA CIENTÍFICA",
+      "type": "Obrigatório",
+      "period": "3",
+      "credits": 2,
+      "workload": {
+        "teorica": 30,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 30
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00020",
+          "name": "TÓPICOS EM METODOLOGIA CIENTÍFICA"
+        },
+        {
+          "code": "CIEN3001",
+          "name": "METODOLOGIA CIENTÍFICA S"
+        }
+      ],
+      "ementa": "O método científico e a prática da pesquisa; função social da pesquisa e da ciência. Tipos\ne características da pesquisa. Instrumentalização metodológica. Projeto de pesquisa. Relatório\nde pesquisa"
+    },
+    {
+      "code": "CCMP3069",
+      "name": "PROJETO DE DESENVOLVIMENTO",
+      "type": "Obrigatório",
+      "period": "7",
+      "credits": 6,
+      "workload": {
+        "teorica": 30,
+        "pratica": 60,
+        "extensao": 0,
+        "total": 90
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3017",
+          "name": "PROGRAMAÇÃO ORIENTADA AO OBJETO"
+        },
+        {
+          "code": "CCMP3018",
+          "name": "ENGENHARIA DE SOFTWARE"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00010",
+          "name": "TÓPICOS EM PROJETO DE DESENVOLVIMENTO"
+        },
+        {
+          "code": "BCC00041",
+          "name": "PROJETO DE DESENVOLVIMENTO DE SOFTWARE"
+        }
+      ],
+      "ementa": "Desenvolvimento de um sistema de computação usando conceitos aprendidos anteriormente.\nSistemas multidisciplinares devem ser estimulados bem como o trabalho em equipe."
+    },
+    {
+      "code": "CCMP3043",
+      "name": "RECONHECIMENTO DE PADRÕES",
+      "type": "Obrigatório",
+      "period": "6",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        },
+        {
+          "code": "CCMP3016",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS II"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        },
+        {
+          "code": "CCMP3059",
+          "name": "MATEMÁTICA DISCRETA"
+        },
+        {
+          "code": "MATM3008",
+          "name": "LÓGICA MATEMÁTICA"
+        }
+      ],
+      "corequisites": [
+        {
+          "code": "CCMP3019",
+          "name": "COMPUTAÇÃO GRÁFICA"
+        }
+      ],
+      "equivalences": [
+        {
+          "code": "BCC00038",
+          "name": "RECONHECIMENTO DE PADRÕES I"
+        }
+      ],
+      "ementa": "Introdução a Aprendizagem de Máquina. Paradigmas de Aprendizagem de Máquina. Classificação\ne avaliação de classificadores. Regressão. Agrupamento. Redes Neurais. Introdução\na Processamento de Imagens. Realce, filtragem e restauração de imagens. Segmentação de\nimagens. Compressão e comunicação de imagens. Noções de visão computacional e reconhecimento\nde padrões. Projeto."
+    },
+    {
+      "code": "CCMP3023",
+      "name": "REDE DE COMPUTADORES",
+      "type": "Obrigatório",
+      "period": "5",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        },
+        {
+          "code": "CCMP3016",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS II"
+        },
+        {
+          "code": "CCMP3056",
+          "name": "INTRODUÇÃO À COMPUTAÇÃO C"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00037",
+          "name": "REDES DE COMPUTADORES"
+        }
+      ],
+      "ementa": "Conceitos básicos de redes de computadores: definições; terminologia; classificação; topologias; modelos de arquitetura e aplicações. Protocolos e modelos de referência: o modelo ISO/OSI e o modelo TCP/IP; conceitos básicos de cada camada; protocolos das camadas de Rede, de Transporte e de Aplicação. Conceitos de segurança. Conceitos de gerenciamento. Conceitos de avaliação de desempenho.\nPROCESSO N 11827/2016-57"
+    },
+    {
+      "code": "CCMP3021",
+      "name": "SISTEMAS DISTRIBUÍDOS",
+      "type": "Obrigatório",
+      "period": "6",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3023",
+          "name": "REDE DE COMPUTADORES"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00039",
+          "name": "SISTEMAS DISTRIBUÍDOS I"
+        }
+      ],
+      "ementa": "Introdução aos sistemas distribuídos; Definições de processos e threads; Comunicação em\nsistemas distribuídos; Sincronização em sistemas distribuídos; Conceitos de middleware;Redes\nP2P: conceitos básicos, arquiteturas, aplicações;Introdução a grades computacionais;Tecnologias\nde middleware tradicionais."
+    },
+    {
+      "code": "CCMP3063",
+      "name": "TRABALHO DE CONCLUSÃO DE CURSO - BACH. CIÊNCIA DA COMPUTAÇÃO UAG",
+      "type": "Obrigatório",
+      "period": "9",
+      "credits": 12,
+      "workload": {
+        "teorica": 180,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 180
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Não encontrada"
+    },
+    {
+      "code": "BCC00008",
+      "name": "BANCO DE DADOS AVANÇADO",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3066",
+          "name": "BANCO DE DADOS I"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": " SQL Avançado. Aspectos Operacionais de Sistemas de Gerenciamento de Banco de Dados (Controle de Concorrência, Restrições de Integridade, Segurança e Recuperação após falhas). Lei Geral de Proteção de Dados (LPD). Bancos de Dados Distribuídos. Mineração de Dados (Data Mining). Recomendação de Conteúdos. Conceitos avançados de Banco de Dados e suas novas tecnologias."
+    },
+    {
+      "code": "CCMP3091",
+      "name": "INTEGRAÇÃO DE DADOS E DATA WAREHOUSE",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3066",
+          "name": "BANCO DE DADOS I"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00046",
+          "name": "INTELIGÊNCIA DE NEGÓCIOS E DATA WAREHOUSE"
+        }
+      ],
+      "ementa": "Definir o processo de construção de um DataWarehouse (DW). Explicar as diferentes fases\nde construção de um DW. Listar os principais fatores que definem um projeto com sucesso.\nAnalisar e transformar exigências empresariais em um modelo de negócios (conceitual). Utilizar\ndiagramas de relacionamentos de entidades para transformar o modelo de negócios em\num modelo dimensional (lógico). Transformar o modelo dimensional em um projeto de dados\nfísico. Apresentar as principais estruturas que cooperam no desempenho e criação de uma base DW."
+    },
+    {
+      "code": "BCC00006",
+      "name": "MODELAGEM CONCEITUAL DE DADOS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3066",
+          "name": "BANCO DE DADOS I"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Conceitos Básicos. Análise de Requisitos para Projeto Conceitual do Banco de Dados.\nVerificação do Projeto Conceitual do Banco de Dados. Estratégias para Especificação do Projeto Conceitual de Banco de Dados. Aspectos Avançados de Projeto Conceitual de Banco de Dados com o Modelo Entidade-Relacionamento (MER) e com a Linguagem de Modelagem Unificada (UML). Metamodelos e UML Profile. Ferramentas CASE. Ontologias e Modelos Conceituais de Banco de dados. Projeto Conceitual de Data Warehouse. Tópicos Especiais. Projeto Prático."
+    },
+    {
+      "code": "CCMP3089",
+      "name": "PROJETO DE BANCO DE DADOS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3066",
+          "name": "BANCO DE DADOS I"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Realizar um projeto real com aplicação de mercado utilizando os conceitos de Bancos de Dados já adiquirido e um conjunto de novos conceitos apresentados nesta disciplina.\n\nPROJETO PEDAGOGICO RESOLUCAO N 005/2012 DE 01/02/2016"
+    },
+    {
+      "code": "UAG00169",
+      "name": "TÓPICOS ESPECIAIS EM BANCO DE DADOS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3066",
+          "name": "BANCO DE DADOS I"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Estudo de técnicas avançadas em na área multidisciplinar de Banco de Dados permitindo\nao aluno conhecer o estado da arte nesta área de pesquisa."
+    },
+    {
+      "code": "UAG00009",
+      "name": "PROJETO DE SISTEMAS EMBARCADOS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3010",
+          "name": "ARQUITETURA DE COMPUTADORES"
+        },
+        {
+          "code": "CCMP3058",
+          "name": "SISTEMAS DIGITAIS"
+        },
+        {
+          "code": "FISC3004",
+          "name": "FÍSICA PARA COMPUTAÇÃO"
+        },
+        {
+          "code": "MATM3031",
+          "name": "CÁLCULO PARA COMPUTAÇÃO I"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Modelos de especificação de sistemas embutidos. Técnicas de partcionamento de sistmas. Técnicas de estimativas. Técnicas para geração de interfaces. Técnicas para síntese de software. Técnicas de co-simulação. Prototipação de sistemas. \nPROJETO PEDAGOGICO RESOLUCAO N 005/2012"
+    },
+    {
+      "code": "CCMP3075",
+      "name": "TÓPICOS AVANÇADOS EM ENGENHARIA DA COMPUTAÇÃO",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Estudo de técnicas avançadas em Engenharia da Computação permitindo ao aluno conhecer\no estado da arte nesta área de pesquisa."
+    },
+    {
+      "code": "UAG00073",
+      "name": "ANÁLISE E PROJETO DE SISTEMAS A",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 45,
+        "pratica": 15,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3017",
+          "name": "PROGRAMAÇÃO ORIENTADA AO OBJETO"
+        },
+        {
+          "code": "CCMP3018",
+          "name": "ENGENHARIA DE SOFTWARE"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00009",
+          "name": "ANÁLISE E PROJETO DE SISTEMAS I"
+        }
+      ],
+      "ementa": "Princípios de linha de produção dentro da Eng. De Software. Este\nconceito define as etapas de como um software orientado a objeto deve ser construído desde seu levantamento de requisitos até a sua implantação."
+    },
+    {
+      "code": "CCMP3078",
+      "name": "DESENVOLVIMENTO DE APLICAÇÕES MÓVEIS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Introdução ao Desenvolvimento de Aplicações Móveis. Fundamentos de Desenvolvimento para Plataformas Móveis. Interface de Usuário para Dispositivos Móveis. Desenvolvimento de Aplicativos Multiplataforma Armazenamento de Dados em Dispositivos Móveis. Acesso a Recursos do Dispositivo. Testes e Depuração de Aplicativos Móveis. Publicação e Distribuição de Aplicativos. Segurança em Aplicações Móveis.\n"
+    },
+    {
+      "code": "CCMP3051",
+      "name": "DESENVOLVIMENTO DISTRIBUÍDO DE SOFTWARE",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Gerência de Projeto; Engenharia de Requisitos; Processos de Software; Adaptação de Processos; Modelos de desenvolvimento; Métodos Ágeis; Scrum; XP"
+    },
+    {
+      "code": "BCC00007",
+      "name": "ENGENHARIA DE SOFTWARE EXPERIMENTAL",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3018",
+          "name": "ENGENHARIA DE SOFTWARE"
+        },
+        {
+          "code": "CIEN3005",
+          "name": "METODOLOGIA CIENTÍFICA"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Introdução à Engenharia de Software Experimental. Processo de condução de estudos experimentais. Estudos Primários e\nSecundários. Métodos quantitativos e qualitativos em engenharia de software. Engenharia de software baseada em\nevidências. Planejamento de experimentos e análise de resultados. Estatística Aplicada a Estudos Experimentais."
+    },
+    {
+      "code": "BCC00002",
+      "name": "ESPECIFICAÇÃO FORMAL DE SOFTWARE",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3059",
+          "name": "MATEMÁTICA DISCRETA"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Especificação de software baseada no paradigma imperativo: conjuntos, dados, operações,\nrefinamentos sucessivos e implementação (geração de código). Especificação de software\nbaseada no paradigma orientado a objetos. Redes de Petri coloridas. Verificação automática\nde modelos. "
+    },
+    {
+      "code": "UAG00075",
+      "name": "GERENCIAMENTO DE PROJETOS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3017",
+          "name": "PROGRAMAÇÃO ORIENTADA AO OBJETO"
+        },
+        {
+          "code": "CCMP3018",
+          "name": "ENGENHARIA DE SOFTWARE"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "CCMP3054",
+          "name": "GERÊNCIA DE PROJETOS DE SOFTWARE"
+        }
+      ],
+      "ementa": "Fundamentos de Gerenciamento de Projetos (GP); Descrição do Processo de GP; Atividades\nde planejamento e gerenciamento de um processo específico (o RUP, por exemplo); Desenvolvimento\nde Proposta e Plano de Projeto; Atividade de Iniciação de um Projeto; Atividade\nde Gerenciamento de Tempo; Atividade de Gerenciamento de Escopo; Atividade de Gerenciamento\nde Riscos; Fases de Implementação do Projeto; Fases de Implantação; Fase de Finalização\ndo Projeto de Software; Ferramentas de planejamento e gerenciamento; Técnicas para\nestimativas e coleta de métricas"
+    },
+    {
+      "code": "BCC00001",
+      "name": "GESTÃO ÁGIL DE PROJETOS DE SOFTWARE",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3018",
+          "name": "ENGENHARIA DE SOFTWARE"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Fundamentos de Gerenciamento de Projetos (GP); Projetos de Software; Processo de GP; Processo de Desenvolvimento de Software; Proposta e Plano de Projeto; Atividade e Fases executadas na Gestão de um projeto; Ferramentas de planejamento e gerenciamento de projetos; Gestão de implantação; Métodos Ágeis; Ferramentas colaborativas; Gestão Ágil de software; Scrum na Prática.\n"
+    },
+    {
+      "code": "CCMP3090",
+      "name": "PROGRAMAÇÃO PARALELA E DISTRIBUÍDA",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 45,
+        "pratica": 15,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Arquiteturas paralelas, programação paralela e aspectos de desempenho; Processos, comunicação\ne sincronização (IPC); Threads, comunicação e sincronização em memória compartilhada;\nParalelismo com threads; Algoritmos de escalonamento; Processadores paralelos\ne distribuídos; Comunicação em Rede (sockets); Computação com Passagem de Mensagem\n(MPI)\n"
+    },
+    {
+      "code": "CCMP3073",
+      "name": "PROGRAMAÇÃO WEB",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00011",
+          "name": "PROGRAMAÇÃO WEB I"
+        }
+      ],
+      "ementa": "Não encontrada"
+    },
+    {
+      "code": "UAG00028",
+      "name": "QUALIDADE DE SOFTWARE",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 2,
+      "workload": {
+        "teorica": 15,
+        "pratica": 15,
+        "extensao": 0,
+        "total": 30
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3017",
+          "name": "PROGRAMAÇÃO ORIENTADA AO OBJETO"
+        },
+        {
+          "code": "CCMP3018",
+          "name": "ENGENHARIA DE SOFTWARE"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Apresentar aos alunos o tema Qualidade de Software, procurando discutir aspectos relacionados\na essa sub-área da Engenharia de Software."
+    },
+    {
+      "code": "UAG00031",
+      "name": "TESTE DE SOFTWARE",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 45,
+        "pratica": 15,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3017",
+          "name": "PROGRAMAÇÃO ORIENTADA AO OBJETO"
+        },
+        {
+          "code": "CCMP3018",
+          "name": "ENGENHARIA DE SOFTWARE"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Inspeção de software; Princípios e técnicas de testes de software; teste de unidade; teste\nde integração; teste de regressão; Desenvolvimento orientado a testes; Automação dos testes;\nGeração de casos de teste; Teste de interfaces humanas; Teste de aplicações para a web; Testes\nalfas, beta e de aceitação; Ferramentas de testes; Planos de testes. Gerenciamento do processo\nde testes. Registro e acompanhamento de problemas."
+    },
+    {
+      "code": "CCMP3080",
+      "name": "TÓPICOS ESPECIAIS EM ENGENHARIA DE SOFTWARE",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3017",
+          "name": "PROGRAMAÇÃO ORIENTADA AO OBJETO"
+        },
+        {
+          "code": "CCMP3018",
+          "name": "ENGENHARIA DE SOFTWARE"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Estudo de técnicas avançadas em na área multidisciplinar de Engenharia de Software permitindo ao aluno conhecer o estado da arte nesta área de pesquisa.\n"
+    },
+    {
+      "code": "CCMP3083",
+      "name": "TÓPICOS ESPECIAIS EM GESTÃO DE PROJETOS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3017",
+          "name": "PROGRAMAÇÃO ORIENTADA AO OBJETO"
+        },
+        {
+          "code": "CCMP3018",
+          "name": "ENGENHARIA DE SOFTWARE"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Breve histórico da evolução do gerenciamento de projetos; Modelos de gerenciamento de\nprojetos: Revisão PMBoK e dos conceitos de metodologias ágeis; Categorização de projetos.\nModelos de Maturidade. Inovação, complexidade e incerteza em projetos. Sustentabilidade\nem projetos. Projetos globais. Ferramentas de gerenciamento de projetos. Apresentação das\náreas de pesquisa em projetos.\n"
+    },
+    {
+      "code": "CCMP3081",
+      "name": "APRENDIZAGEM DE MÁQUINA",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Introdução; Vetores de Características; Domínio dos atributos; Aprendizagem Não Supervisionada;\nAlgoritmos de Agrupamento; Aprendizagem Supervisionada; Algoritmos de Classificação\nde padrões; Algoritmos de regressão de funções; Avaliação de técnicas de classificação,\nregressão, agrupamento e testes estatísticos; Tratamento dos dados; Projeto"
+    },
+    {
+      "code": "CCMP3087",
+      "name": "BIOMETRIA",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Introdução a Biometria. Etapas de um sistema computacional para reconhecimento/verificação\ndos seguintes elementos: digitais, face, voz, íris, retina, veias, mão, pé, assinaturas e manuscritos.\nSistemas de segurança biométricos. Seminário. Projeto."
+    },
+    {
+      "code": "UAG00045",
+      "name": "COMPUTAÇÃO FORENSE",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        },
+        {
+          "code": "CCMP3014",
+          "name": "INTELIGÊNCIA ARTIFICIAL"
+        },
+        {
+          "code": "CCMP3016",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS II"
+        },
+        {
+          "code": "CCMP3043",
+          "name": "RECONHECIMENTO DE PADRÕES"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        },
+        {
+          "code": "CCMP3065",
+          "name": "PARADIGMAS DE LINGUAGENS DE PROGRAMAÇÃO"
+        },
+        {
+          "code": "MATM3008",
+          "name": "LÓGICA MATEMÁTICA"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Princípios básicos de Ciência Forense e áreas de atuação. Apresentar os conceitos básicos da perícia criminal e cível. Novas tecnologias disponíveis nas áreas de Computação Forense e ferramentas tecnológicas para processamento e análise de evidências. Seminário e Projeto."
+    },
+    {
+      "code": "UAG00029",
+      "name": "MINERAÇÃO DE DADOS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3014",
+          "name": "INTELIGÊNCIA ARTIFICIAL"
+        },
+        {
+          "code": "CCMP3043",
+          "name": "RECONHECIMENTO DE PADRÕES"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Introdução e Motivação ao Processo de Descoberta de Conhecimento em Bases de Dados\n(KDD). Etapas do Processo de KDD. Conceitos e Tecnologias de Suporte à Mineração\nde Dados. Pré-processamento dos Dados. Extração de Padrões: Tarefas, Algoritmos e Paradigmas\nde Mineração de Dados. Pós-processamento de Resultados. Métricas de Avaliação:\nComplexidade, Eficiência e Escalabilidade. Tópicos Avançados: Metaheurísticas, Paralelismo\ne Distribuição, Visualização, Privacidade e Segurança, Representações e Estruturas de Dados\nNãoconvencionais,Mineração Multimodal (Textos e Multimídia),Mineração de Dados Espaciais\ne Temporais. Técnicas, Ferramentas e Aplicações."
+    },
+    {
+      "code": "UAG00064",
+      "name": "MÉTODOS PARAMÉTRICOS DE APRENDIZAGEM DE MÁQUINA",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        },
+        {
+          "code": "CCMP3016",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS II"
+        },
+        {
+          "code": "CCMP3043",
+          "name": "RECONHECIMENTO DE PADRÕES"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        },
+        {
+          "code": "CCMP3059",
+          "name": "MATEMÁTICA DISCRETA"
+        },
+        {
+          "code": "MATM3008",
+          "name": "LÓGICA MATEMÁTICA"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00012",
+          "name": "MÉTODOS PARAMÉTRICOS DE APRENDIZAGEM DE MÁQUINA I"
+        }
+      ],
+      "ementa": "Reconhecimento de padrões. Revisão de Probabilidade e Estatística. Teoria da decisão\nBayesiana. Máxima verossimilhança e estimação de parâmetros. Métodos paramétricos de classificação.\nMétodos paramétricos de regressão. Métodos paramétricos de agrupamento. Análise\ndos Componentes Principais. Discriminante linear de Fisher."
+    },
+    {
+      "code": "UAG00012",
+      "name": "RECONHECIMENTO DE PADRÕES II",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        },
+        {
+          "code": "CCMP3016",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS II"
+        },
+        {
+          "code": "CCMP3043",
+          "name": "RECONHECIMENTO DE PADRÕES"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        },
+        {
+          "code": "CCMP3059",
+          "name": "MATEMÁTICA DISCRETA"
+        },
+        {
+          "code": "MATM3008",
+          "name": "LÓGICA MATEMÁTICA"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Introdução; Extração de Características; Pré-processamento dos dados; Seleção de Características;\nRedução da dimensionalidade dos padrões; Algoritmos de Aprendizagem de Máquina;\nReconhecimento de Imagens; Outras aplicações; "
+    },
+    {
+      "code": "CCMP3039",
+      "name": "REDES NEURAIS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        },
+        {
+          "code": "CCMP3016",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS II"
+        },
+        {
+          "code": "CCMP3043",
+          "name": "RECONHECIMENTO DE PADRÕES"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Processos de aprendizagem de máquina. Perceptrons de camada única. Perceptrons de múltiplas\ncamadas. Redes de função de base radial. Mapas auto-organizáveis. Tópicos avançados\nem Redes Neurais: máquinas de vetor de suporte, análise de componentes principais, outros\ntópicos.\n"
+    },
+    {
+      "code": "UAG00074",
+      "name": "SISTEMAS DE RECOMENDAÇÃO",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        },
+        {
+          "code": "CCMP3016",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS II"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Função do Sistema de Recomendação. Coleta de Informações. Estratégias de Recomendação.\nDescoberta do Conhecimento: tipos de descoberta; classificação; agrupamento. Filtragem\nde informações; filtragem baseada em conteúdo; filtragem colaborativa; filtragem híbrida.\nTécnicas de Recomendação. Aplicação e avaliação. Sistemas de Recomendação e IHC. Processamento\nde Dados, Classificação, Análise de Cluster, Regras associativas de recomendação.\nExemplos de Sistemas de Recomendação. Projeto."
+    },
+    {
+      "code": "UAG00030",
+      "name": "TÓPICOS ESPECIAIS EM BIOINFORMÁTICA",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Estudo de técnicas avançadas em Bioinformática permitindo ao aluno conhecer o estado da\narte nesta área de pesquisa."
+    },
+    {
+      "code": "CCMP3086",
+      "name": "TÓPICOS ESPECIAIS EM INTELIGÊNCIA ARTIFICIAL",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Estudo de técnicas avançadas em Inteligência Artificial permitindo ao aluno conhecer o\nestado da arte nesta área de pesquisa."
+    },
+    {
+      "code": "UAG00011",
+      "name": "VISÃO COMPUTACIONAL",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Introdução à visão computacional. Ferramentas de apoio. Pré-processamento e filtros. Segmentação. Rastreamento. Reconhecimento e classificação de padrões em imagens e vídeos. Avaliação de desempenho de algoritmos de visão computacional. Seminário. Projeto.\n"
+    },
+    {
+      "code": "MATM3007",
+      "name": "CÁLCULO III",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "MATM3031",
+          "name": "CÁLCULO PARA COMPUTAÇÃO I"
+        },
+        {
+          "code": "MATM3032",
+          "name": "CÁLCULO PARA COMPUTAÇÃO II"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Conceitos introdutórios e classificação das equações diferenciais. Equações diferenciais de\nprimeira ordem. Obtenção de soluções de equações lineares, separáveis, exatas, não exatas com\nfatores integrantes simples, etc... Algumas aplicações das equações de primeira ordem. Equações\ndiferenciais de segunda ordem, propriedades gerais das soluções, soluções das homogêneas\ncom coeficientes constantes. Equações lineares não homogêneas, método dos coeficientes\na determinar e método da variação dos parâmetros. Estudo introdutório das oscilações lineares\nlivres e forçadas. Transformada de Laplace, propriedades fundamentais, e utilização para resolução\nde equações diferenciais. Equação do calor. Método de separação de variáveis. Séries de\nFourier, propriedades básicas e aplicações. Equação da onda, vibrações em uma corda elástica.\nEquaçãode Laplace."
+    },
+    {
+      "code": "MATM3017",
+      "name": "CÁLCULO NUMÉRICO E COMPUTACIONAL",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "MATM3019",
+          "name": "ÁLGEBRA LINEAR I"
+        },
+        {
+          "code": "MATM3021",
+          "name": "GEOMETRIA ANALÍTICA A"
+        },
+        {
+          "code": "MATM3031",
+          "name": "CÁLCULO PARA COMPUTAÇÃO I"
+        },
+        {
+          "code": "MATM3032",
+          "name": "CÁLCULO PARA COMPUTAÇÃO II"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Máquinas digitais: precisão, exatidão e erros. Aritmética de ponto flutuante. Sistemas de\nenumeração. Sistemas lineares. Resolução computacional de sistemas de equações lineares.\nResolução de equações transcendentes. Aproximação de funções: interpolação spline, ajustamento\nde curvas, aproximação racional e por polinômios de Chebyschev. Integração numérica:\nNewton-Cotes e quadratura Gaussiana.\n"
+    },
+    {
+      "code": "CCMP3032",
+      "name": "MODELAGEM MATEMÁTICA",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "MATM3031",
+          "name": "CÁLCULO PARA COMPUTAÇÃO I"
+        },
+        {
+          "code": "MATM3032",
+          "name": "CÁLCULO PARA COMPUTAÇÃO II"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Etapas da modelagem matemática e computacional. Fundamentos de equações diferenciais ordinárias com ênfase aplicada. Estudo de modelos descritos por formulação matemática contínua. Métodos numéricos para resolução de equações diferenciais ordinárias. Fundamentos de visualização científica."
+    },
+    {
+      "code": "CCMP3030",
+      "name": "MÉTODOS DE OTIMIZAÇÃO",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Programação Linear,Método Simplex. Programação Não-Linear: convexidade, otimização\nsem restrições, otimização com restrições, condições de otimalidade, métodos computacionais\nde otimização."
+    },
+    {
+      "code": "CCMP3024",
+      "name": "PROGRAMAÇÃO MATEMÁTICA",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "MATM3019",
+          "name": "ÁLGEBRA LINEAR I"
+        },
+        {
+          "code": "MATM3021",
+          "name": "GEOMETRIA ANALÍTICA A"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Modelagem sistemica de problemas industriais. Modelos de Programação\nLinear Inteira Mista (PLIM) para apoio à tomada de decisão. Programação Linear\n(PL). Método primal simplex. Problema de transporte. Problema de designação.\nDualidade. Método dual simplex. Análise de sensibilidade. Interpretação\neconômica da PL. Programação inteira. Programação inteira mista. Resolução de\nproblemas de grande porte. Decomposição em PL e PLIM. Aplicações em\nsistemas produtivos."
+    },
+    {
+      "code": "UAG00305",
+      "name": "DESENVOLVIMENTO E EXECUÇÃO DE PROJETOS DE SOFTWARE",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Práticas em tecnologias e frameworks para desenvolvimento de aplicações Web. Preparação de ambientes reais para especificação, desenvolvimento e implantação de sistemas de software. Definição e implantação de processo/metodologia de desenvolvimento de software em projetos reais."
+    },
+    {
+      "code": "UAG00171",
+      "name": "LABORATÓRIO DE PROGRAMAÇÃO I",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 2,
+      "workload": {
+        "teorica": 15,
+        "pratica": 15,
+        "extensao": 0,
+        "total": 30
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Práticas exaustivas de Programação. Definição e resolução de problemas com técnicas e métodos de programação. Práticas interdisciplinares usando programação."
+    },
+    {
+      "code": "CCMP3084",
+      "name": "MÉTODOS DE PESQUISA EM COMPUTAÇÃO",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CIEN3005",
+          "name": "METODOLOGIA CIENTÍFICA"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "A metodologia científica é o estudo de como se conduz/produz pesquisa científica. Metodologia\ncientífica é necessária, entre outras razões, para tornar os resultados da pesquisa mais\nconfiáveis e possíveis de serem reproduzidos, de forma independente, por outros pesquisadores.\nEste curso irá apresentar estratégias e métodos para pesquisa em computação desde a formulação\ndo problema até a validação de uma possível solução. Em particular, o curso irá focar em\nmétodos experimentais e explorar o papel da experimentação na pesquisa em computação."
+    },
+    {
+      "code": "BCC00004",
+      "name": "PROGRAMAÇÃO COMPETITIVA I",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Introdução a programação competitiva; plano para uma maratona; estruturas de dados\nessenciais; buscas; strings; ordenação; análise combinatória; grafos.\n"
+    },
+    {
+      "code": "BCC00005",
+      "name": "PROGRAMAÇÃO COMPETITIVA II",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "BCC00004",
+          "name": "PROGRAMAÇÃO COMPETITIVA I"
+        },
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Introdução a programação competitiva; plano para uma maratona; backtracking; divisão e\nconquista; algoritmos gulosos; programação dinâmica."
+    },
+    {
+      "code": "CCMP3082",
+      "name": "DESENVOLVIMENTO DE JOGOS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3019",
+          "name": "COMPUTAÇÃO GRÁFICA"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        },
+        {
+          "code": "MATM3019",
+          "name": "ÁLGEBRA LINEAR I"
+        },
+        {
+          "code": "MATM3021",
+          "name": "GEOMETRIA ANALÍTICA A"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Introdução: história e categorias de jogos. Gerenciamento de equipes de desenvolvimento\nde jogos. Projeto de jogos: roteiro, interface. Conceitos gráficos: modelagem 2D e 3D. Técnicas\ne Ferramentas de Implementação (2D e 3D). Conceitos: gráficos, sons, inteligência artificial\ne redes em Jogos. Tópicos complementares. Projeto de Desenvolvimento."
+    },
+    {
+      "code": "CCMP3034",
+      "name": "PROCESSAMENTO DIGITAL DE IMAGENS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3019",
+          "name": "COMPUTAÇÃO GRÁFICA"
+        },
+        {
+          "code": "CCMP3059",
+          "name": "MATEMÁTICA DISCRETA"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Introdução. Amostragem. Processamento de histogramas. Filtragem espacial. Filtragem\nno domínio da freqüência. Restauração. Modelos de cor. Processamento de imagens coloridas.\nProcessamento morfológico. Segmentação. Representação e Descrição. Tópicos sobre\nformatos de arquivo de imagens. Tópicos sobre compressão de imagens. Projeto.\n"
+    },
+    {
+      "code": "CCMP3076",
+      "name": "PROCESSAMENTO DIGITAL DE SINAIS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3043",
+          "name": "RECONHECIMENTO DE PADRÕES"
+        },
+        {
+          "code": "MATM3032",
+          "name": "CÁLCULO PARA COMPUTAÇÃO II"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Representação digital de sinais de áudio, imagens, e vídeo: amostragem, quantização e “aliasing”.\nTransformada Discreta de Fourier e FFT (1D, 2D e 3D). Outras transformações: Transformada\nde Fourier (Contínua), Transformada do Coseno Discreta, Transformada z, Transformada\nde Walsh-Hadamard, Transformada de Haar. Convolução linear, circular e secionada.\nFiltros lineares (FIR) e Filtros recursivos (IIR). Aplicações de filtros: suavização, interpolação,\nrealce, detecção de bordas e segmentação. Espaço de transformação no tempo e no espaço,\nlocalização e efeitos no espectro. Bancos de filtros e técnicas de análise-ressíntese. Compressão:\nPredição Linear, compressão usando DCT, Compensação deMovimento. Sinais aleatórios:\nRepresentação, Filtros de Wiener e de Kalman."
+    },
+    {
+      "code": "UAG00019",
+      "name": "REALIDADE VIRTUAL E AUMENTADA",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3019",
+          "name": "COMPUTAÇÃO GRÁFICA"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        },
+        {
+          "code": "MATM3019",
+          "name": "ÁLGEBRA LINEAR I"
+        },
+        {
+          "code": "MATM3021",
+          "name": "GEOMETRIA ANALÍTICA A"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Introdução - Histórico. Aplicações: mercados tradicionais e emergentes. Tecnologias Básicas. Definições e Caracterizações. Fatores Humanos, Percepção Humana e Interação. Princípios Básicos de Computação Gráfica aplicados a RV e RA. Princípios de Modelagem Geométrica Aplicados a RV e RA. Modelagem de Ambientes Virtuais. Ferramentas de Desenvolvimento de Ambientes Virtuais. Tópicos Especiais em Realidade Virtual.\n\n"
+    },
+    {
+      "code": "CCMP3088",
+      "name": "TÓPICOS ESPECIAIS EM MÍDIA E INTERAÇÃO",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Estudo de técnicas avançadas em de interação e representação das diversas mídias existentes,\npermitindo ao aluno conhecer o estado da arte nesta área de pesquisa.\n"
+    },
+    {
+      "code": "UAG00304",
+      "name": "AVALIAÇÃO DE DESEMPENHO DE SISTEMAS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        },
+        {
+          "code": "CCMP3016",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS II"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00015",
+          "name": "AVALIAÇÃO DE DESEMPENHO DE SISTEMAS I"
+        }
+      ],
+      "ementa": "Conceitos sobre avaliação de desempenho. Conceitos básicos e erros em medição. Técnicas de medição e ferramentas: medição direta, medição indireta, tracing, benchmarking, medição baseada em amostragem. Tópicos em estatística descritiva. Tópicos em inferência estatística. Planejamento de capacidade. Estudo de casos."
+    },
+    {
+      "code": "CCMP3085",
+      "name": "GERENCIAMENTO DE REDES",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        },
+        {
+          "code": "CCMP3016",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS II"
+        },
+        {
+          "code": "CCMP3023",
+          "name": "REDE DE COMPUTADORES"
+        },
+        {
+          "code": "CCMP3056",
+          "name": "INTRODUÇÃO À COMPUTAÇÃO C"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00016",
+          "name": "GERENCIAMENTO DE REDES I"
+        }
+      ],
+      "ementa": "Princípios, organização e métodos de administração de rede; Tecnologias para operação e\ngerência de rede; Rede de gerência de telecomunicações TMN; Recursos humanos para administração\nde rede; Plataformas de gerência de redes; e Aplicações de gerência de rede.\n"
+    },
+    {
+      "code": "UAG00170",
+      "name": "MODELAGEM DE DEPENDABILIDADE DE SISTEMAS COMPUTACIONAIS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 30,
+        "pratica": 30,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "MATM3031",
+          "name": "CÁLCULO PARA COMPUTAÇÃO I"
+        },
+        {
+          "code": "MATM3032",
+          "name": "CÁLCULO PARA COMPUTAÇÃO II"
+        },
+        {
+          "code": "PRBE3006",
+          "name": "PROBABILIDADE E ESTATÍSTICA"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00017",
+          "name": "MODELAGEM E DEPENDABILIDADE DE SISTEMAS COMPUTACIONAIS I"
+        }
+      ],
+      "ementa": "Conceito de dependabilidade de sistemas. Conceito sobre modelagem analítica e por simulação. Processos estocásticos. Teoria das filas. Diagramas de blocos de confiabilidade. Redes de Petri estocásticos. Cadeias de Markov. Estudos de casos. "
+    },
+    {
+      "code": "CCMP3079",
+      "name": "SEGURANÇA DE REDES DE COMPUTADORES",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3006",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS I"
+        },
+        {
+          "code": "CCMP3016",
+          "name": "ALGORITMOS E ESTRUTURA DE DADOS II"
+        },
+        {
+          "code": "CCMP3056",
+          "name": "INTRODUÇÃO À COMPUTAÇÃO C"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00018",
+          "name": "SEGURANÇA DE REDES DE COMPUTADORES I"
+        }
+      ],
+      "ementa": "PROJETO PEDAGÓGICO DO CURSO APROVADO ATRAVÉS DA RESOLUÇÃO Nº 005/2012 DE 09/01/2012."
+    },
+    {
+      "code": "CCMP3074",
+      "name": "TÓPICOS ESPECIAIS REDES E SISTEMAS DISTRIBUÍDOS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3009",
+          "name": "SISTEMAS OPERACIONAIS"
+        },
+        {
+          "code": "CCMP3010",
+          "name": "ARQUITETURA DE COMPUTADORES"
+        },
+        {
+          "code": "CCMP3021",
+          "name": "SISTEMAS DISTRIBUÍDOS"
+        },
+        {
+          "code": "CCMP3023",
+          "name": "REDE DE COMPUTADORES"
+        },
+        {
+          "code": "CCMP3056",
+          "name": "INTRODUÇÃO À COMPUTAÇÃO C"
+        },
+        {
+          "code": "CCMP3058",
+          "name": "SISTEMAS DIGITAIS"
+        },
+        {
+          "code": "FISC3004",
+          "name": "FÍSICA PARA COMPUTAÇÃO"
+        },
+        {
+          "code": "MATM3031",
+          "name": "CÁLCULO PARA COMPUTAÇÃO I"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [
+        {
+          "code": "BCC00019",
+          "name": "TÓPICOS ESPECIAIS EM REDES E SISTEMAS DISTRIBUÍDOS I"
+        }
+      ],
+      "ementa": "Estudo de técnicas avançadas em redes de computadores e sistemas distribuídos permitindo ao aluno conhecer o estado da arte nesta área de pesquisa."
+    },
+    {
+      "code": "EDUC3092",
+      "name": "EDUCAÇÃO DAS RELAÇÕES ÉTNICO-RACIAIS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Formação das identidades brasileiras: elementos históricos. Relações sociais e étnico-raciais. África e Brasil, semelhanças e diferenças em suas formações. Interações Brasil-África na contemporaneidade. Preconceito, estereótipo, etnia, interculturalidade. A educação indígena no Brasil, historicidade e perspectivas teórico-metodológicas. Ensino e aprendizagem na perspectiva da pluralidade cultural. Pluralidade étnica do nordeste e de Pernambuco: especificidades e situação sócio-educacional. Multiculturalismo e transculturalismo crítico."
+    },
+    {
+      "code": "EDUC3048",
+      "name": "INFORMÁTICA NA EDUCAÇÃO",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3056",
+          "name": "INTRODUÇÃO À COMPUTAÇÃO C"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Motivação e discussão crítica sobre o uso da informática na educação, incluindo conhecimento\nsobre assuntos atuais; Histórico da informática na educação; Ambientes educacionais\nbaseados em computador; As implicações pedagógicas e sociais do uso da informática na educação;\nInformática na educação especial, na educação à distância e no aprendizado cooperativo.\n"
+    },
+    {
+      "code": "LING3014",
+      "name": "LIBRAS - LINGUAGEM E SURDEZ",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Fundamentos gramaticais da Língua Brasileira de Sinais – Libras. Relação entre Libras e\ncultura das comunidades surdas. Ensino básico da Libras. Legislação e políticas de inclusão"
+    },
+    {
+      "code": "EDUC3090",
+      "name": "LÍNGUA BRASILEIRA DE SINAIS - LIBRAS L",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 3,
+      "workload": {
+        "teorica": 45,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 45
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Fundamentos gramaticais da Língua Brasileira de Sinais – Libras. Relação entre Libras e\ncultura das comunidades surdas. Ensino básico da Libras. Legislação e políticas de inclusão"
+    },
+    {
+      "code": "EDUC3079",
+      "name": "PROJETO DE SISTEMAS EDUCACIONAIS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3017",
+          "name": "PROGRAMAÇÃO ORIENTADA AO OBJETO"
+        },
+        {
+          "code": "CCMP3018",
+          "name": "ENGENHARIA DE SOFTWARE"
+        },
+        {
+          "code": "CCMP3057",
+          "name": "INTRODUÇÃO À PROGRAMAÇÃO"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "1 - Revisão de tópicos da Engenharia de Software; 2- Introdução à Sistemas e Ciclo de\nVida de um Sistema de Informação; 3 - Necessidades Básicas para o Desenvolvimento de Sistemas\nEducacionais; 4 – Elicitação e Validação de Requisitos para Desenvolvimento de Sistemas\nEducacionais.\n"
+    },
+    {
+      "code": "ADMT3002",
+      "name": "CONTABILIDADE E ADMINISTRAÇÃO FINANCEIRA",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Empreendedorismo; Características; Oportunidades; Desenvolvimento de Atitudes Empreendedoras.\nNovos Paradigmas. Administração do Crescimento da Empresa. Prospecção\nEmpresarial. Plano de Negócio. Inovação e Criatividade. Modelagem Organizacional. Pesquisa\nde Mercado. Técnicas de Venda. Técnicas de Negociação. Qualidade. Formação de\nPreços. Ferramentas Gerenciais."
+    },
+    {
+      "code": "UAG00300",
+      "name": "FUNDAMENTOS EM CIÊNCIA DE DADOS",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3066",
+          "name": "BANCO DE DADOS I"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Apresentar os principais conceitos sobre ciência de dados, big data e inteligência de negócios permitindo o conhecimento dos principais conceitos relacionados a ciência de dados. Refletir e destacar a importância da ciência de dados, big data e inteligência de negócios. Apresentar as principais tecnologias para a ciência de dados."
+    },
+    {
+      "code": "UAG00080",
+      "name": "GESTÃO DA TECNOLOGIA DA INFORMAÇÃO",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3067",
+          "name": "SISTEMAS DE INFORMAÇÃO E TECNOLOGIAS"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Estratégia empresarial . Alinhamento estratégico; Processo de aquisição e de implementação\nde sistemas; Desenvolvimento interno, outsourcing, Software as a Service; Acordos de\nnível de serviço. Arquitetura orientada a serviço; Tópicos em segurança da informação, falhas\nem SIs; continuidade do negócio; Risco em TI; Uso de tecnologias de Virtualização, datacenter;\ncloud computing; Valor da TI; Retorno sobre investimento. Impactos da TI nos indivíduos,\norganizações. Questões éticas."
+    },
+    {
+      "code": "UAG00024",
+      "name": "GESTÃO DE PROCESSOS DE NEGÓCIO",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3067",
+          "name": "SISTEMAS DE INFORMAÇÃO E TECNOLOGIAS"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Contextualizando o gerenciamento de processos. Conceitos de processos. Engenharia de Processos de negócios: Desenho, Ferramentas, Metodologias, Suporte de TI para Engenharia de Processos. Sistemas de Informação e os processos organizacionais. a prática da modelagem de processos. BPM e BPMS; Conceitos básicos: ciclo de vida de BPM; BPMS e serviços Web; Modelagem de processos: BPMN;"
+    },
+    {
+      "code": "CCMP3077",
+      "name": "GESTÃO DE SERVIÇOS EM TI",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Conceitos do que é um Serviço. Características do Serviço. Governança de TI e Gerenciamento\nde Serviços. Gestão estratégica e tática de serviços de TI. Acordos de nível de serviço.\nGerenciamento de serviços com base no conjunto de melhores práticas baseado no ITIL\n(Information Technology Infrastructure Library Biblioteca de Infra-estrutura de Tecnologia da\nInformação) que identifica o relacionamento das diversas atividades necessárias para entrega e\nsuporte dos serviços de TI. Ferramentas de apoio ao gerenciamento de serviços. Elaboração de\nProjeto.\n"
+    },
+    {
+      "code": "UAG00079",
+      "name": "GOVERNANÇA EM TECNOLOGIA DA INFORMAÇÃO",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 60,
+        "pratica": 0,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "CCMP3067",
+          "name": "SISTEMAS DE INFORMAÇÃO E TECNOLOGIAS"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Planejamento Estratégico; Alinhamento estratégico; Decisões Estratégicas de TI; Governança Corporativa e Governança de TI. Arquétipos de TI para alocação de direitos decisórios; Mecanismos para implantar a Governança de TI. Tipos de governança. Associação da Estratégia, da Governança e o Desempenho. Princípios de Liderança para governança de TI. Normas, processos e indicadores de desempenho para área de TI. Modelos de apoio para Governança de TI: COBIT (Control Objectives for Information and Related Tecnhonology); ITIL (Informática Tecnology Infrasture Library); BSC (Balanced Socorecard); Estruturação de um plano de implantação de um modelo de governança de TI; A norma ISO 20000."
+    },
+    {
+      "code": "BCC00045",
+      "name": "SEGURANÇA DE INFORMAÇÃO",
+      "type": "Optativo",
+      "period": "0",
+      "credits": 4,
+      "workload": {
+        "teorica": 45,
+        "pratica": 15,
+        "extensao": 0,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": "Apresentar os conceitos básicos de Segurança da Informação, com destaques para seus os seus pilares e criptografia moderna, seus fundamentos, cifras simétricas e assimétricas, RSA, autenticação, hash, assinaturas e certificados digitais. Auditoria de Sistemas de Informação: segurança lógica, segurança física, continuidade operacional, planos de contingência, controle de acesso, pontos de controle.\nDesenvolver a capacidade de reconhecimento de riscos e ameaças aos ativos de Tecnologia da Informação e apresentar propostas de medidas preventivas e corretivas para eliminar, corrigir ou defender os ativos contra ameaças. Despertar o aluno para a importância e o valor da informação como um ativo da organização ou do indivíduo."
+    }
+  ],
+  "grades": [
+    {
+      "nome": "CCMP3043 - RECONHECIMENTO DE PADRÕES - CC5",
+      "semestre": "2025.2",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "F",
+        "VA2": "F",
+        "VA3": "F"
+      },
+      "teacher": "TIAGO BUARQUE ASSUNCAO DE CARVALHO"
+    },
+    {
+      "nome": "CCMP3073 - PROGRAMAÇÃO WEB - CC5",
+      "semestre": "2025.2",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "10.0",
+        "VA2": "10.0",
+        "Média": "10.0",
+        "MFIN": "10.0"
+      },
+      "teacher": "IGOR MEDEIROS VANDERLEI"
+    },
+    {
+      "nome": "CCMP3021 - SISTEMAS DISTRIBUÍDOS - CC5",
+      "semestre": "2025.2",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "16",
+        "VA1": "6.5",
+        "VA2": "3.0",
+        "VA3": "F",
+        "Média": "4.75"
+      },
+      "teacher": "JEAN CARLOS TEIXEIRA DE ARAUJO"
+    },
+    {
+      "nome": "CCMP3088 - TÓPICOS ESPECIAIS EM MÍDIA E INTERAÇÃO - CC5",
+      "semestre": "2025.2",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "10.0",
+        "VA2": "10.0",
+        "Média": "10.0",
+        "MFIN": "10.0"
+      },
+      "teacher": "RODRIGO CARDOSO AMARAL DE ANDRADE"
+    },
+    {
+      "nome": "CCMP3064 - PROJETO E ANÁLISE DE ALGORITMOS - CC5",
+      "semestre": "2025.2",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "8",
+        "VA1": "F",
+        "VA2": "F",
+        "VA3": "F"
+      },
+      "teacher": "ALVARO ALVARES DE CARVALHO CESAR SOBRINHO"
+    },
+    {
+      "nome": "BCC00003 - EMPREENDEDORISMO I - CC5",
+      "semestre": "2025.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "9.0",
+        "VA2": "10.0",
+        "Média": "9.5",
+        "MFIN": "9.5"
+      },
+      "teacher": "ASSUERO FONSECA XIMENES"
+    },
+    {
+      "nome": "CCMP3019 - COMPUTAÇÃO GRÁFICA - CC5",
+      "semestre": "2025.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "6.64",
+        "VA2": "9.5",
+        "Média": "8.07",
+        "MFIN": "8.07"
+      },
+      "teacher": "ICARO LINS LEITAO DA CUNHA"
+    },
+    {
+      "nome": "PRBE3006 - PROBABILIDADE E ESTATÍSTICA - CC5",
+      "semestre": "2025.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "7.25",
+        "VA2": "8.5",
+        "Média": "7.88",
+        "MFIN": "7.88"
+      },
+      "teacher": "ROMERO LUIZ MENDONCA SALES FILHO"
+    },
+    {
+      "nome": "CCMP3064 - PROJETO E ANÁLISE DE ALGORITMOS - CC5",
+      "semestre": "2025.1",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "32",
+        "VA1": "F",
+        "VA2": "F",
+        "VA3": "F"
+      },
+      "teacher": "ALVARO ALVARES DE CARVALHO CESAR SOBRINHO"
+    },
+    {
+      "nome": "UAG00300 - FUNDAMENTOS EM CIÊNCIA DE DADOS - CC5",
+      "semestre": "2025.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "9.0",
+        "VA2": "9.0",
+        "Média": "9.0",
+        "MFIN": "9.0"
+      },
+      "teacher": "RYAN RIBEIRO DE AZEVEDO"
+    },
+    {
+      "nome": "CCMP3010 - ARQUITETURA DE COMPUTADORES - CC5",
+      "semestre": "2025.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "9.3",
+        "VA2": "10.0",
+        "VA3": "F",
+        "Média": "9.65",
+        "MFIN": "9.65"
+      },
+      "teacher": "HELDER FERNANDO DE ARAUJO OLIVEIRA"
+    },
+    {
+      "nome": "CCMP3023 - REDE DE COMPUTADORES - CC5",
+      "semestre": "2024.2",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "4",
+        "VA1": "9.8",
+        "VA2": "8.4",
+        "Média": "9.1",
+        "MFIN": "9.1"
+      },
+      "teacher": "KADNA MARIA ALVES CAMBOIM VALE"
+    },
+    {
+      "nome": "CCMP3067 - SISTEMAS DE INFORMAÇÃO E TECNOLOGIAS - CC5",
+      "semestre": "2024.2",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "8.0",
+        "VA2": "8.0",
+        "VA3": "F",
+        "Média": "8.0",
+        "MFIN": "8.0"
+      },
+      "teacher": "ASSUERO FONSECA XIMENES"
+    },
+    {
+      "nome": "CCMP3078 - DESENVOLVIMENTO DE APLICAÇÕES MÓVEIS - CC3",
+      "semestre": "2024.2",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "9.0",
+        "VA2": "10.0",
+        "Média": "9.5",
+        "MFIN": "9.5"
+      },
+      "teacher": "THAIS ALVES BURITY ROCHA"
+    },
+    {
+      "nome": "BCC00029 - CÁLCULO II - CC2",
+      "semestre": "2024.2",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "4",
+        "VA1": "9.41",
+        "VA2": "8.5",
+        "VA3": "F",
+        "Média": "8.95",
+        "MFIN": "8.95"
+      },
+      "teacher": "MARIO SANSUKE MARANHAO WATANABE, EVERSON FERNANDO SANTOS FEITOSA"
+    },
+    {
+      "nome": "CCMP3058 - SISTEMAS DIGITAIS - CC2",
+      "semestre": "2024.2",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "10.0",
+        "VA2": "10.0",
+        "VA3": "F",
+        "Média": "10.0",
+        "MFIN": "10.0"
+      },
+      "teacher": "HELDER FERNANDO DE ARAUJO OLIVEIRA"
+    },
+    {
+      "nome": "CCMP3071 - COMPUTADORES E SOCIEDADE - CC5",
+      "semestre": "2024.2",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "8.8",
+        "VA2": "F",
+        "VA3": "8.5",
+        "Média": "8.65",
+        "MFIN": "8.65"
+      },
+      "teacher": "RYAN RIBEIRO DE AZEVEDO"
+    },
+    {
+      "nome": "FISC3004 - FÍSICA PARA COMPUTAÇÃO - CC5",
+      "semestre": "2024.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "F",
+        "VA2": "10.0",
+        "VA3": "4.0",
+        "Média": "7.0",
+        "MFIN": "7.0"
+      },
+      "teacher": "WELLINGTON ROMERO SERAFIM FREIRE"
+    },
+    {
+      "nome": "CCMP3059 - MATEMÁTICA DISCRETA - CC5",
+      "semestre": "2024.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "6.5",
+        "VA2": "9.0",
+        "Média": "7.75",
+        "MFIN": "7.75"
+      },
+      "teacher": "GERSONILO OLIVEIRA DA SILVA"
+    },
+    {
+      "nome": "MATM3019 - ÁLGEBRA LINEAR I - CC5",
+      "semestre": "2024.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "10.0",
+        "VA2": "9.0",
+        "Média": "9.5",
+        "MFIN": "9.5"
+      },
+      "teacher": "GERSONILO OLIVEIRA DA SILVA"
+    },
+    {
+      "nome": "CCMP3080 - TÓPICOS ESPECIAIS EM ENGENHARIA DE SOFTWARE - CC3",
+      "semestre": "2024.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "9.0",
+        "VA2": "9.5",
+        "Média": "9.25",
+        "MFIN": "9.25"
+      },
+      "teacher": "IGOR MEDEIROS VANDERLEI"
+    },
+    {
+      "nome": "MATM3031 - CÁLCULO PARA COMPUTAÇÃO I - CC5",
+      "semestre": "2023.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "10.0",
+        "VA2": "9.55",
+        "VA3": "F",
+        "Média": "9.77",
+        "MFIN": "9.77"
+      },
+      "teacher": "WILLAMES FERREIRA DE MAGALHÃES"
+    },
+    {
+      "nome": "CCMP3066 - BANCO DE DADOS I - CC5",
+      "semestre": "2022.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "8.2",
+        "VA2": "9.69",
+        "Média": "8.94",
+        "MFIN": "8.94"
+      },
+      "teacher": "JEAN CARLOS TEIXEIRA DE ARAUJO, PRISCILLA KELLY MACHADO VIEIRA AZEVEDO"
+    },
+    {
+      "nome": "MATM3031 - CÁLCULO PARA COMPUTAÇÃO I - CC5",
+      "semestre": "2022.1",
+      "situacao": "REPROVADO",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "3.0",
+        "VA2": "2.0",
+        "VA3": "F",
+        "Média": "2.5",
+        "MFIN": "2.5"
+      },
+      "teacher": "MARCIUS PETRUCIO DE ALMEIDA CAVALCANTE"
+    },
+    {
+      "nome": "CCMP3059 - MATEMÁTICA DISCRETA - CC5",
+      "semestre": "2022.1",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "8.0",
+        "VA2": "F",
+        "VA3": "F"
+      },
+      "teacher": "GERSONILO OLIVEIRA DA SILVA"
+    },
+    {
+      "nome": "MATM3019 - ÁLGEBRA LINEAR I - CC5",
+      "semestre": "2022.1",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "7.0",
+        "VA2": "F",
+        "VA3": "F"
+      },
+      "teacher": "GERSONILO OLIVEIRA DA SILVA"
+    },
+    {
+      "nome": "CCMP3065 - PARADIGMAS DE LINGUAGENS DE PROGRAMAÇÃO - CC5",
+      "semestre": "2021.2",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "6.2",
+        "VA2": "8.2",
+        "VA3": "F",
+        "Média": "7.2",
+        "MFIN": "7.2"
+      },
+      "teacher": "DIMAS CASSIMIRO DO NASCIMENTO FILHO"
+    },
+    {
+      "nome": "CCMP3018 - ENGENHARIA DE SOFTWARE - CC5",
+      "semestre": "2021.2",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "10.0",
+        "VA2": "10.0",
+        "Média": "10.0",
+        "MFIN": "10.0"
+      },
+      "teacher": "RODRIGO CARDOSO AMARAL DE ANDRADE"
+    },
+    {
+      "nome": "CCMP3016 - ALGORITMOS E ESTRUTURA DE DADOS II - CC5",
+      "semestre": "2021.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "9.5",
+        "VA2": "10.0",
+        "Média": "9.75",
+        "MFIN": "9.75"
+      },
+      "teacher": "IGOR MEDEIROS VANDERLEI"
+    },
+    {
+      "nome": "MATM3008 - LÓGICA MATEMÁTICA - CC5",
+      "semestre": "2021.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "7.2",
+        "VA2": "10.0",
+        "Média": "8.6",
+        "MFIN": "8.6"
+      },
+      "teacher": "GERSONILO OLIVEIRA DA SILVA"
+    },
+    {
+      "nome": "MATM3031 - CÁLCULO PARA COMPUTAÇÃO I - CC5",
+      "semestre": "2020.1",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "F",
+        "VA2": "F",
+        "VA3": "F"
+      },
+      "teacher": "GERSONILO OLIVEIRA DA SILVA"
+    },
+    {
+      "nome": "MATM3008 - LÓGICA MATEMÁTICA - CC5",
+      "semestre": "2020.1",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "F",
+        "VA2": "F"
+      },
+      "teacher": "MARCIUS PETRUCIO DE ALMEIDA CAVALCANTE"
+    },
+    {
+      "nome": "MATM3019 - ÁLGEBRA LINEAR I - CC5",
+      "semestre": "2019.2",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "F",
+        "VA2": "F",
+        "VA3": "F"
+      },
+      "teacher": "MURILO CHAVEDAR DE SOUZA ARAUJO"
+    },
+    {
+      "nome": "CCMP3017 - PROGRAMAÇÃO ORIENTADA AO OBJETO - CC5",
+      "semestre": "2019.2",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "4",
+        "VA1": "6.0",
+        "VA2": "7.5",
+        "VA3": "6.5",
+        "Média": "7.0",
+        "MFIN": "7.0"
+      },
+      "teacher": "THAIS ALVES BURITY ROCHA"
+    },
+    {
+      "nome": "CCMP3066 - BANCO DE DADOS I - CC5",
+      "semestre": "2019.2",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "36",
+        "VA1": "F",
+        "VA2": "F",
+        "VA3": "F"
+      },
+      "teacher": "DIMAS CASSIMIRO DO NASCIMENTO FILHO"
+    },
+    {
+      "nome": "CIEN3005 - METODOLOGIA CIENTÍFICA - CC5",
+      "semestre": "2019.2",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "8.0",
+        "VA2": "10.0",
+        "Média": "9.0",
+        "MFIN": "9.0"
+      },
+      "teacher": "MARY HELLEN BATISTA DOS SANTOS SEVERIANO"
+    },
+    {
+      "nome": "CCMP3006 - ALGORITMOS E ESTRUTURA DE DADOS I - CC5",
+      "semestre": "2019.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "2",
+        "VA1": "9.5",
+        "VA2": "8.0",
+        "Média": "8.75",
+        "MFIN": "8.75"
+      },
+      "teacher": "PRISCILLA KELLY MACHADO VIEIRA AZEVEDO"
+    },
+    {
+      "nome": "MATM3021 - GEOMETRIA ANALÍTICA A - CC5",
+      "semestre": "2019.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "7.5",
+        "VA2": "9.0",
+        "VA3": "F",
+        "Média": "8.25",
+        "MFIN": "8.25"
+      },
+      "teacher": "HUDSON CAVALCANTE DA SILVA"
+    },
+    {
+      "nome": "MATM3031 - CÁLCULO PARA COMPUTAÇÃO I - CC5",
+      "semestre": "2019.1",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "F",
+        "VA2": "F",
+        "VA3": "F"
+      },
+      "teacher": "MURILO CHAVEDAR DE SOUZA ARAUJO"
+    },
+    {
+      "nome": "LETR3020 - INGLÊS - CC5",
+      "semestre": "2019.1",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "8.5",
+        "VA2": "10.0",
+        "Média": "9.25",
+        "MFIN": "9.25"
+      },
+      "teacher": "DIANA VASCONCELOS LOPES"
+    },
+    {
+      "nome": "CCMP3017 - PROGRAMAÇÃO ORIENTADA AO OBJETO - CC5",
+      "semestre": "2018.2",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "44",
+        "VA1": "F",
+        "VA2": "F",
+        "VA3": "F"
+      },
+      "teacher": "THAIS ALVES BURITY ROCHA"
+    },
+    {
+      "nome": "CCMP3017 - PROGRAMAÇÃO ORIENTADA AO OBJETO - CC5",
+      "semestre": "2018.1",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "18",
+        "VA1": "6.0",
+        "VA2": "F",
+        "VA3": "F"
+      },
+      "teacher": "THAIS ALVES BURITY ROCHA"
+    },
+    {
+      "nome": "CCMP3006 - ALGORITMOS E ESTRUTURA DE DADOS I - CC5",
+      "semestre": "2018.1",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "44",
+        "VA1": "F",
+        "VA2": "F",
+        "VA3": "F"
+      },
+      "teacher": "RENAN LEANDRO FERNANDES, DIOGO ESPINHARA OLIVEIRA"
+    },
+    {
+      "nome": "CIEN3005 - METODOLOGIA CIENTÍFICA - CC5",
+      "semestre": "2018.1",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "14",
+        "VA1": "F",
+        "VA2": "F"
+      },
+      "teacher": "ADEILSON PINHEIRO SEDRINS"
+    },
+    {
+      "nome": "MATM3021 - GEOMETRIA ANALÍTICA A - CC3",
+      "semestre": "2018.1",
+      "situacao": "REPROVADO",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "8.0",
+        "VA2": "3.0",
+        "VA3": "F",
+        "Média": "5.5",
+        "VAFN": "F"
+      },
+      "teacher": "HUDSON CAVALCANTE DA SILVA"
+    },
+    {
+      "nome": "CCMP3057 - INTRODUÇÃO À PROGRAMAÇÃO - CC5",
+      "semestre": "2017.2",
+      "situacao": "APROVADO POR MÉDIA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "7.8",
+        "VA2": "9.5",
+        "Média": "8.65",
+        "MFIN": "8.65"
+      },
+      "teacher": "LUIS FILIPE ALVES PEREIRA"
+    },
+    {
+      "nome": "MATM3008 - LÓGICA MATEMÁTICA - CC5",
+      "semestre": "2017.2",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "F",
+        "VA2": "F",
+        "VA3": "F"
+      },
+      "teacher": "GERSONILO OLIVEIRA DA SILVA"
+    },
+    {
+      "nome": "MATM3021 - GEOMETRIA ANALÍTICA A - CC5",
+      "semestre": "2017.2",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "F",
+        "VA2": "3.0",
+        "VA3": "F"
+      },
+      "teacher": "MARCIUS PETRUCIO DE ALMEIDA CAVALCANTE"
+    },
+    {
+      "nome": "MATM3031 - CÁLCULO PARA COMPUTAÇÃO I - CC5",
+      "semestre": "2017.2",
+      "situacao": "REPROVADO POR FALTA",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "2.0",
+        "VA2": "F",
+        "VA3": "F"
+      },
+      "teacher": "MURILO CHAVEDAR DE SOUZA ARAUJO"
+    },
+    {
+      "nome": "CCMP3056 - INTRODUÇÃO À COMPUTAÇÃO C - CC5",
+      "semestre": "2017.2",
+      "situacao": "APROVADO",
+      "notas": {
+        "Faltas": "0",
+        "VA1": "4.5",
+        "VA2": "6.8",
+        "VA3": "5.0",
+        "Média": "5.9",
+        "VAFN": "5.0",
+        "MFIN": "5.45"
+      },
+      "teacher": "DALITON DA SILVA"
+    }
+  ],
+  "timetable": [
+    {
+      "code": "CCMP3073",
+      "name": "PROGRAMAÇÃO WEB",
+      "className": "CC5",
+      "room": "SALA 7B",
+      "status": "CONFIRMADA",
+      "timeSlots": [
+        {
+          "day": "DayOfWeek.segunda",
+          "startTime": "20:10",
+          "endTime": "21:00"
+        },
+        {
+          "day": "DayOfWeek.terca",
+          "startTime": "20:10",
+          "endTime": "21:00"
+        },
+        {
+          "day": "DayOfWeek.segunda",
+          "startTime": "21:00",
+          "endTime": "21:50"
+        },
+        {
+          "day": "DayOfWeek.terca",
+          "startTime": "21:00",
+          "endTime": "21:50"
+        }
+      ]
+    },
+    {
+      "code": "CCMP3064",
+      "name": "PROJETO E ANÁLISE DE ALGORITMOS",
+      "className": "CC5",
+      "room": "SALA 4B",
+      "status": "CONFIRMADA",
+      "timeSlots": [
+        {
+          "day": "DayOfWeek.quarta",
+          "startTime": "20:10",
+          "endTime": "21:00"
+        },
+        {
+          "day": "DayOfWeek.sexta",
+          "startTime": "20:10",
+          "endTime": "21:00"
+        },
+        {
+          "day": "DayOfWeek.quarta",
+          "startTime": "21:00",
+          "endTime": "21:50"
+        },
+        {
+          "day": "DayOfWeek.sexta",
+          "startTime": "21:00",
+          "endTime": "21:50"
+        }
+      ]
+    },
+    {
+      "code": "CCMP3043",
+      "name": "RECONHECIMENTO DE PADRÕES",
+      "className": "CC5",
+      "room": "SALA 10B",
+      "status": "CONFIRMADA",
+      "timeSlots": [
+        {
+          "day": "DayOfWeek.terca",
+          "startTime": "18:30",
+          "endTime": "19:20"
+        },
+        {
+          "day": "DayOfWeek.quarta",
+          "startTime": "18:30",
+          "endTime": "19:20"
+        },
+        {
+          "day": "DayOfWeek.terca",
+          "startTime": "19:20",
+          "endTime": "20:10"
+        },
+        {
+          "day": "DayOfWeek.quarta",
+          "startTime": "19:20",
+          "endTime": "20:10"
+        }
+      ]
+    },
+    {
+      "code": "CCMP3021",
+      "name": "SISTEMAS DISTRIBUÍDOS",
+      "className": "CC5",
+      "room": "SALA 10B",
+      "status": "CONFIRMADA",
+      "timeSlots": [
+        {
+          "day": "DayOfWeek.quinta",
+          "startTime": "18:30",
+          "endTime": "19:20"
+        },
+        {
+          "day": "DayOfWeek.sexta",
+          "startTime": "18:30",
+          "endTime": "19:20"
+        },
+        {
+          "day": "DayOfWeek.quinta",
+          "startTime": "19:20",
+          "endTime": "20:10"
+        },
+        {
+          "day": "DayOfWeek.sexta",
+          "startTime": "19:20",
+          "endTime": "20:10"
+        }
+      ]
+    },
+    {
+      "code": "CCMP3088",
+      "name": "TÓPICOS ESPECIAIS EM MÍDIA E INTERAÇÃO",
+      "className": "CC5",
+      "room": "SALA 11B",
+      "status": "CONFIRMADA",
+      "timeSlots": [
+        {
+          "day": "DayOfWeek.segunda",
+          "startTime": "14:00",
+          "endTime": "15:00"
+        },
+        {
+          "day": "DayOfWeek.quinta",
+          "startTime": "14:00",
+          "endTime": "15:00"
+        },
+        {
+          "day": "DayOfWeek.segunda",
+          "startTime": "15:00",
+          "endTime": "16:00"
+        },
+        {
+          "day": "DayOfWeek.quinta",
+          "startTime": "15:00",
+          "endTime": "16:00"
+        }
+      ]
+    }
+  ],
+  "academic_achievement": {
+    "totalPendingHours": 1050,
+    "pendingSubjects": [
+      {
+        "code": "CCMP3043",
+        "name": "RECONHECIMENTO DE PADRÕES",
+        "workload": 60,
+        "period": 6,
+        "credits": 4
+      },
+      {
+        "code": "CCMP3069",
+        "name": "PROJETO DE DESENVOLVIMENTO",
+        "workload": 90,
+        "period": 7,
+        "credits": 6
+      },
+      {
+        "code": "CCMP3068",
+        "name": "TEORIA DA COMPUTAÇÃO",
+        "workload": 60,
+        "period": 5,
+        "credits": 4
+      },
+      {
+        "code": "CCMP3070",
+        "name": "INTERAÇÃO HUMANO-COMPUTADOR",
+        "workload": 60,
+        "period": 7,
+        "credits": 4
+      },
+      {
+        "code": "CCMP3064",
+        "name": "PROJETO E ANÁLISE DE ALGORITMOS",
+        "workload": 60,
+        "period": 4,
+        "credits": 4
+      },
+      {
+        "code": "CCMP3063",
+        "name": "TRABALHO DE CONCLUSÃO DE CURSO - BACH. CIÊNCIA DA COMPUTAÇÃO UAG",
+        "workload": 180,
+        "period": 9,
+        "credits": 12
+      },
+      {
+        "code": "CCMP3061",
+        "name": "ESTÁGIO SUPERVISIONADO OBRIGATÓRIO - BACH COMPUTAÇÃO",
+        "workload": 300,
+        "period": 9,
+        "credits": 20
+      },
+      {
+        "code": "CCMP3009",
+        "name": "SISTEMAS OPERACIONAIS",
+        "workload": 60,
+        "period": 5,
+        "credits": 4
+      },
+      {
+        "code": "CCMP3021",
+        "name": "SISTEMAS DISTRIBUÍDOS",
+        "workload": 60,
+        "period": 6,
+        "credits": 4
+      },
+      {
+        "code": "CCMP3020",
+        "name": "COMPILADORES",
+        "workload": 60,
+        "period": 6,
+        "credits": 4
+      },
+      {
+        "code": "CCMP3014",
+        "name": "INTELIGÊNCIA ARTIFICIAL",
+        "workload": 60,
+        "period": 5,
+        "credits": 4
+      }
+    ],
+    "componentSummary": [
+      {
+        "description": "Obrigatórios Cursados",
+        "hours": 1350,
+        "quantity": 24
+      },
+      {
+        "description": "Obrigatórios Dispensados",
+        "hours": 0,
+        "quantity": 0
+      },
+      {
+        "description": "Obrigatórios com Equivalência",
+        "hours": 60,
+        "quantity": 1
+      },
+      {
+        "description": "Optativos Cursados",
+        "hours": 180,
+        "quantity": 3
+      },
+      {
+        "description": "Optativos Dispensados",
+        "hours": 0,
+        "quantity": 0
+      },
+      {
+        "description": "Atividades Extensionistas",
+        "hours": 0,
+        "quantity": null
+      },
+      {
+        "description": "Atividades Complementares",
+        "hours": 0,
+        "quantity": null
+      },
+      {
+        "description": "Carga Horária Optativa Livre",
+        "hours": 0,
+        "quantity": null
+      },
+      {
+        "description": "Outro Perfil*",
+        "hours": 0,
+        "quantity": 0
+      },
+      {
+        "description": "Outro Curso***",
+        "hours": 0,
+        "quantity": 0
+      },
+      {
+        "description": "Total de componentes aproveitados",
+        "hours": null,
+        "quantity": 28
+      },
+      {
+        "description": "Utilizados como Equivalência**",
+        "hours": null,
+        "quantity": 1
+      }
+    ],
+    "workloadSummary": [
+      {
+        "category": "a1.2",
+        "name": "Total",
+        "integration": 3200,
+        "completedHours": 1590,
+        "completedPercentage": 49.69,
+        "waivedHours": 0,
+        "toCompleteHours": 1610,
+        "children": [
+          {
+            "category": "a1.2.1",
+            "name": "Obrigatória",
+            "integration": 2460,
+            "completedHours": 1410,
+            "completedPercentage": 57.32,
+            "waivedHours": 0,
+            "toCompleteHours": 1050,
+            "children": []
+          },
+          {
+            "category": "a1.2.2",
+            "name": "Optativa",
+            "integration": 740,
+            "completedHours": 180,
+            "completedPercentage": 24.32,
+            "waivedHours": 0,
+            "toCompleteHours": 560,
+            "children": [
+              {
+                "category": "a1.2.2.1",
+                "name": "Do Perfil",
+                "integration": 740,
+                "completedHours": 180,
+                "completedPercentage": 24.32,
+                "waivedHours": 0,
+                "toCompleteHours": 560,
+                "children": [
+                  {
+                    "category": "a1.2.2.1.1",
+                    "name": "Disciplinas",
+                    "integration": 420,
+                    "completedHours": 180,
+                    "completedPercentage": 42.86,
+                    "waivedHours": 0,
+                    "toCompleteHours": 240,
+                    "children": []
+                  },
+                  {
+                    "category": "a1.2.2.1.2",
+                    "name": "Atividades Complementares",
+                    "integration": 320,
+                    "completedHours": 0,
+                    "completedPercentage": 0.0,
+                    "waivedHours": 0,
+                    "toCompleteHours": 320,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "category": "a1.2.2.2",
+                "name": "Livre",
+                "integration": 0,
+                "completedHours": 0,
+                "completedPercentage": 0.0,
+                "waivedHours": 0,
+                "toCompleteHours": 0,
+                "children": [
+                  {
+                    "category": "a1.2.2.2.1",
+                    "name": "Disciplinas",
+                    "integration": null,
+                    "completedHours": 0,
+                    "completedPercentage": null,
+                    "waivedHours": 0,
+                    "toCompleteHours": null,
+                    "children": []
+                  },
+                  {
+                    "category": "a1.2.2.2.2",
+                    "name": "Atividades Complementares",
+                    "integration": null,
+                    "completedHours": 0,
+                    "completedPercentage": null,
+                    "waivedHours": 0,
+                    "toCompleteHours": null,
+                    "children": []
+                  },
+                  {
+                    "category": "a1.2.2.2.3",
+                    "name": "Carga Horária Optativa Livre",
+                    "integration": null,
+                    "completedHours": null,
+                    "completedPercentage": null,
+                    "waivedHours": 0,
+                    "toCompleteHours": null,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "category": "a1.2.3",
+            "name": "Atividades Extensionistas",
+            "integration": 0,
+            "completedHours": 0,
+            "completedPercentage": 0.0,
+            "waivedHours": 0,
+            "toCompleteHours": 0,
+            "children": [
+              {
+                "category": "a1.2.3.1",
+                "name": "De disciplinas",
+                "integration": null,
+                "completedHours": 0,
+                "completedPercentage": null,
+                "waivedHours": 0,
+                "toCompleteHours": null,
+                "children": []
+              },
+              {
+                "category": "a1.2.3.2",
+                "name": "Atividades",
+                "integration": null,
+                "completedHours": 0,
+                "completedPercentage": null,
+                "waivedHours": 0,
+                "toCompleteHours": null,
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

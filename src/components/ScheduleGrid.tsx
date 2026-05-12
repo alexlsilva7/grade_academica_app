@@ -1,4 +1,4 @@
-import { AlertCircle, X } from 'lucide-react';
+import { AlertCircle, X, Info } from 'lucide-react';
 import { Discipline } from '../types';
 import { DAYS, TIMESLOTS } from '../constants';
 
@@ -6,12 +6,14 @@ interface ScheduleGridProps {
   mobileTab: string;
   schedule: Discipline[];
   removeFromSchedule: (id: string) => void;
+  onShowDetails?: (disc: Discipline) => void;
 }
 
 export function ScheduleGrid({
   mobileTab,
   schedule,
-  removeFromSchedule
+  removeFromSchedule,
+  onShowDetails
 }: ScheduleGridProps) {
   return (
     <div className={`flex-1 flex col h-full overflow-hidden ${mobileTab === 'schedule' ? 'flex flex-col' : 'hidden md:flex flex-col'}`}>
@@ -60,16 +62,28 @@ export function ScheduleGrid({
                                   {scheduledDisc.professor}
                                 </div>
                               </div>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  removeFromSchedule(scheduledDisc.id);
-                                }}
-                                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-0.5 hover:bg-indigo-200 rounded text-indigo-800 transition-all"
-                                title="Remover"
-                              >
-                                <X className="w-3.5 h-3.5" />
-                              </button>
+                              <div className="absolute top-1 right-1 flex items-center opacity-0 group-hover:opacity-100 transition-opacity gap-0.5">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (onShowDetails) onShowDetails(scheduledDisc);
+                                  }}
+                                  className="p-0.5 hover:bg-indigo-200 rounded text-indigo-800 transition-all"
+                                  title="Detalhes"
+                                >
+                                  <Info className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    removeFromSchedule(scheduledDisc.id);
+                                  }}
+                                  className="p-0.5 hover:bg-indigo-200 rounded text-indigo-800 transition-all"
+                                  title="Remover"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
                             </div>
                           )}
                         </td>

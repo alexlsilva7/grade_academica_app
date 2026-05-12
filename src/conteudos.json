@@ -1,0 +1,593 @@
+{
+  "curso": "Bacharelado em Ciência da Computação - UFAPE",
+  "disciplinas":[
+    {
+      "codigo": "BCC0022",
+      "nome": "Geometria Analítica",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Os conjuntos numéricos e operações; 2. Os números reais; 3. Trigonometria; 4. Matrizes, Determinantes e Sistemas Lineares; 5. Vetores no Plano e no Espaço; 6. Reta e Plano; 7. Cônicas; 8. Cilindros e superfícies quádricas."
+    },
+    {
+      "codigo": "BCC0023",
+      "nome": "Introdução à Computação",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Introdução à Ciência da Computação; 2. História e Evolução da Computação; 3. Sistemas Digitais e Organização de Computadores; 4. Redes de Computadores e Sistemas Operacionais; 5. Engenharia de Software; 6. Teoria da Computação e Compiladores; 7. Inteligência Artificial; 8. Sistemas de Informação e Empreendedorismo em Computação."
+    },
+    {
+      "codigo": "BCC0024",
+      "nome": "Introdução à Programação I",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Conceitos preliminares; 2. Tipos de dados, variáveis e operadores; 3. Entrada e saída padrão; 4. Estruturas de controle; 5. Operações com cadeias de caracteres; 6. Estruturas de dados em diferentes linguagens de programação; 7. Ponteiros; 8. Funções e modularização; 9. Leitura e escrita de arquivos; 10. Bibliotecas definidas pelo usuário."
+    },
+    {
+      "codigo": "BCC0025",
+      "nome": "Lógica Matemática I",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Teoria dos Conjuntos; 2. Lógica proposicional; 3. Conceitos básicos sobre números inteiros; 4. Técnicas de demonstração."
+    },
+    {
+      "codigo": "BCC0042",
+      "nome": "Metodologia Científica para Computação",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Ciência e tecnologia; 2. O método científico; 3. Pesquisa; 4. Planejamento da pesquisa; 5. Abordagens comuns de Pesquisa Empírica em Computação; 6. Apresentação escrita da pesquisa; 7. Apresentações orais; 8. Leitura de artigo científico."
+    },
+    {
+      "codigo": "BCC0026",
+      "nome": "Álgebra Linear",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Espaços Vetoriais; 2. Espaços Vetoriais com Produto Interno; 3. Transformações Lineares; 4. Operadores Lineares; 5. Vetores Próprios e Valores Próprios."
+    },
+    {
+      "codigo": "BCC0027",
+      "nome": "Algoritmos e Estruturas de Dados I",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Linguagem de programação C; 2. Estruturas de dados lineares e seus algoritmos; 3. Algoritmos de ordenação e noções de complexidade."
+    },
+    {
+      "codigo": "BCC0043",
+      "nome": "Cálculo I",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Funções; 2. Limites e Derivadas; 3. Regras de Derivação; 4. Aplicações de Derivação."
+    },
+    {
+      "codigo": "BCC0044",
+      "nome": "Programação Orientada a Objetos",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Contextualização de POO; 2. Ambientes de Desenvolvimento; 3. Conceitos Fundamentais; 4. Associação entre Classes; 5. Herança; 6. Polimorfismo; 7. Classes Abstratas; 8. Interfaces; 9. Coleções; 10. Exceções; 11. Implementação em linguagens modernas; 12. Diagramas UML; 13. Arquitetura de software e padrões."
+    },
+    {
+      "codigo": "CCMP3058",
+      "nome": "Sistemas Digitais",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Sistemas de Numeração e Códigos; 2. Aritmética Binária; 3. Portas Lógicas; 4. Análise e Projeto de Circuitos Combinacionais; 5. Componentes Combinacionais; 6. Análise e Síntese de Circuitos Sequenciais; 7. Dispositivos Lógicos Programáveis; 8. Memória."
+    },
+    {
+      "codigo": "BCC0028",
+      "nome": "Algoritmos e Estruturas de Dados II",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Tipos de dados, TAD e estruturas de dados; 2. Árvores; 3. Árvores Balanceadas AVL; 4. Árvores Balanceadas Rubro Negras (RB); 5. Árvores B; 6. Tabelas Hash; 7. Grafos."
+    },
+    {
+      "codigo": "CCMP3010",
+      "nome": "Arquitetura de Computadores",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. CISC x RISC; 2. Mecanismos de Interrupção e Exceção; 3. Barramentos; 4. Hierarquia de Memória; 5. Sistemas de Memória; 6. Estrutura e Funcionamento da CPU; 7. Multiprocessadores e Multicomputadores; 8. Arquiteturas Paralelas; 9. Conjunto de Instruções; 10. Modos de Endereçamento; 11. Ciclos da Instrução e Pipeline; 12. Desenvolvimento HDL."
+    },
+    {
+      "codigo": "BCC0029",
+      "nome": "Cálculo II",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Integrais; 2. Técnicas de Integração; 3. Aplicações de Integração; 4. Equações Paramétricas e Coordenadas Polares; 5. Funções Vetoriais."
+    },
+    {
+      "codigo": "CCMP3019",
+      "nome": "Computação Gráfica",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Conceitos Básicos de Computação Gráfica; 2. Bibliotecas Gráficas; 3. Pipeline Gráfico; 4. Transformações Geométricas; 5. Algoritmos de Recorte; 6. Algoritmos de Rasterização; 7. Textura."
+    },
+    {
+      "codigo": "BCC0030",
+      "nome": "Matemática Discreta I",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Contagem e Relações; 2. Teoria dos Números; 3. Grafos e Árvores."
+    },
+    {
+      "codigo": "BCC0031",
+      "nome": "Banco de Dados",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Introdução; 2. Modelagem de Dados; 3. Projeto de Banco de Dados Relacional; 4. Álgebra Relacional; 5. Manipulação de Dados; 6. Aplicações, Administração e Tópicos Emergentes."
+    },
+    {
+      "codigo": "BCC0032",
+      "nome": "Engenharia de Software I",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Introdução; 2. Processos de Desenvolvimento; 3. Agilidade; 4. Arquitetura de Software; 5. Qualidade de Software; 7. Integração e Implantação Contínua; 8. Gerenciamento de Configuração; 9. UML; 10. Refatoração; 11. Princípios de Projeto; 12. Padrões de Projeto; 13. Requisitos; 14. Codificação com IAs; 15. Autenticação/Autorização."
+    },
+    {
+      "codigo": "BCC0033",
+      "nome": "Paradigmas de Linguagens de Programação I",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Introdução; 2. Conceitos das linguagens de programação; 3. Programação Concorrente; 4. Programação Funcional; 5. Programação Lógica."
+    },
+    {
+      "codigo": "PRBE3006",
+      "nome": "Probabilidade e Estatística",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Aspectos básicos da estatística; 2. Séries estatísticas; 3. Distribuição de frequência; 4. Medidas de tendência central; 5. Medidas de dispersão; 6. Introdução à probabilidade; 7. Variável aleatória; 8. Amostragem; 9. Inferência básica; 10. Regressão."
+    },
+    {
+      "codigo": "BCC0034",
+      "nome": "Projeto e Análise de Algoritmos I",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Corretude de Algoritmos; 2. Modelo Computacional; 3. Medidas de Tempo e Espaço; 4. Técnicas de Análise de Algoritmos; 5. Estratégias de Projeto de Algoritmos; 6. Técnicas Avançadas de Busca; 7. Problemas NP-Completos."
+    },
+    {
+      "codigo": "BCC0035",
+      "nome": "Inteligência Artificial I",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "[1] Introdução à Inteligência Artificial; [2] Agentes Inteligentes; [3] Resolução de Problemas por meio de Busca; [4] Problemas de Satisfação de Restrições; [5] Introdução a Aprendizagem de Máquina; [6] Classificação; [7] Avaliação e Comparação; [8] Pré-processamento dos dados; [9] Regressão; [10] Agrupamento."
+    },
+    {
+      "codigo": "BCC0036",
+      "nome": "Interação Humano-Computador I",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Introdução à IHC; 2. Conhecimento em IHC; 3. Interação e Interface; 4. Perspectivas sobre IHC; 5. Design e Avaliação em IHC; 6. Noções de Heurística em IHC; 7. Paradigmas de IHC; 8. Projeto em IHC; 9. Design Thinking."
+    },
+    {
+      "codigo": "BCC0037",
+      "nome": "Redes de Computadores",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Introdução; 2. Redes de computadores e a Internet; 3. Camada de aplicação; 4. Camada de transporte; 5. Camada de rede; 6. Camada de enlace e redes locais; 7. Tópicos especiais em redes de computadores."
+    },
+    {
+      "codigo": "CCMP3009",
+      "nome": "Sistemas Operacionais",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Introdução; 2. Estruturas do SO; 3. Processos e Gerenciamento; 4. Threads e Multithreading; 5. Escalonamento de Processos; 6. Sincronização; 7. Tratamento de Deadlocks; 8. Gerenciamento de Memória; 9. Memória Virtual e Paginação; 10. Interface do Sistema de Arquivos; 11. Implementação do Sistema de Arquivos; 12. Tópicos Especiais."
+    },
+    {
+      "codigo": "CCMP3068",
+      "nome": "Teoria da Computação",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Introdução e Conceitos Básicos; 2. Autômatos Finitos; 3. Linguagens Formais; 4. Decidibilidade; 5. Classes de Complexidade; 6. Conclusões."
+    },
+    {
+      "codigo": "CCMP3020",
+      "nome": "Compiladores",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Introdução a Compiladores; 2. Analisador Léxico; 3. Analisador Sintático; 4. Verificação semântica de tipos; 5. Ambiente de Execução; 6. Tradução para código intermediário; 7. Otimização de código; 8. Tradução para código final."
+    },
+    {
+      "codigo": "BCC0003",
+      "nome": "Empreendedorismo I",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Características do Empreendedorismo; 2. Comportamentos do Empreendedor; 3. Oportunidades; 4. Inovação; 5. Inovação e Estratégia; 6. Plano de Negócio; 7. Matriz CSD; 8. CANVAS; 9. MVP."
+    },
+    {
+      "codigo": "BCC0038",
+      "nome": "Reconhecimento de Padrões I",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Redes Neurais Artificiais; 2. Visão Computacional; 3. Introdução ao Processamento Digital de Imagens; 4. Transformações e Realce de Imagens; 5. Segmentação; 6. Morfologia Matemática e Análise de Regiões."
+    },
+    {
+      "codigo": "BCC0040",
+      "nome": "Sistemas de Informação e Tecnologias I",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. A organização e sua configuração estrutural; 2. A TI na empresa e a Revolução da Web; 3. Visão sistêmica; 4. Elementos da Tomada de decisão; 5. Sistemas Transacionais; 6. Sistemas Gerenciais; 7. Sistemas Especialistas; 8. Sistemas de apoio a decisão; 9. ERP; 10. CRM; 11. SCM; 12. Business intelligence; 13. BPM; 14. Segurança das informações; 15. Gestão do conhecimento; 16. Governança de TI; 17. Tendências."
+    },
+    {
+      "codigo": "BCC0039",
+      "nome": "Sistemas Distribuídos I",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "Introdução. Arquiteturas. Processos. Comunicação. Sincronização. Tolerância a falhas. Clusters Computacionais. Grids Computacionais. Tópicos especiais em sistemas distribuídos."
+    },
+    {
+      "codigo": "BCC0041",
+      "nome": "Projeto de Desenvolvimento de Software",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Conceitos de Desenvolvimento de Sistemas; 2. Definição de Projeto; 3. Elicitação de Requisitos; 4. Análise de Requisitos; 5. Prototipação; 6. Especificação do Sistema; 7. Implementação; 8. Testes; 9. Documentação; 10. Implantação; 11. Transferência Tecnológica."
+    },
+    {
+      "codigo": "BCC0045",
+      "nome": "Segurança de Informação",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Pilares da Segurança da Informação; 2. Introdução à Criptografia Moderna; 3. Auditoria e Análise de Riscos; 4. Leis e Regulamentações."
+    },
+    {
+      "codigo": "CCMP3071",
+      "nome": "Computadores e Sociedade",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "1. Consequências da Informatização da Sociedade; 2. Política Nacional de Informática; 3. Automação de Atividades; 4. Aplicações da Informática; 5. Ergonomia e Doenças Profissionais."
+    },
+    {
+      "codigo": "CCMP3071_EST",
+      "nome": "Estágio Obrigatório de BCC",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "Não há (atividade prática supervisionada)."
+    },
+    {
+      "codigo": "BCC0048",
+      "nome": "Trabalho de Conclusão de Curso de BCC",
+      "tipo": "Obrigatória",
+      "conteudo_programatico": "Não há (elaboração, desenvolvimento, escrita e apresentação oral do TCC)."
+    },
+    {
+      "codigo": "CIEN3005",
+      "nome": "Metodologia Científica",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Método Científico e Prática da Pesquisa. Função Social da Pesquisa. Tipos de Pesquisa. Instrumentalização Metodológica. Projeto de Pesquisa. Relatório de Pesquisa."
+    },
+    {
+      "codigo": "BCC0020",
+      "nome": "Tópicos em Metodologia Científica",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Abordagens comuns de Pesquisa Empírica em Computação. 2. Apresentação escrita da pesquisa. 3. Apresentações orais. 4. Leitura de artigo científico."
+    },
+    {
+      "codigo": "LETR3020",
+      "nome": "Inglês",
+      "tipo": "Optativa",
+      "conteudo_programatico": "UNIDADE 1: Estratégias de leitura; Frases nominais; Estrutura lexical; Elementos básicos gramaticais. UNIDADE 2: Técnicas básicas de tradução interlingual; Atividades práticas de compreensão textual."
+    },
+    {
+      "codigo": "FISC3004",
+      "nome": "Física para Computação",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Carga Elétrica. 2. Campo Elétrico. 3. Lei De Gauss. 4. Potencial Elétrico. 5. Capacitância. 6. Corrente E Resistência. 7. Circuitos Elétricos. 8. Campo Magnético. 9. Lei De Ampère. 10. Lei Da Indução De Faraday."
+    },
+    {
+      "codigo": "EDUC3092",
+      "nome": "Educação das Relações Étnico-Raciais",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Identidade Nacional e Relações Étnico-Raciais. 2. Movimentos Sociais Negros e Indígenas e a Educação. 3. A Educação Indígena e as Relações Étnico-Raciais na Contemporaneidade."
+    },
+    {
+      "codigo": "EDUC3090",
+      "nome": "Língua Brasileira de Sinais - LIBRAS L",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Abordagem social e linguística da Surdez e do mundo dos Surdos com ênfase nos aspectos específicos da Língua Brasileira de Sinais – LIBRAS. Surdez, linguagem e sociedade."
+    },
+    {
+      "codigo": "BCC0006",
+      "nome": "Modelagem Conceitual de Dados",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução aos Conceitos. 2. Análise de Requisitos. 3. Verificação do Projeto. 4. Estratégias para Especificação. 5. Metamodelos e UML Profile. 6. Ferramentas CASE. 7. Ontologias e Modelos Conceituais. 8. Projeto Conceitual de Data Warehouse. 9. Tópicos Especiais."
+    },
+    {
+      "codigo": "BCC0008",
+      "nome": "Banco de Dados Avançado",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. SQL Avançada e Estendida. 2. Segurança e Autorização em Banco de Dados. 3. Bancos de Dados Distribuídos. 4. Mineração de Dados. 5. Recomendação de Conteúdos."
+    },
+    {
+      "codigo": "BCC0046",
+      "nome": "Inteligência de Negócios e Data Warehouse",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Tomada de decisão baseada em dados. 2. Inteligência de Negócios. 3. Data Warehouse. 4. Modelagem de Data Warehouses. 5. O Processo de ETL. 6. Cubos OLAP para análise de dados. 7. Análise de desempenho. 8. Implantação de projetos de BI. 9. Ferramentas para análise e visualização."
+    },
+    {
+      "codigo": "BCC0047",
+      "nome": "Integração de Dados",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Sistemas de Integração de Dados. 2. Correspondência de esquemas. 3. Correspondência de instâncias. 4. Fusão de dados. 5. Validação."
+    },
+    {
+      "codigo": "UAG0169",
+      "nome": "Tópicos Especiais em Banco de Dados",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução ao Estudo de Técnicas Avançadas em Banco de Dados. 2. Aplicações Práticas e Estudos de Caso. 3. Tendências Futuras e Desafios."
+    },
+    {
+      "codigo": "UAG0009",
+      "nome": "Projeto de Sistemas Embarcados",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução aos Sistemas Embarcados. 2. Modelos de Especificação. 3. Técnicas de Particionamento. 4. Técnicas de Estimativas. 5. Técnicas para Geração de Interfaces. 6. Técnicas para Síntese. 7. Técnicas de Co-simulação. 8. Prototipação de Sistemas."
+    },
+    {
+      "codigo": "CCMP3075",
+      "nome": "Tópicos Avançados em Engenharia da Computação",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução à Engenharia da Computação Avançada. 2. Arquiteturas Avançadas de Processadores e Microcontroladores. 3. Projeto de Circuitos Integrados e Sistemas VLSI. 4. Tendências Futuras em Hardware de Computadores."
+    },
+    {
+      "codigo": "BCC0009",
+      "nome": "Análise e Projeto de Sistemas I",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Fundamentos e a aplicação das atividades de análise e projeto, com foco em abordagens orientadas a objetos; Técnicas e ferramentas para engenharia direta e reversa; Desenvolvimento de um sistema simples."
+    },
+    {
+      "codigo": "BCC0010",
+      "nome": "Tópicos em Projeto de Desenvolvimento",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Conceitos de Desenvolvimento de Sistemas. 2. Definição de Projeto."
+    },
+    {
+      "codigo": "CCMP3078",
+      "nome": "Desenvolvimento de Aplicações Móveis",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução ao Desenvolvimento de Jogos (Móveis). 2. Gerenciamento de Equipes. 3. Projeto. 4. Conceitos Gráficos. 5. Técnicas e Ferramentas. 6. Gráficos em Jogos. 7. Sons. 8. IA. 9. Redes. 11. Projeto (Nota: Ementa misturada no original, foca em Plataformas Móveis, UI/UX, Multiplataforma, Testes e Segurança mobile)."
+    },
+    {
+      "codigo": "CCMP3051",
+      "nome": "Desenvolvimento Distribuído de Software",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução à Gerência de Projeto. 2. Engenharia de Requisitos. 3. Processos de Software. 4. Adaptação de Processos. 5. Modelos de Desenvolvimento. 6. Métodos Ágeis. 7. Scrum. 8. Extreme Programming (XP)."
+    },
+    {
+      "codigo": "BCC0007",
+      "nome": "Engenharia de Software Experimental",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução à Experimentação em Engenharia de Software. 2. Métodos e Técnicas de Experimentação. 3. Projeto, Execução e Avaliação de Experimentos. 4. Definição de Métricas. 5. Empacotamento e Replicação de Experimentos."
+    },
+    {
+      "codigo": "BCC0002",
+      "nome": "Especificação Formal de Software",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Especificação de software baseada no paradigma imperativo. 2. Conceitos fundamentais sobre a notação Z. 3. Especificação de software baseada no paradigma orientado a objetos. 4. Redes de Petri coloridas na especificação."
+    },
+    {
+      "codigo": "UAG0075",
+      "nome": "Gerenciamento de Projetos",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Definição e a importância da gerência de projetos; Gerenciamento de projetos e seus objetivos gerais; Papel do Gerente de Projetos; Planejamento estratégico; Métodos de planejamento, análise de riscos e estimativas de custos, recursos, tamanho e complexidade."
+    },
+    {
+      "codigo": "BCC0001",
+      "nome": "Gestão Ágil de Projetos de Software",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Princípios, práticas e frameworks ágeis aplicados ao gerenciamento de projetos de software; Definição de metodologias Scrum, Kanban e XP; Flexibilidade, entrega contínua de valor, colaboração entre equipes."
+    },
+    {
+      "codigo": "CCMP3090",
+      "nome": "Programação Paralela e Distribuída",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Arquiteturas Paralelas e Desempenho. 2. Processos, Comunicação e Sincronização (IPC). 3. Threads. 4. Paralelismo com Threads. 5. Algoritmos de Escalonamento. 6. Processadores Paralelos e Distribuídos. 7. Comunicação em Rede (Sockets). 8. Computação com Passagem de Mensagem (MPI)."
+    },
+    {
+      "codigo": "BCC0011",
+      "nome": "Programação Web I",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Histórico e evolução da web; Arquitetura de aplicações web; Protocolos e tecnologias fundamentais (HTTP, HTTPS, DNS); Fundamentos de HTML, CSS e Javascript; Programação Client-Side; Desenvolvimento de APIs e Serviços Web; Segurança em Aplicações Web; Integração em nuvem."
+    },
+    {
+      "codigo": "UAG0028",
+      "nome": "Qualidade de Software",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Definição de princípios e práticas para garantir a qualidade tanto do produto quanto do processo de desenvolvimento de software; Controle de qualidade, testes, verificação e validação."
+    },
+    {
+      "codigo": "UAG0031",
+      "nome": "Teste de Software",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Teste funcional. 2. Teste estrutural. 3. Noções fundamentais de teste de unidade. 4. Framework JUnit. 5. Outros tipos de teste (integração, regressão, aceitação, web, interface). 6. Processos, planejamento e gerenciamento de testes."
+    },
+    {
+      "codigo": "CCMP3080",
+      "nome": "Tópicos Especiais em Engenharia de Software",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Padrões de Projetos (GoF, GRASP). 2. Arquitetura de Microsserviços (Spring Boot, JPA, Docker, OpenAPI). 3. Spring Cloud (Serviços de Descoberta, Gateway, Segurança)."
+    },
+    {
+      "codigo": "CCMP3083",
+      "nome": "Tópicos Especiais em Gestão de Projetos",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Evolução do Gerenciamento de Projetos. 2. Modelos de Gerenciamento. 3. Categorização de Projetos. 4. Modelos de Maturidade. 5. Inovação, Complexidade e Incerteza. 6. Sustentabilidade em Projetos. 7. Projetos Globais. 8. Ferramentas. 9. Áreas de Pesquisa."
+    },
+    {
+      "codigo": "CCMP3081",
+      "nome": "Aprendizagem de Máquina",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução. 2. Domínio dos Atributos. 3. Aprendizagem Não Supervisionada e Agrupamento. 4. Aprendizagem Supervisionada. 5. Avaliação de Técnicas. 6. Tratamento dos Dados. 7. Projeto."
+    },
+    {
+      "codigo": "CCMP3087",
+      "nome": "Biometria",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução à Biometria. 2. Etapas de um Sistema Computacional para Reconhecimento/Verificação. 3. Sistemas de Segurança Biométricos. 4. Seminário. 5. Projeto."
+    },
+    {
+      "codigo": "UAG0029",
+      "nome": "Mineração de Dados",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução e Motivação ao KDD. 2. Etapas do Processo. 3. Conceitos e Tecnologias. 4. Pré-processamento. 5. Extração de Padrões. 6. Pós-processamento. 7. Métricas de Avaliação. 8. Tópicos Avançados. 9. Técnicas, Ferramentas e Aplicações."
+    },
+    {
+      "codigo": "BCC0012",
+      "nome": "Métodos Paramétricos de Aprendizagem de Máquina I",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Reconhecimento de Padrões. 2. Revisão de Probabilidade e Estatística. 3. Teoria da Decisão Bayesiana. 4. Métodos Paramétricos de Classificação. 5. Métodos Paramétricos de Regressão. 6. Análise dos Componentes Principais (PCA)."
+    },
+    {
+      "codigo": "UAG0012",
+      "nome": "Reconhecimento de Padrões II",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução. 2. Extração de Características. 3. Pré-processamento. 4. Seleção de Características. 5. Redução da Dimensionalidade. 6. Algoritmos de Aprendizagem. 7. Reconhecimento de Imagens. 8. Outras Aplicações. 9. Projeto."
+    },
+    {
+      "codigo": "CCMP3039",
+      "nome": "Redes Neurais",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução às Redes Neurais Artificiais. 2. Redes Feedforward e Backpropagation. 3. Redes Neurais Convolucionais (CNNs). 4. Redes Neurais Recorrentes (RNNs) e LSTMs. 5. Técnicas de Regularização. 6. Arquiteturas Avançadas. 7. Aplicações."
+    },
+    {
+      "codigo": "UAG0074",
+      "nome": "Sistemas de Recomendação",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução. 2. Coleta de Informações. 3. Estratégias de Recomendação. 4. Descoberta do Conhecimento. 5. Filtragem de Informações. 6. Técnicas de Recomendação. 7. Sistemas e IHC. 8. Processamento e Análise. 9. Regras Associativas. 10. Exemplos. 11. Projeto."
+    },
+    {
+      "codigo": "CCMP3086",
+      "nome": "Tópicos Especiais em Inteligência Artificial",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução à Inteligência Artificial Avançada. 2. Aprendizado Profundo (Deep Learning). 3. Tendências Futuras e Desafios em IA."
+    },
+    {
+      "codigo": "UAG0011",
+      "nome": "Visão Computacional",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução à Visão Computacional. 2. Ferramentas de Apoio. 3. Segmentação. 4. Rastreamento. 5. Reconhecimento e Classificação em Imagens e Vídeos. 6. Avaliação de Desempenho. 7. Seminário. 8. Projeto."
+    },
+    {
+      "codigo": "BCC0013",
+      "nome": "Redes Complexas",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução. 2. Redes sociais, biológicas e tecnológicas. 3. Revisão sobre grafos. 4. Métricas. 5. Modelos de redes complexas. 6. Algoritmos sobre as redes. 7. Epidemias. 8. Trabalhos atuais. 9. Projeto."
+    },
+    {
+      "codigo": "MATM3007",
+      "nome": "Cálculo III",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Equações Diferenciais. 2. Equações Diferenciais de Primeira Ordem. 3. Equações Diferenciais de Segunda Ordem e de Ordem Mais Alta. 4. Transformada de Laplace. 5. Equações Diferenciais Parciais."
+    },
+    {
+      "codigo": "MATM3017",
+      "nome": "Cálculo Numérico e Computacional",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Modelagem Matemática e Erros. 2. Sistemas de Equações Lineares. 3. Resolução de Equações Não-Lineares. 4. Sistemas de Equações Não-Lineares. 5. Interpolação e Ajuste de Curvas. 6. Integração Numérica. 7. Métodos Numéricos para Equações Diferenciais Ordinárias."
+    },
+    {
+      "codigo": "CCMP3032",
+      "nome": "Modelagem Matemática",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução à Modelagem Matemática. 2. Equações Diferenciais. 3. Modelagem de Sistemas Físicos, Biológicos e Químicos Básicos. 4. Métodos Numéricos e Computacionais."
+    },
+    {
+      "codigo": "CCMP3030",
+      "nome": "Métodos de Otimização",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Programação Linear. 2. Programação Não-Linear. 3. Métodos Computacionais de Otimização."
+    },
+    {
+      "codigo": "CCMP3024",
+      "nome": "Programação Matemática",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Modelagem Sistêmica de Problemas Industriais. 2. Modelos de Programação Linear Inteira Mista (PLIM). 3. Programação Linear (PL). 4. Método do simplex. 5. Problema de Transporte. 6. Problema de Designação. 7. Dualidade. 8. Método dual simplex. 9. Programação inteira. 10. Programação inteira mista. 11. Resolução de problemas. 12. Decomposição. 13. Aplicações."
+    },
+    {
+      "codigo": "BCC0004",
+      "nome": "Programação Competitiva I",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução à Programação Competitiva. 2. Formato da Maratona da ICPC/SBC. 3. Metodologia de Resolução. 4. Funcionamento Codeforces. 5. Biblioteca STL/C++. 6. Algoritmos de Busca. 7. Manipulação de Strings. 8. Algoritmos de Ordenação. 9. Cálculo Combinatório. 10. Estruturas de Dados para Grafos. 11 a 14. Algoritmos em Grafos e Prática Intensiva."
+    },
+    {
+      "codigo": "BCC0014",
+      "nome": "Desenvolvimento e Execução de Projetos de Software",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Práticas de Desenvolvimento e Execução de Sistemas de Software Usando Linguagens de Programação (C, Python, Java ou JavaScript). Desenvolvimento Orientado a Objetos usando Angular e TypeScript. Implantação de processo/metodologia. Construção de páginas web. Análise e desenvolvimento de projetos de software (negócio, requisitos, testes)."
+    },
+    {
+      "codigo": "CCMP3084",
+      "nome": "Métodos de Pesquisa em Computação",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Ciência, método científico e Ciência da Computação. Mapeamento Sistemático da Literatura (MSL) e Revisão Sistemática (RSL). Discussão de resumos, TCCs, dissertações. Organização e condução do projeto de pesquisa empírica. Planejamento de estudos de caso e experimentos. Análise de resultados."
+    },
+    {
+      "codigo": "BCC0005",
+      "nome": "Programação Competitiva II",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução. 2. Formato da Maratona da ICPC/SBC. 3. Metodologia de Resolução de Questões. 4. Codeforces. 5. Backtracking. 6. Divisão e Conquista. 7. Algoritmos Gulosos. 8. Backtracking versus Algoritmos Gulosos. 9. Programação Dinâmica. 10. Prática Intensiva."
+    },
+    {
+      "codigo": "CCMP3082",
+      "nome": "Desenvolvimento de Jogos",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução. 2. Gerenciamento de Equipes. 3. Projeto de Jogos. 4. Conceitos Gráficos: Modelagem 2D e 3D. 5. Técnicas e Ferramentas de Implementação. 6. Gráficos em Jogos. 7. Sons em Jogos. 8. Inteligência Artificial em Jogos. 9. Redes em Jogos. 11. Projeto."
+    },
+    {
+      "codigo": "CCMP3034",
+      "nome": "Processamento Digital de Imagens",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução. 2. Amostragem. 3. Processamento de Histogramas. 4. Filtragem Espacial. 5. Filtragem no Domínio da Frequência. 6. Restauração. 7. Modelos de Cor. 8. Processamento Morfológico. 9. Segmentação. 10. Representação e Descrição. 11. Formatos de Arquivo. 12. Compressão. 13. Projeto."
+    },
+    {
+      "codigo": "CCMP3076",
+      "nome": "Processamento Digital de Sinais",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Representação Digital de Sinais. 2. Transformada Discreta de Fourier (DFT) e FFT. 3. Outras Transformações (Coseno Discreta, Walsh-Hadamard, Haar). 4. Convolução e Filtros Lineares. 5. Espaço de Transformação. 6. Compressão de Sinais. 7. Sinais Aleatórios."
+    },
+    {
+      "codigo": "UAG0019",
+      "nome": "Realidade Virtual e Aumentada",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução e Histórico. 2. Aplicações. 3. Tecnologias Básicas. 4. Definições e Caracterizações. 5. Fatores Humanos, Percepção e Interação. 6. Princípios de Computação Gráfica para RV/RA. 7. Modelagem Geométrica. 8. Modelagem de Ambientes Virtuais. 9. Ferramentas de Desenvolvimento. 10. Tópicos Especiais."
+    },
+    {
+      "codigo": "CCMP3088",
+      "nome": "Tópicos Especiais em Mídia e Interação",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Conceitos da Comunicação e Mídias Digitais; Tratamento de informações digitais (texto, imagens, áudio, vídeo); Produção de Texto em Mídias Digitais; Teorias do Jornalismo em Mídias Digitais; Produção de Aplicações Multimídia."
+    },
+    {
+      "codigo": "BCC0015",
+      "nome": "Avaliação de Desempenho de Sistemas I",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Introdução. Visão geral sobre desempenho e dependabilidade. Métodos de avaliação quantitativa: monitoração e modelagem. Protocolo e Técnicas de Medição. Redes de Petri. Diagrama de Bloco de Confiabilidade. Cadeias de Markov. Tópicos especiais em avaliação de desempenho."
+    },
+    {
+      "codigo": "BCC0016",
+      "nome": "Gerenciamento de Redes I",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Introdução ao Gerenciamento de Redes. Princípios de Administração. Tecnologias para Operação e Gerência. Rede de Gerência de Telecomunicações TMN. Recursos Humanos. Tópicos especiais em gerenciamento de redes."
+    },
+    {
+      "codigo": "BCC0017",
+      "nome": "Modelagem e Dependabilidade de Sistemas Computacionais I",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Motivação e contexto. Sistemas e modelos. Modelos comportamentais e modelagem via simulação. Linguagem e autômatos. Redes de Petri. Introdução à álgebra de processos. Especificação de Protocolos, de Arquitetura de Software Distribuída e Middleware."
+    },
+    {
+      "codigo": "BCC0018",
+      "nome": "Segurança de Redes de Computadores I",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Introdução à Segurança de Redes. Introdução à Criptografia (Simétrica e Pública). Assinatura Digital. Certificados Digitais. Tópicos especiais em segurança de redes (VPNs, Pragas virtuais, Firewalls, SPAM)."
+    },
+    {
+      "codigo": "BCC0019",
+      "nome": "Tópicos Especiais em Redes e Sistemas Distribuídos I",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Introdução aos Tópicos Avançados. Protocolos e Arquiteturas Avançadas. Sistemas Distribuídos. Segurança em Redes. Tolerância a Falhas e Alta Disponibilidade. Terminologias atuais e ferramental (Computação em nuvem, Edge Computing, IoT)."
+    },
+    {
+      "codigo": "EDUC3048",
+      "nome": "Informática na Educação",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução à Informática na Educação. 2. Histórico. 3. Ambientes Educacionais Baseados em Computador. 4. Tecnologias Educacionais Atuais. 5. Implicações Pedagógicas. 6. Informática na Educação Especial. 7. Educação à Distância (EAD). 8. Aprendizado Cooperativo e Colaborativo."
+    },
+    {
+      "codigo": "EDUC3079",
+      "nome": "Projeto de Sistemas Educacionais",
+      "tipo": "Optativa",
+      "conteudo_programatico": "1. Introdução ao Projeto de Sistemas Educacionais. 2. Revisão de Engenharia de Software. 3. Sistemas e Ciclo de Vida de um Sistema de Informação. 4. Necessidades Básicas para Sistemas Educacionais. 5. Elicitação de Requisitos. 6. Validação de Requisitos."
+    },
+    {
+      "codigo": "UAG0300",
+      "nome": "Fundamentos em Ciência de Dados",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Introdução a ciência de dados; A relação entre Ciência de dados e Big Data; A importância da estatística na ciência de dados; Ciclo de vida de projetos de ciência de dados; Aplicações da ciência de dados."
+    },
+    {
+      "codigo": "UAG0080",
+      "nome": "Gestão da Tecnologia da Informação",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Revisão das Funções administrativas; Evolução da tecnologia da informação; Alinhamento Estratégico de TI; Planejamento Estratégico de Tecnologia da Informação; Noções de gerenciamento de processos de negócio, pontos de função e Terceirização de TI; Governança e Segurança."
+    },
+    {
+      "codigo": "UAG0024",
+      "nome": "Gestão de Processos de Negócio",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Conceituação de processos; Processos e a estrutura organizacional; Visão do ciclo de gerenciamento; Modelagem e otimização de processos; Tecnologia da informação no gerenciamento de processos; Aplicações no planejamento e implantação; Modelos de maturidade."
+    },
+    {
+      "codigo": "CCMP3077",
+      "nome": "Gestão de Serviços em TI",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Introdução à gestão de serviços de TI; Detalhamento dos processos ITIL; Central de Serviços; Gerenciamento de Incidentes, problema, mudança, liberação, nível de serviço, capacidade, disponibilidade e continuidade; Gerenciamento Financeiro; ISO/IEC 20000."
+    },
+    {
+      "codigo": "UAG0079",
+      "nome": "Governança em Tecnologia da Informação",
+      "tipo": "Optativa",
+      "conteudo_programatico": "Planejamento Estratégico; Decisões Estratégicas de TI; Governança Corporativa e Governança de TI. Mecanismos para implantar a Governança. Princípios de Liderança. Modelos de apoio para Governança de TI (COBIT, ITIL, BSC). A norma ISO 20000."
+    }
+  ]
+}

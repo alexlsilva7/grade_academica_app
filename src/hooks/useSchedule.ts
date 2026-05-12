@@ -4,7 +4,8 @@ import { Discipline, TimeSlot } from '../types';
 import { TIMESLOTS } from '../constants';
 import { GoogleGenAI, Type } from '@google/genai';
 
-const ai = new GoogleGenAI({ apiKey: (import.meta as any).env.VITE_GEMINI_API_KEY || (process.env.GEMINI_API_KEY as string) });
+const apiKey = process.env.GEMINI_API_KEY || (import.meta as any).env?.VITE_GEMINI_API_KEY;
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 export function useSchedule() {
   const [view, setView] = useState<'home' | 'schedule'>('home');
@@ -18,8 +19,15 @@ export function useSchedule() {
 
   const [mobileTab, setMobileTab] = useState<'disciplines' | 'schedule'>('disciplines');
   const [searchQuery, setSearchQuery] = useState('');
+  const [detailsDiscipline, setDetailsDiscipline] = useState<Discipline | null>(null);
 
-  const periods = Array.from(new Set(disciplinesList.map(d => d.period))).sort((a, b) => (a as number) - (b as number)) as number[];
+  const periods = Array.from(new Set(disciplinesList.map(d => d.period))).sort((a, b) => {
+    const periodA = a as number;
+    const periodB = b as number;
+    if (periodA === 0) return 1;
+    if (periodB === 0) return -1;
+    return periodA - periodB;
+  }) as number[];
   
   const normalizeString = (str: string) => {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -47,6 +55,12 @@ export function useSchedule() {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    if (!ai) {
+      setConflictMsg("API key do Gemini não está configurada.");
+      setTimeout(() => setConflictMsg(null), 4000);
+      return;
+    }
+
     setIsProcessingPdf(true);
     
     try {
@@ -63,10 +77,10 @@ export function useSchedule() {
       const base64Data = await base64Promise;
 
       const response = await ai.models.generateContent({
-        model: "gemini-3.1-pro-preview",
+        model: "gemini-3.1-flash-lite",
         contents: [
           {
-            text: "Extraia todas as disciplinas deste PDF. Para cada disciplina, encontre o nome, o professor, o período e os horários das aulas. Mapeie os dias para 1 (Segunda) até 5 (Sexta). Mapeie os horários para uma das opções: 14:00 - 16:00, 16:00 - 18:00, 18:30 - 20:10 ou 20:10 - 21:50. Se um horário não bater exatamente, adapte para a opção mais próxima. Gere um ID único para cada disciplina."
+            text: "Extraia todas as disciplinas deste PDF. Para cada disciplina, encontre o nome, o professor, o período e os horários das aulas. Mapeie os dias para 1 (Segunda) até 5 (Sexta). Mapeie os horários para uma das opções: 14:00 - 16:00, 16:00 - 18:00, 18:30 - 20:10 ou 20:10 - 21:50. Se um horário não bater exatamente, adapte para a opção mais próxima. Gere um ID único para cada disciplina. Se o período não estiver claro ou for uma disciplina optativa, use 0 para o campo 'period'."
           },
           {
             inlineData: {
@@ -85,7 +99,7 @@ export function useSchedule() {
                 id: { type: Type.STRING },
                 name: { type: Type.STRING },
                 professor: { type: Type.STRING },
-                period: { type: Type.INTEGER },
+                period: { type: Type.INTEGER, description: "Use 0 for electives/optativas or if period is unknown." },
                 sessions: {
                   type: Type.ARRAY,
                   items: {
@@ -108,6 +122,7 @@ export function useSchedule() {
         const newDisciplines = JSON.parse(response.text) as Discipline[];
         const sanitizedDisciplines = newDisciplines.map(d => ({
           ...d,
+          period: (d.period === null || d.period === undefined || d.period < 0) ? 0 : d.period,
           sessions: d.sessions.filter(s => 
             [1, 2, 3, 4, 5].includes(s.day) && 
             TIMESLOTS.includes(s.time as TimeSlot)
@@ -118,8 +133,14 @@ export function useSchedule() {
         setGradeTitle(file.name.replace('.pdf', ''));
         setSchedule([]);
         if (sanitizedDisciplines.length > 0) {
-          const firstPeriod = Array.from(new Set(sanitizedDisciplines.map(d => d.period))).sort((a, b) => (a as number) - (b as number))[0] as number;
-          setSelectedPeriod(firstPeriod);
+          const availablePeriods = Array.from(new Set(sanitizedDisciplines.map(d => d.period))).sort((a, b) => {
+            const pA = a as number;
+            const pB = b as number;
+            if (pA === 0) return 1;
+            if (pB === 0) return -1;
+            return pA - pB;
+          });
+          setSelectedPeriod(availablePeriods[0] as number);
         }
         setView('schedule');
       }
@@ -170,6 +191,7 @@ export function useSchedule() {
   const isDisciplineScheduled = (id: string) => schedule.some(d => d.id === id);
 
   return {
+    hasApiKey: !!ai,
     view,
     setView,
     gradeTitle,
@@ -191,5 +213,7 @@ export function useSchedule() {
     toggleDiscipline,
     removeFromSchedule,
     isDisciplineScheduled,
+    detailsDiscipline,
+    setDetailsDiscipline,
   };
 }

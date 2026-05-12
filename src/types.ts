@@ -8,6 +8,7 @@ export interface Session {
 
 export interface Discipline {
   id: string;
+  code?: string;
   name: string;
   professor: string;
   period: number;
