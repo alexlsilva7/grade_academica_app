@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { bcc2026_1 } from '../data';
+import { bcc2026_1, eal2026_1 } from '../data';
 import { Discipline, TimeSlot } from '../types';
 import { TIMESLOTS } from '../constants';
 import { GoogleGenAI, Type } from '@google/genai';
@@ -42,9 +42,14 @@ export function useSchedule() {
       )
     : disciplinesList.filter(d => d.period === selectedPeriod);
 
-  const loadPredefinedGrade = () => {
-    setDisciplinesList(bcc2026_1);
-    setGradeTitle('BCC - Bacharelado em Ciência da Computação - Período 2026.1');
+  const loadPredefinedGrade = (type: 'bcc' | 'eal') => {
+    if (type === 'eal') {
+      setDisciplinesList(eal2026_1);
+      setGradeTitle('EAL - Engenharia de Alimentos - Período 2026.1');
+    } else {
+      setDisciplinesList(bcc2026_1);
+      setGradeTitle('BCC - Bacharelado em Ciência da Computação - Período 2026.1');
+    }
     setSchedule([]);
     setSelectedPeriod(1);
     setSearchQuery('');
@@ -80,7 +85,7 @@ export function useSchedule() {
         model: "gemini-3.1-flash-lite",
         contents: [
           {
-            text: "Extraia todas as disciplinas deste PDF. Para cada disciplina, encontre o nome, o professor, o período e os horários das aulas. Mapeie os dias para 1 (Segunda) até 5 (Sexta). Mapeie os horários para uma das opções: 14:00 - 16:00, 16:00 - 18:00, 18:30 - 20:10 ou 20:10 - 21:50. Se um horário não bater exatamente, adapte para a opção mais próxima. Gere um ID único para cada disciplina. Se o período não estiver claro ou for uma disciplina optativa, use 0 para o campo 'period'."
+            text: "Extraia todas as disciplinas deste PDF. Para cada disciplina, encontre o nome, o professor, o período e os horários das aulas. Mapeie os dias para 1 (Segunda) até 6 (Sábado). Mapeie os horários no formato HH:MM - HH:MM, por exemplo: '07:30 - 08:30', '13:00 - 14:00', '14:00 - 16:00', '16:00 - 18:00', '18:30 - 20:10' ou '20:10 - 21:50'. Se um horário não bater exatamente, adapte para a opção mais próxima. Gere um ID único para cada disciplina. Se o período não estiver claro, use 0."
           },
           {
             inlineData: {
@@ -105,8 +110,8 @@ export function useSchedule() {
                   items: {
                     type: Type.OBJECT,
                     properties: {
-                      day: { type: Type.INTEGER, description: "1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday" },
-                      time: { type: Type.STRING, description: "Must be exactly one of: '14:00 - 16:00', '16:00 - 18:00', '18:30 - 20:10', '20:10 - 21:50'" }
+                      day: { type: Type.INTEGER, description: "1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday" },
+                      time: { type: Type.STRING, description: "Format: HH:MM - HH:MM" }
                     },
                     required: ["day", "time"]
                   }
@@ -135,8 +140,7 @@ export function useSchedule() {
             ...d,
             period: (d.period === null || d.period === undefined || d.period < 0) ? 0 : d.period,
             sessions: d.sessions ? d.sessions.filter(s => 
-              [1, 2, 3, 4, 5].includes(s.day) && 
-              TIMESLOTS.includes(s.time as TimeSlot)
+              [1, 2, 3, 4, 5, 6].includes(s.day)
             ) : []
           }));
           

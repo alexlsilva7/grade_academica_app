@@ -1,10 +1,12 @@
+import { useMemo } from 'react';
 import { AlertCircle, X, Info } from 'lucide-react';
-import { Discipline } from '../types';
-import { DAYS, TIMESLOTS } from '../constants';
+import { Discipline, TimeSlot } from '../types';
+import { DAYS, TIMESLOTS as DEFAULT_TIMESLOTS } from '../constants';
 
 interface ScheduleGridProps {
   mobileTab: string;
   schedule: Discipline[];
+  disciplinesList: Discipline[];
   removeFromSchedule: (id: string) => void;
   onShowDetails?: (disc: Discipline) => void;
 }
@@ -12,9 +14,31 @@ interface ScheduleGridProps {
 export function ScheduleGrid({
   mobileTab,
   schedule,
+  disciplinesList,
   removeFromSchedule,
   onShowDetails
 }: ScheduleGridProps) {
+  
+  const timeSlots = useMemo(() => {
+    const times = new Set<TimeSlot>();
+    if (disciplinesList && disciplinesList.length > 0) {
+      disciplinesList.forEach(d => {
+        d.sessions.forEach(s => times.add(s.time));
+      });
+    } else {
+      DEFAULT_TIMESLOTS.forEach(t => times.add(t));
+    }
+    
+    // Sort logic
+    const parseTime = (t: string) => {
+      const parts = t.split(':');
+      if (parts.length >= 2) return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+      return 0;
+    };
+    
+    return Array.from(times).sort((a, b) => parseTime(a as string) - parseTime(b as string));
+  }, [disciplinesList]);
+
   return (
     <div className={`flex-1 flex col h-full overflow-hidden ${mobileTab === 'schedule' ? 'flex flex-col' : 'hidden md:flex flex-col'}`}>
       {/* Top bar */}
@@ -40,7 +64,7 @@ export function ScheduleGrid({
                 </tr>
               </thead>
               <tbody className="bg-slate-100 gap-px">
-                {TIMESLOTS.map((time, timeIdx) => (
+                {timeSlots.map((time, timeIdx) => (
                   <tr key={time} className="bg-white">
                     <td className="px-4 py-4 text-center text-xs font-bold text-slate-400 border-r border-b border-slate-200 whitespace-nowrap align-middle">
                       {time}

@@ -98,7 +98,7 @@ export function Sidebar({
                     : 'text-slate-500 bg-transparent hover:text-slate-700'
                 }`}
               >
-                {period === 0 ? 'Optativa' : `${period}º`}
+                {period === 0 ? 'OPTATIVAS' : `${period}º`}
               </button>
             ))}
           </div>

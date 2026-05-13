@@ -1,4 +1,7 @@
 import { Discipline } from './types';
+import ealData from './eal_data.json';
+
+export const eal2026_1: Discipline[] = ealData as Discipline[];
 
 export const bcc2026_1: Discipline[] = [
   // 1º período

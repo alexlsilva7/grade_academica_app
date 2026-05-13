@@ -6,6 +6,7 @@ export const DAYS: { id: DayOfWeek; name: string }[] = [
   { id: 3, name: 'Quarta' },
   { id: 4, name: 'Quinta' },
   { id: 5, name: 'Sexta' },
+  { id: 6, name: 'Sábado' },
 ];
 
 export const TIMESLOTS: TimeSlot[] = [

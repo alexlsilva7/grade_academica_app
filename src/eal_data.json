@@ -1,0 +1,1359 @@
+[
+  {
+    "id": "eal_1_0",
+    "name": "Cálculo I A",
+    "code": "EAL00024",
+    "professor": "-",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 1,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 3,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 3,
+        "time": "10:30 - 11:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_1_1",
+    "name": "Geom. Anal. B",
+    "code": "EAL00035",
+    "professor": "-",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 3,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 5,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 5,
+        "time": "10:30 - 11:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_1_2",
+    "name": "SOCIOL. ALIM. A",
+    "code": "EAL00049",
+    "professor": "-",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 4,
+        "time": "08:30 - 09:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_1_3",
+    "name": "QUÍM. GERAL A",
+    "code": "EAL00046",
+    "professor": "-",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 5,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 5,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 4,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 4,
+        "time": "10:30 - 11:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_1_4",
+    "name": "DESENHO TÉC. B",
+    "code": "EAL00028",
+    "professor": "-",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 2,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 2,
+        "time": "10:30 - 11:30"
+      },
+      {
+        "day": 2,
+        "time": "11:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_1_5",
+    "name": "INT. EAL B",
+    "code": "EAL00038",
+    "professor": "-",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 1,
+        "time": "10:30 - 11:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_2_6",
+    "name": "Meio Amb",
+    "code": "UAG00110",
+    "professor": "-",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 1,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 1,
+        "time": "15:00 - 16:00"
+      },
+      {
+        "day": 3,
+        "time": "15:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_2_7",
+    "name": "Cálculo II A",
+    "code": "EAL00025",
+    "professor": "-",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 4,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 2,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 4,
+        "time": "14:00 - 15:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_2_8",
+    "name": "Fisico Quimica A",
+    "code": "EAL00034",
+    "professor": "-",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 3,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 5,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 5,
+        "time": "17:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_2_9",
+    "name": "Quim. Org. I A",
+    "code": "EAL00047",
+    "professor": "-",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 5,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 5,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 4,
+        "time": "15:00 - 16:00"
+      },
+      {
+        "day": 5,
+        "time": "15:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_2_10",
+    "name": "Met. Cientif. A",
+    "code": "EAL00039",
+    "professor": "-",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "15:00 - 16:00"
+      },
+      {
+        "day": 2,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 2,
+        "time": "17:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_2_11",
+    "name": "Fís. Geral I",
+    "code": "FISC3005",
+    "professor": "-",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 3,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 1,
+        "time": "17:00 - 18:00"
+      },
+      {
+        "day": 3,
+        "time": "17:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_2_12",
+    "name": "Mat. Primas. ALim.",
+    "code": "EAL00037",
+    "professor": "-",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 4,
+        "time": "17:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_3_13",
+    "name": "Física Geral II",
+    "code": "FISC3003",
+    "professor": "-",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 4,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 2,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 4,
+        "time": "08:30 - 09:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_3_14",
+    "name": "Microb Geral A",
+    "code": "EAL00040",
+    "professor": "-",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 3,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 2,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 2,
+        "time": "10:30 - 11:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_3_15",
+    "name": "Quim. Org. II A",
+    "code": "EAL00048",
+    "professor": "-",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 1,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 4,
+        "time": "09:30 - 10:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_3_16",
+    "name": "Quim Analítica",
+    "code": "UAG00114",
+    "professor": "-",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 5,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 5,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 5,
+        "time": "10:30 - 11:30"
+      },
+      {
+        "day": 5,
+        "time": "11:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_3_17",
+    "name": "Est. Basica",
+    "code": "PRBE3004",
+    "professor": "-",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 3,
+        "time": "10:30 - 11:30"
+      },
+      {
+        "day": 2,
+        "time": "11:30 - 12:30"
+      },
+      {
+        "day": 3,
+        "time": "11:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_3_18",
+    "name": "Cálculo III A",
+    "code": "EAL00026",
+    "professor": "-",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "10:30 - 11:30"
+      },
+      {
+        "day": 4,
+        "time": "10:30 - 11:30"
+      },
+      {
+        "day": 1,
+        "time": "11:30 - 12:30"
+      },
+      {
+        "day": 4,
+        "time": "11:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_4_19",
+    "name": "Quím. Alim. A",
+    "code": "EAL00045",
+    "professor": "-",
+    "period": 4,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 1,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 1,
+        "time": "15:00 - 16:00"
+      },
+      {
+        "day": 3,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 3,
+        "time": "17:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_4_20",
+    "name": "Termodinâmica A",
+    "code": "EAL00055",
+    "professor": "-",
+    "period": 4,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 3,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 2,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 2,
+        "time": "15:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_4_21",
+    "name": "INTRODUÇÃO À PROGRAMAÇÃO I",
+    "code": "UAG00098",
+    "professor": "-",
+    "period": 4,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 5,
+        "time": "15:00 - 16:00"
+      },
+      {
+        "day": 5,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 5,
+        "time": "17:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_4_22",
+    "name": "Cálculo IV",
+    "code": "EAL00027",
+    "professor": "-",
+    "period": 4,
+    "sessions": [
+      {
+        "day": 5,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 3,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 5,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 3,
+        "time": "15:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_4_23",
+    "name": "Bioq. Geral",
+    "code": "EAL00074",
+    "professor": "-",
+    "period": 4,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 4,
+        "time": "15:00 - 16:00"
+      },
+      {
+        "day": 1,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 1,
+        "time": "17:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_4_24",
+    "name": "Física Geral 3 A",
+    "code": "EAL00033",
+    "professor": "-",
+    "period": 4,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 4,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 2,
+        "time": "17:00 - 18:00"
+      },
+      {
+        "day": 4,
+        "time": "17:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_5_25",
+    "name": "Bioq. Alim. A",
+    "code": "EAL00023",
+    "professor": "-",
+    "period": 5,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 1,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 1,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 2,
+        "time": "11:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_5_26",
+    "name": "Micro. Alim.",
+    "code": "UAG00103",
+    "professor": "-",
+    "period": 5,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 3,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 3,
+        "time": "10:30 - 11:30"
+      },
+      {
+        "day": 3,
+        "time": "11:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_5_27",
+    "name": "FT 1 A",
+    "code": "EAL00031",
+    "professor": "-",
+    "period": 5,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 3,
+        "time": "08:30 - 09:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_5_28",
+    "name": "Calc Numer",
+    "code": "EAL00001",
+    "professor": "-",
+    "period": 5,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 5,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 5,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 5,
+        "time": "09:30 - 10:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_5_29",
+    "name": "Est. Exper",
+    "code": "UAG00104",
+    "professor": "-",
+    "period": 5,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 2,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 2,
+        "time": "10:30 - 11:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_5_30",
+    "name": "Análise Alim.",
+    "code": "N/A",
+    "professor": "-",
+    "period": 5,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 4,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 4,
+        "time": "10:30 - 11:30"
+      },
+      {
+        "day": 4,
+        "time": "11:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_5_31",
+    "name": "Adm e econ",
+    "code": "EAL00036",
+    "professor": "-",
+    "period": 5,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "10:30 - 11:30"
+      },
+      {
+        "day": 5,
+        "time": "10:30 - 11:30"
+      },
+      {
+        "day": 1,
+        "time": "11:30 - 12:30"
+      },
+      {
+        "day": 5,
+        "time": "11:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_6_32",
+    "name": "Higiene",
+    "code": "UAG00161",
+    "professor": "-",
+    "period": 6,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 2,
+        "time": "15:00 - 16:00"
+      },
+      {
+        "day": 2,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 2,
+        "time": "17:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_6_33",
+    "name": "Nutrição A",
+    "code": "EAL00041",
+    "professor": "-",
+    "period": 6,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 1,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 2,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 1,
+        "time": "15:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_6_34",
+    "name": "Análise Sens",
+    "code": "EAL00075",
+    "professor": "-",
+    "period": 6,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 3,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 1,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 1,
+        "time": "17:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_6_35",
+    "name": "OP 1",
+    "code": "EAL00042",
+    "professor": "-",
+    "period": 6,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 4,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 3,
+        "time": "15:00 - 16:00"
+      },
+      {
+        "day": 4,
+        "time": "15:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_6_36",
+    "name": "Tec. Cons. B",
+    "code": "EAL00054",
+    "professor": "-",
+    "period": 6,
+    "sessions": [
+      {
+        "day": 5,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 5,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 5,
+        "time": "15:00 - 16:00"
+      },
+      {
+        "day": 5,
+        "time": "16:00 - 17:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_6_37",
+    "name": "FT 2 A",
+    "code": "EAL00032",
+    "professor": "-",
+    "period": 6,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 4,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 3,
+        "time": "17:00 - 18:00"
+      },
+      {
+        "day": 4,
+        "time": "17:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_7_38",
+    "name": "Cont. Qual.",
+    "code": "UAG00162",
+    "professor": "-",
+    "period": 7,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 3,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 1,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 3,
+        "time": "08:30 - 09:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_7_39",
+    "name": "Tec. Leite",
+    "code": "UAG00121",
+    "professor": "-",
+    "period": 7,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 2,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 2,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 2,
+        "time": "10:30 - 11:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_7_40",
+    "name": "Empreendedorismo",
+    "code": "EAL00064",
+    "professor": "-",
+    "period": 7,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 4,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 4,
+        "time": "09:30 - 10:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_7_41",
+    "name": "Tec. Carnes",
+    "code": "EAL00051",
+    "professor": "-",
+    "period": 7,
+    "sessions": [
+      {
+        "day": 5,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 5,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 5,
+        "time": "10:30 - 11:30"
+      },
+      {
+        "day": 5,
+        "time": "11:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_7_42",
+    "name": "Tec. Bebidas",
+    "code": "UAG00124",
+    "professor": "-",
+    "period": 7,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 1,
+        "time": "10:30 - 11:30"
+      },
+      {
+        "day": 1,
+        "time": "11:30 - 12:30"
+      },
+      {
+        "day": 2,
+        "time": "11:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_7_43",
+    "name": "OP2",
+    "code": "EAL00043",
+    "professor": "-",
+    "period": 7,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 3,
+        "time": "10:30 - 11:30"
+      },
+      {
+        "day": 4,
+        "time": "10:30 - 11:30"
+      },
+      {
+        "day": 3,
+        "time": "11:30 - 12:30"
+      },
+      {
+        "day": 4,
+        "time": "11:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_8_44",
+    "name": "Refrigeração",
+    "code": "UAG00119",
+    "professor": "-",
+    "period": 8,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 1,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 2,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 2,
+        "time": "15:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_8_45",
+    "name": "Tec. Cereais",
+    "code": "EAL00052",
+    "professor": "-",
+    "period": 8,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 1,
+        "time": "15:00 - 16:00"
+      },
+      {
+        "day": 1,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 1,
+        "time": "17:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_8_46",
+    "name": "Embalagem",
+    "code": "EAL00029",
+    "professor": "-",
+    "period": 8,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 3,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 3,
+        "time": "15:00 - 16:00"
+      },
+      {
+        "day": 2,
+        "time": "16:00 - 17:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_8_47",
+    "name": "Tec. Frutas",
+    "code": "EAL00053",
+    "professor": "-",
+    "period": 8,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 4,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 4,
+        "time": "15:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_8_48",
+    "name": "Inst. Controle Proc",
+    "code": "EAL00065",
+    "professor": "-",
+    "period": 8,
+    "sessions": [
+      {
+        "day": 5,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 5,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 5,
+        "time": "15:00 - 16:00"
+      },
+      {
+        "day": 4,
+        "time": "16:00 - 17:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_8_49",
+    "name": "Proj. Ind. A",
+    "code": "EAL00044",
+    "professor": "-",
+    "period": 8,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 5,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 3,
+        "time": "17:00 - 18:00"
+      },
+      {
+        "day": 5,
+        "time": "17:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_9_50",
+    "name": "INSTAL INDUST.",
+    "code": "AGRI3016",
+    "professor": "-",
+    "period": 9,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "08:30 - 09:30"
+      },
+      {
+        "day": 4,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 4,
+        "time": "10:30 - 11:30"
+      },
+      {
+        "day": 4,
+        "time": "11:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_9_51",
+    "name": "Eng. Seg B",
+    "code": "EAL00030",
+    "professor": "-",
+    "period": 9,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 3,
+        "time": "10:30 - 11:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_10_52",
+    "name": "TCC 2",
+    "code": "UAG00134",
+    "professor": "-",
+    "period": 10,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "18:30 - 19:20"
+      },
+      {
+        "day": 3,
+        "time": "19:20 - 20:10"
+      }
+    ]
+  },
+  {
+    "id": "eal_10_53",
+    "name": "ESO",
+    "code": "ALIM3024",
+    "professor": "-",
+    "period": 10,
+    "sessions": [
+      {
+        "day": 5,
+        "time": "18:30 - 19:20"
+      },
+      {
+        "day": 5,
+        "time": "19:20 - 20:10"
+      },
+      {
+        "day": 5,
+        "time": "20:10 - 21:00"
+      },
+      {
+        "day": 5,
+        "time": "21:00 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "eal_11_54",
+    "name": "Tratamento de Efluentes",
+    "code": "UAG00127",
+    "professor": "-",
+    "period": 0,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 5,
+        "time": "09:30 - 10:30"
+      },
+      {
+        "day": 3,
+        "time": "10:30 - 11:30"
+      },
+      {
+        "day": 5,
+        "time": "10:30 - 11:30"
+      }
+    ]
+  },
+  {
+    "id": "eal_11_55",
+    "name": "ALIMENTOS FUNCIONAIS",
+    "code": "EAL00013",
+    "professor": "-",
+    "period": 0,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "14:00 - 15:00"
+      },
+      {
+        "day": 3,
+        "time": "15:00 - 16:00"
+      },
+      {
+        "day": 3,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 3,
+        "time": "17:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "eal_11_56",
+    "name": "PROJETO DE PESQUISA PARA TCC",
+    "code": "EAL00011",
+    "professor": "-",
+    "period": 0,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 4,
+        "time": "17:00 - 18:00"
+      }
+    ]
+  }
+]

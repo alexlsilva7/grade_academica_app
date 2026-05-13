@@ -2,7 +2,7 @@ import React from 'react';
 import { BookOpen, FileText, Upload, Plus } from 'lucide-react';
 
 interface HomeViewProps {
-  loadPredefinedGrade: () => void;
+  loadPredefinedGrade: (type: 'bcc' | 'eal') => void;
   handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   isProcessingPdf: boolean;
   hasApiKey: boolean;
@@ -29,15 +29,27 @@ export function HomeView({ loadPredefinedGrade, handleFileUpload, isProcessingPd
             <h2 className="text-lg font-semibold text-slate-800 mb-2">Grades Salvas</h2>
             <p className="text-sm text-slate-500 mb-6 flex-1">Comece com uma grade de disciplinas pré-cadastrada no sistema.</p>
             
-            <button 
-              onClick={loadPredefinedGrade}
-              className="w-full p-4 border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 rounded-xl transition-all text-left group"
-            >
-              <div className="font-semibold text-slate-700 group-hover:text-indigo-700 text-sm">
-                BCC - Ciência da Computação
-              </div>
-              <div className="text-xs text-slate-400 mt-1">Período 2026.1</div>
-            </button>
+            <div className="w-full space-y-3">
+              <button 
+                onClick={() => loadPredefinedGrade('bcc')}
+                className="w-full p-4 border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 rounded-xl transition-all text-left group"
+              >
+                <div className="font-semibold text-slate-700 group-hover:text-indigo-700 text-sm">
+                  BCC - Ciência da Computação
+                </div>
+                <div className="text-xs text-slate-400 mt-1">Período 2026.1</div>
+              </button>
+              
+              <button 
+                onClick={() => loadPredefinedGrade('eal')}
+                className="w-full p-4 border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 rounded-xl transition-all text-left group"
+              >
+                <div className="font-semibold text-slate-700 group-hover:text-indigo-700 text-sm">
+                  EAL - Engenharia de Alimentos
+                </div>
+                <div className="text-xs text-slate-400 mt-1">Período 2026.1</div>
+              </button>
+            </div>
           </div>
 
           {/* Import PDF */}
