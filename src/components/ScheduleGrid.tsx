@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { AlertCircle, X, Info } from 'lucide-react';
 import { Discipline, TimeSlot } from '../types';
 import { DAYS, TIMESLOTS as DEFAULT_TIMESLOTS } from '../constants';
+import { hasDisciplineDetails } from '../utils/detailsHelper';
 
 interface ScheduleGridProps {
   mobileTab: string;
@@ -70,16 +71,18 @@ export function ScheduleGrid({
                     </div>
                   </div>
                   <div className="absolute top-2 right-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity gap-1">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (onShowDetails) onShowDetails(disc);
-                      }}
-                      className="p-1 hover:bg-amber-100 rounded text-amber-700 transition-all"
-                      title="Detalhes"
-                    >
-                      <Info className="w-4 h-4" />
-                    </button>
+                    {hasDisciplineDetails(disc) && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (onShowDetails) onShowDetails(disc);
+                        }}
+                        className="p-1 hover:bg-amber-100 rounded text-amber-700 transition-all"
+                        title="Detalhes"
+                      >
+                        <Info className="w-4 h-4" />
+                      </button>
+                    )}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -137,16 +140,18 @@ export function ScheduleGrid({
                                 </div>
                               </div>
                               <div className="absolute top-1 right-1 flex items-center opacity-0 group-hover:opacity-100 transition-opacity gap-0.5">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (onShowDetails) onShowDetails(scheduledDisc);
-                                  }}
-                                  className="p-0.5 hover:bg-indigo-200 rounded text-indigo-800 transition-all"
-                                  title="Detalhes"
-                                >
-                                  <Info className="w-3.5 h-3.5" />
-                                </button>
+                                {hasDisciplineDetails(scheduledDisc) && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (onShowDetails) onShowDetails(scheduledDisc);
+                                    }}
+                                    className="p-0.5 hover:bg-indigo-200 rounded text-indigo-800 transition-all"
+                                    title="Detalhes"
+                                  >
+                                    <Info className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();

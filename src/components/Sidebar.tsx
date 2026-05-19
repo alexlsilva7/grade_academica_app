@@ -2,6 +2,7 @@ import React, { RefObject } from 'react';
 import { ArrowLeft, Upload, Search, X, CheckCircle2, Info, CheckCircle, Circle, Square, CheckSquare } from 'lucide-react';
 import { Discipline } from '../types';
 import { DAYS } from '../constants';
+import { hasDisciplineDetails } from '../utils/detailsHelper';
 
 interface SidebarProps {
   mobileTab: string;
@@ -189,16 +190,18 @@ export function Sidebar({
                     >
                       <CheckSquare className="w-4 h-4" />
                     </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onShowDetails(disc);
-                      }}
-                      className="p-0.5 text-slate-400 hover:text-indigo-600 rounded transition-colors"
-                      title="Ver Detalhes"
-                    >
-                      <Info className="w-4 h-4" />
-                    </button>
+                    {hasDisciplineDetails(disc) && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onShowDetails(disc);
+                        }}
+                        className="p-0.5 text-slate-400 hover:text-indigo-600 rounded transition-colors"
+                        title="Ver Detalhes"
+                      >
+                        <Info className="w-4 h-4" />
+                      </button>
+                    )}
                     {scheduled ? (
                       <div className="w-4 h-4 bg-indigo-600 rounded-full flex items-center justify-center shadow-sm shadow-indigo-200">
                         <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />
