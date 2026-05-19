@@ -39,14 +39,64 @@ export function ScheduleGrid({
     return Array.from(times).sort((a, b) => parseTime(a as string) - parseTime(b as string));
   }, [disciplinesList]);
 
+  const undeterminedDisciplines = useMemo(() => {
+    return schedule.filter(d => d.sessions.length === 0);
+  }, [schedule]);
+
   return (
-    <div className={`flex-1 flex col h-full overflow-hidden ${mobileTab === 'schedule' ? 'flex flex-col' : 'hidden md:flex flex-col'}`}>
+    <div className={`flex-1 flex flex-col h-full overflow-hidden ${mobileTab === 'schedule' ? 'flex flex-col' : 'hidden md:flex flex-col'}`}>
       {/* Top bar */}
       <div className="h-16 border-b border-slate-200 bg-white px-4 md:px-6 flex items-center justify-between flex-shrink-0">
         <h2 className="text-lg font-semibold text-slate-800">Sua Grade</h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col pb-24 md:pb-6">
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col pb-24 md:pb-6 gap-6">
+        {/* Undetermined Schedule Disciplines */}
+        {undeterminedDisciplines.length > 0 && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 md:p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertCircle className="w-5 h-5 text-amber-600" />
+              <h3 className="text-sm font-bold text-amber-900 uppercase tracking-wide">Sem Horário Definido</h3>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {undeterminedDisciplines.map(disc => (
+                <div key={disc.id} className="bg-white border border-amber-200 rounded-lg p-3 relative group shadow-sm flex flex-col justify-between hover:bg-amber-50/50 transition-colors cursor-pointer">
+                  <div>
+                    <div className="text-xs font-bold text-slate-800 leading-tight pr-10" title={disc.name}>
+                      {disc.name}
+                    </div>
+                    <div className="text-[10px] font-medium text-slate-500 mt-1 truncate">
+                      {disc.professor}
+                    </div>
+                  </div>
+                  <div className="absolute top-2 right-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity gap-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onShowDetails) onShowDetails(disc);
+                      }}
+                      className="p-1 hover:bg-amber-100 rounded text-amber-700 transition-all"
+                      title="Detalhes"
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFromSchedule(disc.id);
+                      }}
+                      className="p-1 hover:bg-amber-100 rounded text-amber-700 transition-all"
+                      title="Remover"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Schedule Grid */}
         <div className="bg-slate-200 border border-slate-200 rounded-xl overflow-hidden shadow-sm flex-1 flex flex-col min-h-0">
           <div className="overflow-x-auto flex-1 flex flex-col">

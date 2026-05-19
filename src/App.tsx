@@ -17,6 +17,9 @@ export default function App() {
           handleFileUpload={scheduleProps.handleFileUpload}
           isProcessingPdf={scheduleProps.isProcessingPdf}
           hasApiKey={scheduleProps.hasApiKey}
+          savedGrades={scheduleProps.savedGrades}
+          loadSavedGrade={scheduleProps.loadSavedGrade}
+          removeSavedGrade={scheduleProps.removeSavedGrade}
         />
       ) : (
         <div className="h-[100dvh] bg-slate-50 text-slate-800 font-sans flex flex-col md:flex-row overflow-hidden animate-in fade-in duration-500">
@@ -38,6 +41,8 @@ export default function App() {
             toggleDiscipline={scheduleProps.toggleDiscipline}
             onShowDetails={scheduleProps.setDetailsDiscipline}
             hasApiKey={scheduleProps.hasApiKey}
+            completedDisciplines={scheduleProps.completedDisciplines}
+            toggleCompleted={scheduleProps.toggleCompleted}
           />
           <ScheduleGrid 
             mobileTab={scheduleProps.mobileTab}
@@ -51,6 +56,8 @@ export default function App() {
             <DisciplineDetailsModal 
               discipline={scheduleProps.detailsDiscipline}
               onClose={() => scheduleProps.setDetailsDiscipline(null)}
+              completedDisciplines={scheduleProps.completedDisciplines}
+              toggleCompleted={scheduleProps.toggleCompleted}
             />
           )}
 

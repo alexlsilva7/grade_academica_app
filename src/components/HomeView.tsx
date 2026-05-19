@@ -1,17 +1,29 @@
 import React from 'react';
-import { BookOpen, FileText, Upload, Plus } from 'lucide-react';
+import { BookOpen, FileText, Upload, Plus, Trash2, Clock } from 'lucide-react';
+import { SavedGrade } from '../hooks/useSchedule';
 
 interface HomeViewProps {
   loadPredefinedGrade: (type: 'bcc' | 'eal') => void;
   handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   isProcessingPdf: boolean;
   hasApiKey: boolean;
+  savedGrades: SavedGrade[];
+  loadSavedGrade: (grade: SavedGrade) => void;
+  removeSavedGrade: (id: string) => void;
 }
 
-export function HomeView({ loadPredefinedGrade, handleFileUpload, isProcessingPdf, hasApiKey }: HomeViewProps) {
+export function HomeView({ 
+  loadPredefinedGrade, 
+  handleFileUpload, 
+  isProcessingPdf, 
+  hasApiKey,
+  savedGrades,
+  loadSavedGrade,
+  removeSavedGrade 
+}: HomeViewProps) {
   return (
-    <div className="min-h-[100dvh] bg-slate-50 text-slate-800 font-sans flex flex-col items-center justify-center p-6 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
-      <div className="w-full max-w-3xl space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+    <div className="min-h-[100dvh] bg-slate-50 text-slate-800 font-sans flex flex-col items-center p-6 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] overflow-y-auto">
+      <div className="w-full max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 py-12">
         <div className="text-center space-y-4">
           <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold text-3xl mx-auto shadow-lg shadow-indigo-200">
             G
@@ -20,13 +32,54 @@ export function HomeView({ loadPredefinedGrade, handleFileUpload, isProcessingPd
           <p className="text-slate-500 text-lg">Monte seu horário perfeito de forma simples e visual.</p>
         </div>
 
-        <div className={`grid gap-6 mt-12 w-full mx-auto ${hasApiKey ? 'md:grid-cols-2 max-w-2xl' : 'max-w-md'}`}>
-          {/* Saved Grades */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col items-start text-left">
+        <div className="grid gap-6 mt-12 w-full mx-auto md:grid-cols-2 max-w-4xl">
+          {/* Imported/Saved Grades - Only show if there are any */}
+          {savedGrades.length > 0 && (
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col items-start text-left md:col-span-2">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-800">Suas Grades Importadas</h2>
+                  <p className="text-sm text-slate-500">Grades que você importou e estão salvas no seu navegador.</p>
+                </div>
+              </div>
+              
+              <div className="w-full grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                {savedGrades.map(grade => (
+                  <div key={grade.id} className="relative group flex items-stretch">
+                    <button 
+                      onClick={() => loadSavedGrade(grade)}
+                      className="flex-1 p-4 border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 rounded-xl transition-all text-left group overflow-hidden min-w-0"
+                    >
+                      <div className="font-semibold text-slate-700 group-hover:text-emerald-700 text-sm truncate w-full pr-8" title={grade.title}>
+                        {grade.title}
+                      </div>
+                      <div className="text-xs text-slate-400 mt-1">{grade.disciplines.length} disciplinas</div>
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeSavedGrade(grade.id);
+                      }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                      title="Excluir Grade"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Predefined Grades */}
+          <div className={`bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col items-start text-left h-full ${!hasApiKey && savedGrades.length === 0 ? 'col-span-2 max-w-md mx-auto w-full' : ''}`}>
             <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-4">
               <BookOpen className="w-5 h-5" />
             </div>
-            <h2 className="text-lg font-semibold text-slate-800 mb-2">Grades Salvas</h2>
+            <h2 className="text-lg font-semibold text-slate-800 mb-2">Grades Pré-cadastradas</h2>
             <p className="text-sm text-slate-500 mb-6 flex-1">Comece com uma grade de disciplinas pré-cadastrada no sistema.</p>
             
             <div className="w-full space-y-3">

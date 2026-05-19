@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Book, Clock, AlertCircle, Link, FileText } from 'lucide-react';
+import { X, Book, Clock, AlertCircle, Link, FileText, CheckCircle2, Circle } from 'lucide-react';
 import { Discipline } from '../types';
 import bccData from '../bcc_dados.json';
 import conteudosData from '../conteudos.json';
@@ -7,9 +7,16 @@ import conteudosData from '../conteudos.json';
 interface DisciplineDetailsModalProps {
   discipline: Discipline;
   onClose: () => void;
+  completedDisciplines: string[];
+  toggleCompleted: (id: string) => void;
 }
 
-export function DisciplineDetailsModal({ discipline, onClose }: DisciplineDetailsModalProps) {
+export function DisciplineDetailsModal({ 
+  discipline, 
+  onClose,
+  completedDisciplines,
+  toggleCompleted
+}: DisciplineDetailsModalProps) {
   // Find subject details in JSON by code
   const subjectDetails = discipline.code 
     ? bccData.subjects.find(s => s.code === discipline.code) 
@@ -33,6 +40,7 @@ export function DisciplineDetailsModal({ discipline, onClose }: DisciplineDetail
   );
 
   const displayCode = discipline.code || subjectDetails?.code || finalConteudoDetails?.codigo;
+  const discIdentifier = displayCode || discipline.id;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
@@ -219,7 +227,28 @@ export function DisciplineDetailsModal({ discipline, onClose }: DisciplineDetail
         </div>
         
         {/* Footer */}
-        <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end shrink-0">
+        <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-between items-center shrink-0">
+          <button
+            onClick={() => toggleCompleted(discIdentifier)}
+            className={`flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors border ${
+              completedDisciplines.includes(discIdentifier)
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            {completedDisciplines.includes(discIdentifier) ? (
+              <>
+                <CheckCircle2 className="w-4 h-4 mr-2" />
+                Concluída
+              </>
+            ) : (
+              <>
+                <Circle className="w-4 h-4 mr-2 text-slate-400" />
+                Marcar como concluída
+              </>
+            )}
+          </button>
+          
           <button 
             onClick={onClose}
             className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"

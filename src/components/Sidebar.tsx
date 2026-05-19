@@ -1,5 +1,5 @@
 import React, { RefObject } from 'react';
-import { ArrowLeft, Upload, Search, X, CheckCircle2, Info } from 'lucide-react';
+import { ArrowLeft, Upload, Search, X, CheckCircle2, Info, CheckCircle, Circle, Square, CheckSquare } from 'lucide-react';
 import { Discipline } from '../types';
 import { DAYS } from '../constants';
 
@@ -21,6 +21,8 @@ interface SidebarProps {
   toggleDiscipline: (disc: Discipline) => void;
   onShowDetails: (disc: Discipline) => void;
   hasApiKey: boolean;
+  completedDisciplines: string[];
+  toggleCompleted: (id: string) => void;
 }
 
 export function Sidebar({
@@ -40,7 +42,9 @@ export function Sidebar({
   isDisciplineScheduled,
   toggleDiscipline,
   onShowDetails,
-  hasApiKey
+  hasApiKey,
+  completedDisciplines,
+  toggleCompleted
 }: SidebarProps) {
   return (
     <div className={`w-full md:w-80 bg-white border-r border-slate-200 flex-col h-full overflow-hidden ${mobileTab === 'disciplines' ? 'flex' : 'hidden md:flex'}`}>
@@ -149,6 +153,8 @@ export function Sidebar({
         ) : (
           displayedDisciplines.map(disc => {
             const scheduled = isDisciplineScheduled(disc.id);
+            const discIdentifier = disc.code || disc.id;
+            const isCompleted = completedDisciplines.includes(discIdentifier);
             return (
               <div
                 key={disc.id}
@@ -156,14 +162,33 @@ export function Sidebar({
                 className={`p-3 border rounded-lg cursor-pointer transition-colors ${
                   scheduled
                     ? 'bg-indigo-50 border-indigo-200'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
+                    : isCompleted
+                      ? 'bg-emerald-50/50 border-emerald-200/50 opacity-80 hover:opacity-100 hover:border-emerald-300'
+                      : 'border-slate-200 bg-white hover:border-slate-300'
                 }`}
               >
                 <div className="flex justify-between items-start">
-                  <h4 className={`text-sm ${scheduled ? 'font-semibold text-indigo-900' : 'font-medium text-slate-700'}`}>
-                    {disc.name}
-                  </h4>
-                  <div className="flex gap-2 items-center ml-2 shrink-0">
+                  <div className="flex-1 pr-2">
+                    <h4 className={`text-sm ${scheduled ? 'font-semibold text-indigo-900' : isCompleted ? 'font-medium text-emerald-800 line-through decoration-emerald-300' : 'font-medium text-slate-700'}`}>
+                      {disc.name}
+                    </h4>
+                    {isCompleted && (
+                      <span className="inline-flex items-center text-[10px] uppercase font-bold text-emerald-600 mt-1">
+                        <CheckCircle className="w-3 h-3 mr-1" /> Concluída
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-2 items-center shrink-0">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleCompleted(discIdentifier);
+                      }}
+                      className={`p-0.5 rounded transition-colors ${isCompleted ? 'text-emerald-600 hover:text-emerald-700' : 'text-slate-300 hover:text-emerald-500'}`}
+                      title={isCompleted ? "Remover de concluídas" : "Marcar como concluída"}
+                    >
+                      <CheckSquare className="w-4 h-4" />
+                    </button>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -179,20 +204,20 @@ export function Sidebar({
                         <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />
                       </div>
                     ) : (
-                      <div className="w-4 h-4 rounded-full border border-slate-300 bg-slate-50" />
+                      <div className={`w-4 h-4 rounded-full border ${isCompleted ? 'border-emerald-300 bg-emerald-100/50' : 'border-slate-300 bg-slate-50'}`} />
                     )}
                   </div>
                 </div>
-                <div className={`text-xs mt-1 ${scheduled ? 'text-indigo-700' : 'text-slate-500'}`}>
+                <div className={`text-xs mt-1 ${scheduled ? 'text-indigo-700' : isCompleted ? 'text-emerald-700/70' : 'text-slate-500'}`}>
                   {disc.professor}
                 </div>
-                <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                   <span className={`inline-flex items-center text-[9px] uppercase font-black px-1.5 py-0.5 rounded shadow-sm ${scheduled ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-white'}`}>
+                <div className={`mt-2 flex flex-wrap items-center gap-1.5 ${isCompleted && !scheduled ? 'opacity-70' : ''}`}>
+                   <span className={`inline-flex items-center text-[9px] uppercase font-black px-1.5 py-0.5 rounded shadow-sm ${scheduled ? 'bg-indigo-600 text-white' : isCompleted ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-white'}`}>
                     {disc.period === 0 ? 'Opt' : `${disc.period}º`}
                   </span>
-                  <div className="h-3 w-[1px] bg-slate-300" />
+                  <div className={`h-3 w-[1px] ${isCompleted ? 'bg-emerald-200' : 'bg-slate-300'}`} />
                   {disc.sessions.map((session, i) => (
-                    <span key={i} className={`inline-flex items-center text-[9px] uppercase font-bold px-1.5 py-0.5 rounded ${scheduled ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-500'}`}>
+                    <span key={i} className={`inline-flex items-center text-[9px] uppercase font-bold px-1.5 py-0.5 rounded ${scheduled ? 'bg-indigo-100 text-indigo-800' : isCompleted ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
                       {DAYS.find(d => d.id === session.day)?.name.substring(0, 3)} {session.time}
                     </span>
                   ))}

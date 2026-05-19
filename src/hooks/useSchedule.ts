@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { bcc2026_1, eal2026_1 } from '../data';
 import { Discipline, TimeSlot } from '../types';
 import { TIMESLOTS } from '../constants';
@@ -6,6 +6,12 @@ import { GoogleGenAI, Type } from '@google/genai';
 
 const apiKey = process.env.GEMINI_API_KEY || (import.meta as any).env?.VITE_GEMINI_API_KEY;
 const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+
+export interface SavedGrade {
+  id: string;
+  title: string;
+  disciplines: Discipline[];
+}
 
 export function useSchedule() {
   const [view, setView] = useState<'home' | 'schedule'>('home');
@@ -20,6 +26,71 @@ export function useSchedule() {
   const [mobileTab, setMobileTab] = useState<'disciplines' | 'schedule'>('disciplines');
   const [searchQuery, setSearchQuery] = useState('');
   const [detailsDiscipline, setDetailsDiscipline] = useState<Discipline | null>(null);
+
+  const [savedGrades, setSavedGrades] = useState<SavedGrade[]>([]);
+  const [completedDisciplines, setCompletedDisciplines] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('savedGrades');
+      if (stored) {
+        setSavedGrades(JSON.parse(stored));
+      }
+      const storedCompleted = localStorage.getItem('completedDisciplines');
+      if (storedCompleted) {
+        setCompletedDisciplines(JSON.parse(storedCompleted));
+      }
+    } catch (e) {
+      console.error('Failed to load from localStorage', e);
+    }
+  }, []);
+
+  const toggleCompleted = (disciplineId: string) => {
+    setCompletedDisciplines(prev => {
+      const isCompleted = prev.includes(disciplineId);
+      const updated = isCompleted ? prev.filter(id => id !== disciplineId) : [...prev, disciplineId];
+      localStorage.setItem('completedDisciplines', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const saveGradeToLocal = (title: string, disciplines: Discipline[]) => {
+    try {
+      const newGrade: SavedGrade = {
+        id: Date.now().toString(),
+        title,
+        disciplines
+      };
+      setSavedGrades(prev => {
+        const updated = [...prev, newGrade];
+        localStorage.setItem('savedGrades', JSON.stringify(updated));
+        return updated;
+      });
+    } catch (e) {
+      console.error('Failed to save grade to localStorage', e);
+    }
+  };
+
+  const removeSavedGrade = (id: string) => {
+    try {
+      setSavedGrades(prev => {
+        const updated = prev.filter(g => g.id !== id);
+        localStorage.setItem('savedGrades', JSON.stringify(updated));
+        return updated;
+      });
+    } catch (e) {
+      console.error('Failed to remove grade from localStorage', e);
+    }
+  };
+
+  const loadSavedGrade = (grade: SavedGrade) => {
+    setDisciplinesList(grade.disciplines);
+    setGradeTitle(grade.title);
+    setSchedule([]);
+    setSelectedPeriod(1);
+    setSearchQuery('');
+    setView('schedule');
+  };
 
   const periods = Array.from(new Set(disciplinesList.map(d => d.period))).sort((a, b) => {
     const periodA = a as number;
@@ -145,7 +216,8 @@ export function useSchedule() {
           }));
           
           setDisciplinesList(sanitizedDisciplines);
-          setGradeTitle(file.name.replace('.pdf', ''));
+          const newTitle = file.name.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
+          setGradeTitle(newTitle);
           setSchedule([]);
           if (sanitizedDisciplines.length > 0) {
             const availablePeriods = Array.from(new Set(sanitizedDisciplines.map(d => d.period))).sort((a, b) => {
@@ -158,6 +230,7 @@ export function useSchedule() {
             setSelectedPeriod(availablePeriods[0] as number);
           }
           setView('schedule');
+          saveGradeToLocal(newTitle, sanitizedDisciplines);
         } catch (parseError) {
           console.error("Parse error:", parseError, textResponse);
           setConflictMsg("O PDF não contém uma grade válida ou o formato não foi reconhecido.");
@@ -238,5 +311,10 @@ export function useSchedule() {
     isDisciplineScheduled,
     detailsDiscipline,
     setDetailsDiscipline,
+    savedGrades,
+    loadSavedGrade,
+    removeSavedGrade,
+    completedDisciplines,
+    toggleCompleted,
   };
 }
