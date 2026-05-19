@@ -9,14 +9,18 @@ interface DisciplineDetailsModalProps {
   onClose: () => void;
   completedDisciplines: string[];
   toggleCompleted: (id: string) => void;
+  getDisciplineConflictInstance: (disc: Discipline) => { withName: string } | null;
 }
 
 export function DisciplineDetailsModal({ 
   discipline, 
   onClose,
   completedDisciplines,
-  toggleCompleted
+  toggleCompleted,
+  getDisciplineConflictInstance
 }: DisciplineDetailsModalProps) {
+  const conflict = getDisciplineConflictInstance(discipline);
+
   // Find subject details in JSON by code
   const subjectDetails = discipline.code 
     ? bccData.subjects.find(s => s.code === discipline.code) 
@@ -68,6 +72,14 @@ export function DisciplineDetailsModal({
 
         {/* Content */}
         <div className="p-5 overflow-y-auto space-y-6 flex-1">
+          {conflict && (
+            <div className="bg-amber-50 border border-amber-200 text-amber-900 text-xs p-3.5 rounded-lg flex items-start gap-2.5 shadow-sm">
+              <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-bold">Conflito de Horário!</span> Esta disciplina choque de horário com <span className="font-semibold text-amber-950">{conflict.withName}</span> que já está adicionada à sua grade de horário atual.
+              </div>
+            </div>
+          )}
           
           {(subjectDetails || finalConteudoDetails) ? (
             <>

@@ -250,17 +250,51 @@ export function useSchedule() {
     }
   };
 
+  const parseTimeToMinutes = (timeStr: string): { start: number; end: number } | null => {
+    const parts = timeStr.split('-');
+    if (parts.length !== 2) return null;
+    const parseSingle = (s: string) => {
+      const t = s.trim().split(':');
+      if (t.length !== 2) return 0;
+      return parseInt(t[0], 10) * 60 + parseInt(t[1], 10);
+    };
+    return {
+      start: parseSingle(parts[0]),
+      end: parseSingle(parts[1])
+    };
+  };
+
   const hasConflict = (newDisc: Discipline) => {
     for (const session of newDisc.sessions) {
       for (const scheduledDisc of schedule) {
+        if (scheduledDisc.id === newDisc.id) continue;
         for (const scheduledSession of scheduledDisc.sessions) {
-          if (session.day === scheduledSession.day && session.time === scheduledSession.time) {
-            return { conflict: true, withName: scheduledDisc.name };
+          if (session.day === scheduledSession.day) {
+            const r1 = parseTimeToMinutes(session.time);
+            const r2 = parseTimeToMinutes(scheduledSession.time);
+            let overlapping = false;
+            if (r1 && r2) {
+              overlapping = r1.start < r2.end && r2.start < r1.end;
+            } else {
+              overlapping = session.time.trim() === scheduledSession.time.trim();
+            }
+            if (overlapping) {
+              return { conflict: true, withName: scheduledDisc.name };
+            }
           }
         }
       }
     }
     return { conflict: false };
+  };
+
+  const getDisciplineConflictInstance = (disc: Discipline) => {
+    if (schedule.some(d => d.id === disc.id)) return null;
+    const conflictCheck = hasConflict(disc);
+    if (conflictCheck.conflict) {
+      return { withName: conflictCheck.withName };
+    }
+    return null;
   };
 
   const toggleDiscipline = (disc: Discipline) => {
@@ -316,5 +350,6 @@ export function useSchedule() {
     removeSavedGrade,
     completedDisciplines,
     toggleCompleted,
+    getDisciplineConflictInstance,
   };
 }

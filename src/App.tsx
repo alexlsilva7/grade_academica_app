@@ -43,6 +43,7 @@ export default function App() {
             hasApiKey={scheduleProps.hasApiKey}
             completedDisciplines={scheduleProps.completedDisciplines}
             toggleCompleted={scheduleProps.toggleCompleted}
+            getDisciplineConflictInstance={scheduleProps.getDisciplineConflictInstance}
           />
           <ScheduleGrid 
             mobileTab={scheduleProps.mobileTab}
@@ -58,6 +59,7 @@ export default function App() {
               onClose={() => scheduleProps.setDetailsDiscipline(null)}
               completedDisciplines={scheduleProps.completedDisciplines}
               toggleCompleted={scheduleProps.toggleCompleted}
+              getDisciplineConflictInstance={scheduleProps.getDisciplineConflictInstance}
             />
           )}
 

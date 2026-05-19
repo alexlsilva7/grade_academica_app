@@ -1,5 +1,5 @@
 import React, { RefObject } from 'react';
-import { ArrowLeft, Upload, Search, X, CheckCircle2, Info, CheckCircle, Circle, Square, CheckSquare } from 'lucide-react';
+import { ArrowLeft, Upload, Search, X, CheckCircle2, Info, CheckCircle, Circle, Square, CheckSquare, AlertCircle } from 'lucide-react';
 import { Discipline } from '../types';
 import { DAYS } from '../constants';
 import { hasDisciplineDetails } from '../utils/detailsHelper';
@@ -24,6 +24,7 @@ interface SidebarProps {
   hasApiKey: boolean;
   completedDisciplines: string[];
   toggleCompleted: (id: string) => void;
+  getDisciplineConflictInstance: (disc: Discipline) => { withName: string } | null;
 }
 
 export function Sidebar({
@@ -45,7 +46,8 @@ export function Sidebar({
   onShowDetails,
   hasApiKey,
   completedDisciplines,
-  toggleCompleted
+  toggleCompleted,
+  getDisciplineConflictInstance
 }: SidebarProps) {
   return (
     <div className={`w-full md:w-80 bg-white border-r border-slate-200 flex-col h-full overflow-hidden ${mobileTab === 'disciplines' ? 'flex' : 'hidden md:flex'}`}>
@@ -156,16 +158,19 @@ export function Sidebar({
             const scheduled = isDisciplineScheduled(disc.id);
             const discIdentifier = disc.code || disc.id;
             const isCompleted = completedDisciplines.includes(discIdentifier);
+            const conflict = getDisciplineConflictInstance(disc);
             return (
               <div
                 key={disc.id}
                 onClick={() => toggleDiscipline(disc)}
-                className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                className={`p-3 border rounded-lg cursor-pointer transition-all ${
                   scheduled
                     ? 'bg-indigo-50 border-indigo-200'
-                    : isCompleted
-                      ? 'bg-emerald-50/50 border-emerald-200/50 opacity-80 hover:opacity-100 hover:border-emerald-300'
-                      : 'border-slate-200 bg-white hover:border-slate-300'
+                    : conflict
+                      ? 'border-amber-200 bg-amber-50/20 hover:border-amber-300'
+                      : isCompleted
+                        ? 'bg-emerald-50/50 border-emerald-200/50 opacity-80 hover:opacity-100 hover:border-emerald-300'
+                        : 'border-slate-200 bg-white hover:border-slate-300'
                 }`}
               >
                 <div className="flex justify-between items-start">
@@ -176,6 +181,11 @@ export function Sidebar({
                     {isCompleted && (
                       <span className="inline-flex items-center text-[10px] uppercase font-bold text-emerald-600 mt-1">
                         <CheckCircle className="w-3 h-3 mr-1" /> Concluída
+                      </span>
+                    )}
+                    {conflict && (
+                      <span className="inline-flex items-center text-[10px] font-semibold text-amber-700 mt-1 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200/60" title={`Conflita com: ${conflict.withName}`}>
+                        <AlertCircle className="w-3 h-3 mr-1 shrink-0 text-amber-600 animate-pulse" /> Conflito: {conflict.withName}
                       </span>
                     )}
                   </div>
