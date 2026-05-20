@@ -121,7 +121,7 @@ export function HomeView({
 
                 <button 
                   onClick={() => changeCourse('bcc')}
-                  className="w-full px-4 py-3 border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-550 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 rounded-xl transition-all text-left shadow-sm group"
+                  className="w-full px-4 py-3 border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 rounded-xl transition-all text-left shadow-sm group"
                 >
                   <div className="font-medium text-slate-700 dark:text-slate-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 text-sm">
                     Ciência da Computação
@@ -130,7 +130,7 @@ export function HomeView({
                 
                 <button 
                   onClick={() => changeCourse('eal')}
-                  className="w-full px-4 py-3 border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-550 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 rounded-xl transition-all text-left shadow-sm group"
+                  className="w-full px-4 py-3 border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 rounded-xl transition-all text-left shadow-sm group"
                 >
                   <div className="font-medium text-slate-700 dark:text-slate-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 text-sm">
                     Engenharia de Alimentos
@@ -183,7 +183,7 @@ export function HomeView({
               <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <button 
                   onClick={() => loadPredefinedGrade(selectedCourse as 'bcc' | 'eal')}
-                  className="w-full p-6 border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-550 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 rounded-xl transition-all text-left shadow-sm group flex flex-col gap-2"
+                  className="w-full p-6 border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 rounded-xl transition-all text-left shadow-sm group flex flex-col gap-2"
                 >
                   <h3 className="font-semibold text-slate-800 dark:text-slate-100 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 text-lg">
                     Horário Letivo
@@ -205,7 +205,7 @@ export function HomeView({
                   onClick={() => selectedCourse === 'bcc' ? setView('matriz') : alert('Matriz ainda não disponível para este curso.')}
                   className={`w-full p-6 border rounded-xl text-left flex flex-col gap-2 transition-all ${
                     selectedCourse === 'bcc' 
-                      ? 'border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-550 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 shadow-sm group cursor-pointer'
+                      ? 'border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 shadow-sm group cursor-pointer'
                       : 'border-slate-200 dark:border-slate-800 opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900/50'
                   }`}
                 >

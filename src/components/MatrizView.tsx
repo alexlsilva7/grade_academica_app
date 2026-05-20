@@ -482,7 +482,7 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
 
             <button 
               onClick={resetProgress}
-              className="flex items-center gap-1.5 text-xs bg-rose-50 dark:bg-rose-950/20 px-3 py-1.5 rounded-lg border border-rose-250 dark:border-rose-900 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 w-full sm:w-auto justify-center shrink-0 cursor-pointer font-semibold shadow-xs"
+              className="flex items-center gap-1.5 text-xs bg-rose-50 dark:bg-rose-950/20 px-3 py-1.5 rounded-lg border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 w-full sm:w-auto justify-center shrink-0 cursor-pointer font-semibold shadow-xs"
               title="Limpar progresso completo da matriz"
             >
               <RotateCcw className="h-3.5 w-3.5" />
@@ -532,7 +532,7 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
                       ? 'border-emerald-500 dark:border-emerald-600 bg-emerald-100/60 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-200 shadow-sm' 
                       : effectiveStatus === 'cursando'
                       ? 'border-amber-400 dark:border-amber-500 bg-amber-100/60 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 ring-1 ring-amber-200 dark:ring-amber-900'
-                      : 'bg-white dark:bg-slate-900 border-slate-250 dark:border-slate-800 text-slate-700 dark:text-slate-300';
+                      : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300';
                           
                     let styles = baseStyles;
 
@@ -707,20 +707,20 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
                       max="500"
                       value={accHours}
                       onChange={(e) => setAccHours(Math.max(0, parseInt(e.target.value) || 0))}
-                      className="w-16 px-1.5 py-1 text-center font-bold text-slate-850 dark:text-slate-100 text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none"
+                      className="w-16 px-1.5 py-1 text-center font-bold text-slate-800 dark:text-slate-100 text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none"
                     />
                     <span className="text-xs text-slate-500 dark:text-slate-400">h</span>
                   </div>
                 </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400 mt-4 border-t border-slate-100 dark:border-slate-800/80 pt-2 flex justify-between">
                   <span>Restantes:</span>
-                  <span className="font-semibold text-indigo-650 dark:text-indigo-400">{Math.max(0, 90 - accHours)}h</span>
+                  <span className="font-semibold text-indigo-600 dark:text-indigo-400">{Math.max(0, 90 - accHours)}h</span>
                 </div>
               </div>
             </div>
             
             {/* Bloco discreto de matérias optativas complementares concluídas */}
-            <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-900/30 rounded-xl border border-slate-200 dark:border-slate-850 flex items-center justify-between text-xs font-bold text-slate-750 dark:text-slate-350">
+            <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-900/30 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
               <span className="text-slate-500">Horas Optativas Concluídas:</span>
               <span className="text-indigo-600 dark:text-indigo-400">{stats.completedOptativeHours}h <span className="text-slate-400">/ 480h</span></span>
             </div>

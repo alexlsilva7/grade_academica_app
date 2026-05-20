@@ -9,7 +9,7 @@ interface MobileNavProps {
 
 export function MobileNav({ mobileTab, setMobileTab, schedule }: MobileNavProps) {
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-850 flex h-[60px] pb-safe z-50">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex h-[60px] pb-safe z-50">
       <button
         onClick={() => setMobileTab('disciplines')}
         className={`flex-1 flex flex-col items-center justify-center gap-1 ${mobileTab === 'disciplines' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300'}`}

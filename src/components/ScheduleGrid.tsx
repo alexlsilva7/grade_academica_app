@@ -119,7 +119,7 @@ export function ScheduleGrid({
               <tbody className="bg-slate-100 dark:bg-slate-950 gap-px">
                 {timeSlots.map((time, timeIdx) => (
                   <tr key={time} className="bg-white dark:bg-slate-900">
-                    <td className="px-4 py-4 text-center text-xs font-bold text-slate-400 dark:text-slate-550 border-r border-b border-slate-200 dark:border-slate-805 whitespace-nowrap align-middle">
+                    <td className="px-4 py-4 text-center text-xs font-bold text-slate-400 dark:text-slate-400 border-r border-b border-slate-200 dark:border-slate-800 whitespace-nowrap align-middle">
                       {time}
                     </td>
                     {DAYS.map(day => {
@@ -132,7 +132,7 @@ export function ScheduleGrid({
                           {scheduledDisc && (
                             <div className="absolute inset-1 p-2 bg-indigo-50/90 dark:bg-indigo-950/40 border-l-[3px] border-indigo-500 rounded flex flex-col justify-between hover:bg-indigo-100 hover:border-indigo-600 dark:hover:bg-indigo-900/30 transition-colors cursor-pointer ring-1 ring-inset ring-indigo-200/50 dark:ring-indigo-800/20">
                               <div>
-                                <div className="text-[10px] sm:text-xs font-bold text-indigo-900 dark:text-indigo-205 uppercase leading-tight line-clamp-2" title={scheduledDisc.name}>
+                                <div className="text-[10px] sm:text-xs font-bold text-indigo-900 dark:text-indigo-200 uppercase leading-tight line-clamp-2" title={scheduledDisc.name}>
                                   {scheduledDisc.name}
                                 </div>
                                 <div className="text-[9px] sm:text-[10px] font-medium text-indigo-700/85 dark:text-indigo-300 mt-1 truncate">

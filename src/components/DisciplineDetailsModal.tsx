@@ -64,14 +64,14 @@ export function DisciplineDetailsModal({
           </div>
           <button 
             onClick={onClose}
-            className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-805 rounded-full transition-colors"
+            className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-5 overflow-y-auto space-y-6 flex-1 text-slate-700 dark:text-slate-250">
+        <div className="p-5 overflow-y-auto space-y-6 flex-1 text-slate-700 dark:text-slate-300">
           {conflict && (
             <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 text-amber-900 dark:text-amber-200 text-xs p-3.5 rounded-lg flex items-start gap-2.5 shadow-sm animate-in shake duration-300">
               <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
@@ -87,7 +87,7 @@ export function DisciplineDetailsModal({
               <div className="flex flex-wrap gap-2">
                 {subjectDetails && (
                   <div className="flex border border-slate-200 dark:border-slate-800 rounded overflow-hidden bg-slate-50 dark:bg-slate-900">
-                    <div className="bg-slate-100 dark:bg-slate-800 px-2 py-1 text-xs font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-850">
+                    <div className="bg-slate-100 dark:bg-slate-800 px-2 py-1 text-xs font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800">
                       Tipo
                     </div>
                     <div className="px-2 py-1 text-xs font-medium text-slate-800 dark:text-slate-200">
@@ -98,7 +98,7 @@ export function DisciplineDetailsModal({
                 
                 {subjectDetails?.period && subjectDetails.period !== "0" && (
                   <div className="flex border border-slate-200 dark:border-slate-800 rounded overflow-hidden bg-slate-50 dark:bg-slate-900">
-                    <div className="bg-slate-100 dark:bg-slate-800 px-2 py-1 text-xs font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-850">
+                    <div className="bg-slate-100 dark:bg-slate-800 px-2 py-1 text-xs font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800">
                       Período
                     </div>
                     <div className="px-2 py-1 text-xs font-medium text-slate-800 dark:text-slate-200">
@@ -109,7 +109,7 @@ export function DisciplineDetailsModal({
                 
                 {subjectDetails?.credits && (
                   <div className="flex border border-slate-200 dark:border-slate-800 rounded overflow-hidden bg-slate-50 dark:bg-slate-900">
-                    <div className="bg-slate-100 dark:bg-slate-800 px-2 py-1 text-xs font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-850">
+                    <div className="bg-slate-100 dark:bg-slate-800 px-2 py-1 text-xs font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800">
                       Créditos
                     </div>
                     <div className="px-2 py-1 text-xs font-medium text-slate-800 dark:text-slate-200">
@@ -154,7 +154,7 @@ export function DisciplineDetailsModal({
                       </h3>
                       <ul className="list-disc pl-5 space-y-1">
                         {subjectDetails.prerequisites.map((req: any, idx: number) => (
-                          <li key={idx} className="text-sm text-slate-750 dark:text-slate-250">
+                          <li key={idx} className="text-sm text-slate-700 dark:text-slate-300">
                             <span className="font-mono text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1 rounded mr-1">{req.code}</span>
                             {req.name}
                           </li>
@@ -171,7 +171,7 @@ export function DisciplineDetailsModal({
                       </h3>
                       <ul className="list-disc pl-5 space-y-1">
                         {subjectDetails.corequisites.map((req: any, idx: number) => (
-                          <li key={idx} className="text-sm text-slate-750 dark:text-slate-250">
+                          <li key={idx} className="text-sm text-slate-700 dark:text-slate-300">
                             <span className="font-mono text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1 rounded mr-1">{req.code}</span>
                             {req.name}
                           </li>
@@ -188,7 +188,7 @@ export function DisciplineDetailsModal({
                       </h3>
                       <ul className="list-disc pl-5 space-y-1">
                         {subjectDetails.equivalences.map((eq: any, idx: number) => (
-                          <li key={idx} className="text-sm text-slate-750 dark:text-slate-250">
+                          <li key={idx} className="text-sm text-slate-700 dark:text-slate-300">
                             <span className="font-mono text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1 rounded mr-1">{eq.code}</span>
                             {eq.name}
                           </li>
@@ -245,7 +245,7 @@ export function DisciplineDetailsModal({
             className={`flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors border ${
               completedDisciplines.includes(discIdentifier)
                 ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/30'
-                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-250 border-slate-200 dark:border-slate-805 hover:bg-slate-50 dark:hover:bg-slate-800'
+                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
             }`}
           >
             {completedDisciplines.includes(discIdentifier) ? (
@@ -255,7 +255,7 @@ export function DisciplineDetailsModal({
               </>
             ) : (
               <>
-                <Circle className="w-4 h-4 mr-2 text-slate-400 dark:text-slate-550" />
+                <Circle className="w-4 h-4 mr-2 text-slate-400 dark:text-slate-500" />
                 Marcar como concluída
               </>
             )}
