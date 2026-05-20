@@ -16,11 +16,54 @@ export interface SavedGrade {
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 export function useSchedule() {
-  const [view, setView] = useState<'home' | 'schedule'>('home');
-  const [gradeTitle, setGradeTitle] = useState<string>('');
-  const [selectedPeriod, setSelectedPeriod] = useState<number>(1);
-  const [schedule, setSchedule] = useState<Discipline[]>([]);
-  const [disciplinesList, setDisciplinesList] = useState<Discipline[]>([]);
+  const [view, setView] = useState<'home' | 'schedule' | 'matriz'>(() => {
+    try {
+      const stored = localStorage.getItem('view_preference');
+      return (stored === 'home' || stored === 'schedule' || stored === 'matriz') ? stored : 'home';
+    } catch {
+      return 'home';
+    }
+  });
+
+  const [gradeTitle, setGradeTitle] = useState<string>(() => {
+    try {
+      return localStorage.getItem('saved_gradeTitle') || '';
+    } catch {
+      return '';
+    }
+  });
+
+  const [selectedPeriod, setSelectedPeriod] = useState<number>(() => {
+    try {
+      const p = localStorage.getItem('saved_selectedPeriod');
+      return p ? Number(p) : 1;
+    } catch {
+      return 1;
+    }
+  });
+
+  const [schedule, setSchedule] = useState<Discipline[]>(() => {
+    try {
+      const course = localStorage.getItem('selectedCourse');
+      if (course) {
+        const stored = localStorage.getItem(`schedule_${course}`);
+        return stored ? JSON.parse(stored) : [];
+      }
+    } catch (e) {
+      console.error('Failed to load schedule', e);
+    }
+    return [];
+  });
+
+  const [disciplinesList, setDisciplinesList] = useState<Discipline[]>(() => {
+    try {
+      const stored = localStorage.getItem('saved_disciplinesList');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [conflictMsg, setConflictMsg] = useState<string | null>(null);
   const [isProcessingPdf, setIsProcessingPdf] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -28,9 +71,9 @@ export function useSchedule() {
   const [themePreference, setThemePreference] = useState<ThemeMode>(() => {
     try {
       const storedTheme = localStorage.getItem('themePreference') as ThemeMode;
-      return (storedTheme === 'light' || storedTheme === 'dark') ? storedTheme : 'system';
+      return (storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'system') ? storedTheme : 'light';
     } catch {
-      return 'system';
+      return 'light';
     }
   });
 
@@ -77,6 +120,63 @@ export function useSchedule() {
 
   const [savedGrades, setSavedGrades] = useState<SavedGrade[]>([]);
   const [completedDisciplines, setCompletedDisciplines] = useState<string[]>([]);
+  const [selectedCourse, setSelectedCourse] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('selectedCourse') || null;
+    } catch {
+      return null;
+    }
+  });
+
+  const changeCourse = (course: string | null) => {
+    setSelectedCourse(course);
+    if (course) {
+      localStorage.setItem('selectedCourse', course);
+    } else {
+      localStorage.removeItem('selectedCourse');
+    }
+  };
+
+  // State triggers to persist variables
+  useEffect(() => {
+    localStorage.setItem('view_preference', view);
+  }, [view]);
+
+  useEffect(() => {
+    localStorage.setItem('saved_gradeTitle', gradeTitle);
+  }, [gradeTitle]);
+
+  useEffect(() => {
+    localStorage.setItem('saved_selectedPeriod', selectedPeriod.toString());
+  }, [selectedPeriod]);
+
+  useEffect(() => {
+    localStorage.setItem('saved_disciplinesList', JSON.stringify(disciplinesList));
+  }, [disciplinesList]);
+
+  useEffect(() => {
+    if (selectedCourse) {
+      try {
+        localStorage.setItem(`schedule_${selectedCourse}`, JSON.stringify(schedule));
+      } catch (e) {
+        console.error('Failed to save schedule to localStorage', e);
+      }
+    }
+  }, [schedule, selectedCourse]);
+
+  // Synchronize completed disciplines back when navigating to scheduling
+  useEffect(() => {
+    if (view === 'schedule') {
+      try {
+        const storedCompleted = localStorage.getItem('completedDisciplines');
+        if (storedCompleted) {
+          setCompletedDisciplines(JSON.parse(storedCompleted));
+        }
+      } catch (e) {
+        console.error('Failed to reload completedDisciplines on view change', e);
+      }
+    }
+  }, [view]);
 
   useEffect(() => {
     try {
@@ -98,6 +198,35 @@ export function useSchedule() {
       const isCompleted = prev.includes(disciplineId);
       const updated = isCompleted ? prev.filter(id => id !== disciplineId) : [...prev, disciplineId];
       localStorage.setItem('completedDisciplines', JSON.stringify(updated));
+
+      // Se estiver marcando como concluída, remove da grade de horários automaticamente
+      if (!isCompleted) {
+        setSchedule(prevSchedule => prevSchedule.filter(d => d.id !== disciplineId && d.code !== disciplineId));
+      }
+
+      // Synchronize with Matrix Curriculum Progress
+      try {
+        const matrixSaved = localStorage.getItem('bcc_matriz_progress');
+        if (matrixSaved) {
+          const matrixSubjects = JSON.parse(matrixSaved);
+          const updatedMatrix = matrixSubjects.map((s: any) => {
+            const matchesCode = s.code && s.code === disciplineId;
+            const matchesId = s.id === disciplineId;
+            if (matchesCode || matchesId) {
+              return { 
+                ...s, 
+                status: isCompleted ? 'pendente' : 'concluido',
+                grade: isCompleted ? '' : s.grade
+              };
+            }
+            return s;
+          });
+          localStorage.setItem('bcc_matriz_progress', JSON.stringify(updatedMatrix));
+        }
+      } catch (e) {
+        console.error('Failed to sync completed discipline with matrix progress', e);
+      }
+
       return updated;
     });
   };
@@ -169,7 +298,19 @@ export function useSchedule() {
       setDisciplinesList(bcc2026_1);
       setGradeTitle('BCC - Bacharelado em Ciência da Computação - Período 2026.1');
     }
-    setSchedule([]);
+    
+    // Restore the saved schedule for this course instead of resetting to empty
+    try {
+      const stored = localStorage.getItem(`schedule_${type}`);
+      if (stored) {
+        setSchedule(JSON.parse(stored));
+      } else {
+        setSchedule([]);
+      }
+    } catch {
+      setSchedule([]);
+    }
+
     setSelectedPeriod(1);
     setSearchQuery('');
     setView('schedule');
@@ -337,6 +478,10 @@ export function useSchedule() {
   };
 
   const getDisciplineConflictInstance = (disc: Discipline) => {
+    const discIdentifier = disc.code || disc.id;
+    const isCompleted = completedDisciplines.includes(discIdentifier) || completedDisciplines.includes(disc.id);
+    if (isCompleted) return null;
+
     if (schedule.some(d => d.id === disc.id)) return null;
     const conflictCheck = hasConflict(disc);
     if (conflictCheck.conflict) {
@@ -346,6 +491,10 @@ export function useSchedule() {
   };
 
   const toggleDiscipline = (disc: Discipline) => {
+    const discIdentifier = disc.code || disc.id;
+    const isCompleted = completedDisciplines.includes(discIdentifier) || completedDisciplines.includes(disc.id);
+    if (isCompleted) return;
+
     const isScheduled = schedule.some(d => d.id === disc.id);
     if (isScheduled) {
       setSchedule(schedule.filter(d => d.id !== disc.id));
@@ -367,6 +516,49 @@ export function useSchedule() {
   };
 
   const isDisciplineScheduled = (id: string) => schedule.some(d => d.id === id);
+
+  const exportData = () => {
+    const data = {
+      savedGrades,
+      completedDisciplines,
+    };
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "grade_academica_backup.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  };
+
+  const importDataFileInputRef = useRef<HTMLInputElement>(null);
+
+  const importData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const data = JSON.parse(content);
+        if (data.savedGrades && Array.isArray(data.savedGrades)) {
+          setSavedGrades(data.savedGrades);
+          localStorage.setItem('savedGrades', JSON.stringify(data.savedGrades));
+        }
+        if (data.completedDisciplines && Array.isArray(data.completedDisciplines)) {
+          setCompletedDisciplines(data.completedDisciplines);
+          localStorage.setItem('completedDisciplines', JSON.stringify(data.completedDisciplines));
+        }
+        alert("Dados importados com sucesso!");
+      } catch (error) {
+        console.error("Erro ao importar dados", error);
+        alert("Arquivo de backup inválido.");
+      }
+    };
+    reader.readAsText(file);
+    if (event.target) event.target.value = '';
+  };
 
   return {
     hasApiKey: !!ai,
@@ -402,5 +594,10 @@ export function useSchedule() {
     darkMode,
     themePreference,
     cycleTheme,
+    exportData,
+    importDataFileInputRef,
+    importData,
+    selectedCourse,
+    changeCourse,
   };
 }

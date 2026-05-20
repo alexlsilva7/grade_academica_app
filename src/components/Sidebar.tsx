@@ -1,5 +1,5 @@
 import React, { RefObject } from 'react';
-import { ArrowLeft, Upload, Search, X, CheckCircle2, Info, CheckCircle, Circle, Square, CheckSquare, AlertCircle, Sun, Moon, Monitor } from 'lucide-react';
+import { ArrowLeft, BookOpen, Search, X, CheckCircle2, Info, CheckCircle, Circle, Square, CheckSquare, AlertCircle, Sun, Moon, Monitor } from 'lucide-react';
 import { Discipline } from '../types';
 import { DAYS } from '../constants';
 import { hasDisciplineDetails } from '../utils/detailsHelper';
@@ -8,9 +8,6 @@ interface SidebarProps {
   mobileTab: string;
   setView: (view: 'home' | 'schedule') => void;
   gradeTitle: string;
-  fileInputRef: RefObject<HTMLInputElement>;
-  handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  isProcessingPdf: boolean;
   periods: number[];
   selectedPeriod: number;
   setSelectedPeriod: (p: number) => void;
@@ -34,9 +31,6 @@ export function Sidebar({
   mobileTab,
   setView,
   gradeTitle,
-  fileInputRef,
-  handleFileUpload,
-  isProcessingPdf,
   periods,
   selectedPeriod,
   setSelectedPeriod,
@@ -57,57 +51,6 @@ export function Sidebar({
 }: SidebarProps) {
   return (
     <div className={`w-full md:w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col h-full overflow-hidden ${mobileTab === 'disciplines' ? 'flex' : 'hidden md:flex'}`}>
-      <div className="h-16 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-4 md:px-6 shrink-0 w-full bg-slate-50 dark:bg-slate-900/50 relative">
-        <button 
-          onClick={() => setView('home')} 
-          className="flex items-center justify-center p-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors mr-2 shrink-0"
-          title="Voltar ao Início"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <div className="flex items-center gap-3 overflow-hidden flex-1">
-          <h1 className="text-sm font-semibold tracking-tight text-slate-800 dark:text-slate-200 truncate" title={gradeTitle}>
-            {gradeTitle || "Grade Acadêmica"}
-          </h1>
-        </div>
-        
-        <div className="flex items-center gap-1 shrink-0 ml-2">
-          <button
-            onClick={cycleTheme}
-            className="flex items-center justify-center w-8 h-8 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors"
-            title={`Tema atual: ${themePreference === 'system' ? 'Sistema' : themePreference === 'dark' ? 'Escuro' : 'Claro'} (clique para alterar)`}
-          >
-            {themePreference === 'system' ? (
-              <Monitor className="w-4.5 h-4.5 text-slate-500 dark:text-slate-400" />
-            ) : themePreference === 'dark' ? (
-              <Moon className="w-4.5 h-4.5 text-amber-300" />
-            ) : (
-              <Sun className="w-4.5 h-4.5 text-amber-500" />
-            )}
-          </button>
-
-          {hasApiKey && (
-            <div className="shrink-0">
-              <input
-                type="file"
-                accept="application/pdf"
-                className="hidden"
-                ref={fileInputRef}
-                onChange={handleFileUpload}
-              />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isProcessingPdf}
-                className="flex items-center justify-center w-8 h-8 md:w-auto md:px-3 md:bg-indigo-50 dark:md:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 md:hover:bg-indigo-100 dark:md:hover:bg-indigo-900/40 disabled:opacity-50 text-sm font-medium rounded-md transition-colors"
-                title="Importar outro PDF"
-              >
-                <Upload className="w-4 h-4 md:mr-2" />
-                <span className="hidden md:inline">{isProcessingPdf ? '...' : 'PDF'}</span>
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
       <div className="p-4 border-b border-slate-100 dark:border-slate-800/80 flex flex-col gap-3 shrink-0">
         <div className="flex justify-between items-center">
           <h2 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Períodos</h2>
@@ -157,19 +100,16 @@ export function Sidebar({
         {disciplinesList.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-4">
             <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/40 rounded-full flex items-center justify-center mb-3">
-              <Upload className="w-6 h-6 text-indigo-500" />
+              <BookOpen className="w-6 h-6 text-indigo-500" />
             </div>
             <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1">Nenhuma disciplina</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Acesse as configurações ou volte ao Menu Iniciar para carregar as disciplinas.</p>
-            {hasApiKey && (
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="px-4 py-2 bg-indigo-600 dark:bg-indigo-705 text-white text-sm font-medium rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-605 transition-colors"
-                disabled={isProcessingPdf}
-              >
-                {isProcessingPdf ? 'Processando...' : 'Importar PDF'}
-              </button>
-            )}
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Acesse as configurações ou volte ao Menu Início para carregar as disciplinas.</p>
+            <button
+              onClick={() => setView('home')}
+              className="px-4 py-2 bg-indigo-600 dark:bg-indigo-705 text-white text-sm font-medium rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-605 transition-colors"
+            >
+              Voltar ao Início
+            </button>
           </div>
         ) : displayedDisciplines.length === 0 ? (
           <div className="text-center py-8">
@@ -184,15 +124,19 @@ export function Sidebar({
             return (
               <div
                 key={disc.id}
-                onClick={() => toggleDiscipline(disc)}
-                className={`p-3 border rounded-lg cursor-pointer transition-all ${
+                onClick={() => {
+                  if (!isCompleted) {
+                    toggleDiscipline(disc);
+                  }
+                }}
+                className={`p-3 border rounded-lg transition-all ${
                   scheduled
-                    ? 'bg-indigo-50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-900/60'
+                    ? 'bg-indigo-50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-900/60 cursor-pointer'
                     : conflict
-                      ? 'border-amber-200 dark:border-amber-800/60 bg-amber-50/20 dark:bg-amber-950/15 hover:border-amber-305'
+                      ? 'border-amber-200 dark:border-amber-800/60 bg-amber-50/20 dark:bg-amber-950/15 hover:border-amber-305 cursor-pointer'
                       : isCompleted
-                        ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200/50 dark:border-emerald-900/40 opacity-80 hover:opacity-100 hover:border-emerald-305'
-                        : 'border-slate-205 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-705'
+                        ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200/50 dark:border-emerald-900/40 opacity-70 cursor-default'
+                        : 'border-slate-205 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-705 cursor-pointer'
                 }`}
               >
                 <div className="flex justify-between items-start">
