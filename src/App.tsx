@@ -20,9 +20,11 @@ export default function App() {
           savedGrades={scheduleProps.savedGrades}
           loadSavedGrade={scheduleProps.loadSavedGrade}
           removeSavedGrade={scheduleProps.removeSavedGrade}
+          themePreference={scheduleProps.themePreference}
+          cycleTheme={scheduleProps.cycleTheme}
         />
       ) : (
-        <div className="h-[100dvh] bg-slate-50 text-slate-800 font-sans flex flex-col md:flex-row overflow-hidden animate-in fade-in duration-500">
+        <div className="h-[100dvh] bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans flex flex-col md:flex-row overflow-hidden animate-in fade-in duration-500">
           <Sidebar 
             mobileTab={scheduleProps.mobileTab}
             setView={scheduleProps.setView}
@@ -44,6 +46,9 @@ export default function App() {
             completedDisciplines={scheduleProps.completedDisciplines}
             toggleCompleted={scheduleProps.toggleCompleted}
             getDisciplineConflictInstance={scheduleProps.getDisciplineConflictInstance}
+            darkMode={scheduleProps.darkMode}
+            themePreference={scheduleProps.themePreference}
+            cycleTheme={scheduleProps.cycleTheme}
           />
           <ScheduleGrid 
             mobileTab={scheduleProps.mobileTab}
@@ -72,7 +77,7 @@ export default function App() {
       )}
 
       {scheduleProps.conflictMsg && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[300] w-[90%] max-w-sm px-4 py-3 bg-red-600 text-white rounded-lg shadow-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[300] w-[90%] max-w-sm px-4 py-3 bg-red-650 dark:bg-red-700 text-white rounded-lg shadow-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300">
           <AlertCircle className="w-5 h-5 shrink-0" />
           <span className="text-sm font-medium leading-tight">{scheduleProps.conflictMsg}</span>
         </div>
@@ -80,11 +85,11 @@ export default function App() {
 
       {/* Global Processing Overlay */}
       {scheduleProps.isProcessingPdf && (
-        <div className="fixed inset-0 z-[200] bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full flex flex-col items-center text-center animate-in zoom-in-95 duration-300 delay-100">
-            <Loader2 className="w-12 h-12 text-indigo-600 animate-spin mb-4" />
-            <h3 className="text-xl font-bold text-slate-800 mb-2">Processando PDF</h3>
-            <p className="text-sm text-slate-500">
+        <div className="fixed inset-0 z-[200] bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-2xl shadow-2xl p-8 max-w-sm w-full flex flex-col items-center text-center animate-in zoom-in-95 duration-300 delay-100">
+            <Loader2 className="w-12 h-12 text-indigo-600 dark:text-indigo-400 animate-spin mb-4" />
+            <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Processando PDF</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               A Inteligência Artificial está lendo o documento e extraindo as disciplinas. Esse processo pode levar alguns segundos...
             </p>
           </div>

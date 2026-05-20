@@ -1,5 +1,5 @@
 import React, { RefObject } from 'react';
-import { ArrowLeft, Upload, Search, X, CheckCircle2, Info, CheckCircle, Circle, Square, CheckSquare, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Upload, Search, X, CheckCircle2, Info, CheckCircle, Circle, Square, CheckSquare, AlertCircle, Sun, Moon, Monitor } from 'lucide-react';
 import { Discipline } from '../types';
 import { DAYS } from '../constants';
 import { hasDisciplineDetails } from '../utils/detailsHelper';
@@ -25,6 +25,9 @@ interface SidebarProps {
   completedDisciplines: string[];
   toggleCompleted: (id: string) => void;
   getDisciplineConflictInstance: (disc: Discipline) => { withName: string } | null;
+  darkMode: boolean;
+  themePreference: 'light' | 'dark' | 'system';
+  cycleTheme: () => void;
 }
 
 export function Sidebar({
@@ -47,51 +50,70 @@ export function Sidebar({
   hasApiKey,
   completedDisciplines,
   toggleCompleted,
-  getDisciplineConflictInstance
+  getDisciplineConflictInstance,
+  darkMode,
+  themePreference,
+  cycleTheme
 }: SidebarProps) {
   return (
-    <div className={`w-full md:w-80 bg-white border-r border-slate-200 flex-col h-full overflow-hidden ${mobileTab === 'disciplines' ? 'flex' : 'hidden md:flex'}`}>
-      <div className="h-16 flex items-center justify-between border-b border-slate-200 px-4 md:px-6 shrink-0 w-full bg-slate-50 relative">
+    <div className={`w-full md:w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col h-full overflow-hidden ${mobileTab === 'disciplines' ? 'flex' : 'hidden md:flex'}`}>
+      <div className="h-16 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-4 md:px-6 shrink-0 w-full bg-slate-50 dark:bg-slate-900/50 relative">
         <button 
           onClick={() => setView('home')} 
-          className="flex items-center justify-center p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-200 rounded-full transition-colors mr-2 shrink-0"
+          className="flex items-center justify-center p-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors mr-2 shrink-0"
           title="Voltar ao Início"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-3 overflow-hidden flex-1">
-          <h1 className="text-sm font-semibold tracking-tight text-slate-800 truncate" title={gradeTitle}>
+          <h1 className="text-sm font-semibold tracking-tight text-slate-800 dark:text-slate-200 truncate" title={gradeTitle}>
             {gradeTitle || "Grade Acadêmica"}
           </h1>
         </div>
         
-        {hasApiKey && (
-          <div className="ml-2 shrink-0">
-            <input
-              type="file"
-              accept="application/pdf"
-              className="hidden"
-              ref={fileInputRef}
-              onChange={handleFileUpload}
-            />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isProcessingPdf}
-              className="flex items-center justify-center w-8 h-8 md:w-auto md:px-3 md:bg-indigo-50 text-indigo-700 md:hover:bg-indigo-100 disabled:opacity-50 text-sm font-medium rounded-md transition-colors"
-              title="Importar outro PDF"
-            >
-              <Upload className="w-4 h-4 md:mr-2" />
-              <span className="hidden md:inline">{isProcessingPdf ? '...' : 'PDF'}</span>
-            </button>
-          </div>
-        )}
+        <div className="flex items-center gap-1 shrink-0 ml-2">
+          <button
+            onClick={cycleTheme}
+            className="flex items-center justify-center w-8 h-8 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors"
+            title={`Tema atual: ${themePreference === 'system' ? 'Sistema' : themePreference === 'dark' ? 'Escuro' : 'Claro'} (clique para alterar)`}
+          >
+            {themePreference === 'system' ? (
+              <Monitor className="w-4.5 h-4.5 text-slate-500 dark:text-slate-400" />
+            ) : themePreference === 'dark' ? (
+              <Moon className="w-4.5 h-4.5 text-amber-300" />
+            ) : (
+              <Sun className="w-4.5 h-4.5 text-amber-500" />
+            )}
+          </button>
+
+          {hasApiKey && (
+            <div className="shrink-0">
+              <input
+                type="file"
+                accept="application/pdf"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isProcessingPdf}
+                className="flex items-center justify-center w-8 h-8 md:w-auto md:px-3 md:bg-indigo-50 dark:md:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 md:hover:bg-indigo-100 dark:md:hover:bg-indigo-900/40 disabled:opacity-50 text-sm font-medium rounded-md transition-colors"
+                title="Importar outro PDF"
+              >
+                <Upload className="w-4 h-4 md:mr-2" />
+                <span className="hidden md:inline">{isProcessingPdf ? '...' : 'PDF'}</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
-      <div className="p-4 border-b border-slate-100 flex flex-col gap-3 shrink-0">
+      <div className="p-4 border-b border-slate-100 dark:border-slate-800/80 flex flex-col gap-3 shrink-0">
         <div className="flex justify-between items-center">
-          <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Períodos</h2>
+          <h2 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Períodos</h2>
         </div>
         {periods.length > 0 && (
-          <div className="flex gap-1 bg-slate-100 p-1 rounded-md overflow-x-auto scrollbar-hide flex-shrink-0">
+          <div className="flex gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-md overflow-x-auto scrollbar-hide flex-shrink-0">
             {periods.map(period => (
               <button
                 key={period}
@@ -101,8 +123,8 @@ export function Sidebar({
                 }}
                 className={`flex-1 min-w-[36px] py-1.5 px-3 text-xs font-medium rounded transition-colors whitespace-nowrap ${
                   selectedPeriod === period && !searchQuery
-                    ? 'bg-white text-slate-900 shadow-sm'
-                    : 'text-slate-500 bg-transparent hover:text-slate-700'
+                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm'
+                    : 'text-slate-500 dark:text-slate-400 bg-transparent hover:text-slate-700 dark:hover:text-slate-200'
                 }`}
               >
                 {period === 0 ? 'OPTATIVAS' : `${period}º`}
@@ -112,18 +134,18 @@ export function Sidebar({
         )}
         
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
           <input
             type="text"
             placeholder="Pesquisar disciplina ou professor..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-100 border-none rounded-md py-2 pl-9 pr-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors placeholder:text-slate-400"
+            className="w-full bg-slate-100 dark:bg-slate-950/60 border-none rounded-md py-2 pl-9 pr-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-900 text-slate-800 dark:text-slate-250 transition-colors placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
           {searchQuery && (
             <button 
               onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-505 dark:hover:text-slate-300"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -131,18 +153,18 @@ export function Sidebar({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 pb-24 md:pb-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 pb-24 md:pb-4 bg-slate-50/50 dark:bg-slate-900/40">
         {disciplinesList.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-4">
-            <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center mb-3">
+            <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/40 rounded-full flex items-center justify-center mb-3">
               <Upload className="w-6 h-6 text-indigo-500" />
             </div>
-            <h3 className="text-sm font-semibold text-slate-800 mb-1">Nenhuma disciplina</h3>
-            <p className="text-xs text-slate-500 mb-4">Acesse as configurações ou volte ao Menu Iniciar para carregar as disciplinas.</p>
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1">Nenhuma disciplina</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Acesse as configurações ou volte ao Menu Iniciar para carregar as disciplinas.</p>
             {hasApiKey && (
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors"
+                className="px-4 py-2 bg-indigo-600 dark:bg-indigo-705 text-white text-sm font-medium rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-605 transition-colors"
                 disabled={isProcessingPdf}
               >
                 {isProcessingPdf ? 'Processando...' : 'Importar PDF'}
@@ -151,7 +173,7 @@ export function Sidebar({
           </div>
         ) : displayedDisciplines.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-sm text-slate-500">Nenhuma disciplina encontrada.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Nenhuma disciplina encontrada.</p>
           </div>
         ) : (
           displayedDisciplines.map(disc => {
@@ -165,27 +187,27 @@ export function Sidebar({
                 onClick={() => toggleDiscipline(disc)}
                 className={`p-3 border rounded-lg cursor-pointer transition-all ${
                   scheduled
-                    ? 'bg-indigo-50 border-indigo-200'
+                    ? 'bg-indigo-50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-900/60'
                     : conflict
-                      ? 'border-amber-200 bg-amber-50/20 hover:border-amber-300'
+                      ? 'border-amber-200 dark:border-amber-800/60 bg-amber-50/20 dark:bg-amber-950/15 hover:border-amber-305'
                       : isCompleted
-                        ? 'bg-emerald-50/50 border-emerald-200/50 opacity-80 hover:opacity-100 hover:border-emerald-300'
-                        : 'border-slate-200 bg-white hover:border-slate-300'
+                        ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200/50 dark:border-emerald-900/40 opacity-80 hover:opacity-100 hover:border-emerald-305'
+                        : 'border-slate-205 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-705'
                 }`}
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1 pr-2">
-                    <h4 className={`text-sm ${scheduled ? 'font-semibold text-indigo-900' : isCompleted ? 'font-medium text-emerald-800 line-through decoration-emerald-300' : 'font-medium text-slate-700'}`}>
+                    <h4 className={`text-sm ${scheduled ? 'font-semibold text-indigo-900 dark:text-indigo-200' : isCompleted ? 'font-medium text-emerald-800 dark:text-emerald-300 line-through decoration-emerald-300 dark:decoration-emerald-505' : 'font-medium text-slate-700 dark:text-slate-200'}`}>
                       {disc.name}
                     </h4>
                     {isCompleted && (
-                      <span className="inline-flex items-center text-[10px] uppercase font-bold text-emerald-600 mt-1">
+                      <span className="inline-flex items-center text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-450 mt-1">
                         <CheckCircle className="w-3 h-3 mr-1" /> Concluída
                       </span>
                     )}
                     {conflict && (
-                      <span className="inline-flex items-center text-[10px] font-semibold text-amber-700 mt-1 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200/60" title={`Conflita com: ${conflict.withName}`}>
-                        <AlertCircle className="w-3 h-3 mr-1 shrink-0 text-amber-600 animate-pulse" /> Conflito: {conflict.withName}
+                      <span className="inline-flex items-center text-[10px] font-semibold text-amber-700 dark:text-amber-400 mt-1 bg-amber-100 dark:bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-200/60 dark:border-amber-800/40" title={`Conflita com: ${conflict.withName}`}>
+                        <AlertCircle className="w-3 h-3 mr-1 shrink-0 text-amber-600 dark:text-amber-400 animate-pulse" /> Conflito: {conflict.withName}
                       </span>
                     )}
                   </div>
@@ -195,7 +217,7 @@ export function Sidebar({
                         e.stopPropagation();
                         toggleCompleted(discIdentifier);
                       }}
-                      className={`p-0.5 rounded transition-colors ${isCompleted ? 'text-emerald-600 hover:text-emerald-700' : 'text-slate-300 hover:text-emerald-500'}`}
+                      className={`p-0.5 rounded transition-colors ${isCompleted ? 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-700' : 'text-slate-300 dark:text-slate-500 hover:text-emerald-500'}`}
                       title={isCompleted ? "Remover de concluídas" : "Marcar como concluída"}
                     >
                       <CheckSquare className="w-4 h-4" />
@@ -206,31 +228,31 @@ export function Sidebar({
                           e.stopPropagation();
                           onShowDetails(disc);
                         }}
-                        className="p-0.5 text-slate-400 hover:text-indigo-600 rounded transition-colors"
+                        className="p-0.5 text-slate-400 dark:text-slate-505 hover:text-indigo-600 dark:hover:text-indigo-400 rounded transition-colors"
                         title="Ver Detalhes"
                       >
                         <Info className="w-4 h-4" />
                       </button>
                     )}
                     {scheduled ? (
-                      <div className="w-4 h-4 bg-indigo-600 rounded-full flex items-center justify-center shadow-sm shadow-indigo-200">
+                      <div className="w-4 h-4 bg-indigo-600 dark:bg-indigo-700 rounded-full flex items-center justify-center shadow-sm shadow-indigo-200 dark:shadow-none">
                         <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />
                       </div>
                     ) : (
-                      <div className={`w-4 h-4 rounded-full border ${isCompleted ? 'border-emerald-300 bg-emerald-100/50' : 'border-slate-300 bg-slate-50'}`} />
+                      <div className={`w-4 h-4 rounded-full border ${isCompleted ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-100/50 dark:bg-emerald-950/30' : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800'}`} />
                     )}
                   </div>
                 </div>
-                <div className={`text-xs mt-1 ${scheduled ? 'text-indigo-700' : isCompleted ? 'text-emerald-700/70' : 'text-slate-500'}`}>
+                <div className={`text-xs mt-1 ${scheduled ? 'text-indigo-700 dark:text-indigo-305' : isCompleted ? 'text-emerald-700/70 dark:text-emerald-400/80' : 'text-slate-500 dark:text-slate-400'}`}>
                   {disc.professor}
                 </div>
                 <div className={`mt-2 flex flex-wrap items-center gap-1.5 ${isCompleted && !scheduled ? 'opacity-70' : ''}`}>
-                   <span className={`inline-flex items-center text-[9px] uppercase font-black px-1.5 py-0.5 rounded shadow-sm ${scheduled ? 'bg-indigo-600 text-white' : isCompleted ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-white'}`}>
+                   <span className={`inline-flex items-center text-[9px] uppercase font-black px-1.5 py-0.5 rounded shadow-sm ${scheduled ? 'bg-indigo-600 dark:bg-indigo-750 text-white' : isCompleted ? 'bg-emerald-600 dark:bg-emerald-750 text-white' : 'bg-slate-800 dark:bg-slate-705 text-white'}`}>
                     {disc.period === 0 ? 'Opt' : `${disc.period}º`}
                   </span>
-                  <div className={`h-3 w-[1px] ${isCompleted ? 'bg-emerald-200' : 'bg-slate-300'}`} />
+                  <div className={`h-3 w-[1px] ${isCompleted ? 'bg-emerald-200 dark:bg-emerald-900/50' : 'bg-slate-300 dark:bg-slate-700'}`} />
                   {disc.sessions.map((session, i) => (
-                    <span key={i} className={`inline-flex items-center text-[9px] uppercase font-bold px-1.5 py-0.5 rounded ${scheduled ? 'bg-indigo-100 text-indigo-800' : isCompleted ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                    <span key={i} className={`inline-flex items-center text-[9px] uppercase font-bold px-1.5 py-0.5 rounded ${scheduled ? 'bg-indigo-100 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-300' : isCompleted ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>
                       {DAYS.find(d => d.id === session.day)?.name.substring(0, 3)} {session.time}
                     </span>
                   ))}

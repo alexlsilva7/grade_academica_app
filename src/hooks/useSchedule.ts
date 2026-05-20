@@ -13,6 +13,8 @@ export interface SavedGrade {
   disciplines: Discipline[];
 }
 
+export type ThemeMode = 'light' | 'dark' | 'system';
+
 export function useSchedule() {
   const [view, setView] = useState<'home' | 'schedule'>('home');
   const [gradeTitle, setGradeTitle] = useState<string>('');
@@ -22,6 +24,52 @@ export function useSchedule() {
   const [conflictMsg, setConflictMsg] = useState<string | null>(null);
   const [isProcessingPdf, setIsProcessingPdf] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [themePreference, setThemePreference] = useState<ThemeMode>(() => {
+    try {
+      const storedTheme = localStorage.getItem('themePreference') as ThemeMode;
+      return (storedTheme === 'light' || storedTheme === 'dark') ? storedTheme : 'system';
+    } catch {
+      return 'system';
+    }
+  });
+
+  const [isSystemDark, setIsSystemDark] = useState<boolean>(() => {
+    try {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      setIsSystemDark(e.matches);
+    };
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  const darkMode = themePreference === 'system' ? isSystemDark : themePreference === 'dark';
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (darkMode) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('themePreference', themePreference);
+  }, [darkMode, themePreference]);
+
+  const cycleTheme = () => {
+    setThemePreference(prev => {
+      if (prev === 'system') return 'light';
+      if (prev === 'light') return 'dark';
+      return 'system';
+    });
+  };
 
   const [mobileTab, setMobileTab] = useState<'disciplines' | 'schedule'>('disciplines');
   const [searchQuery, setSearchQuery] = useState('');
@@ -351,5 +399,8 @@ export function useSchedule() {
     completedDisciplines,
     toggleCompleted,
     getDisciplineConflictInstance,
+    darkMode,
+    themePreference,
+    cycleTheme,
   };
 }
