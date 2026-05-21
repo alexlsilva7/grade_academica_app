@@ -4,7 +4,7 @@ import { exportAllUserData, importAllUserData } from '../utils/backupHelper';
 import { ThemeMode } from '../hooks/useSchedule';
 
 interface NavbarProps {
-  setView: (view: 'home' | 'schedule' | 'matriz') => void;
+  setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines') => void;
   title: string;
   course: string | null;
   darkMode: boolean;

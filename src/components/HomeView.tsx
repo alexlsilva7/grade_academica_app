@@ -4,7 +4,7 @@ import { exportAllUserData, importAllUserData } from '../utils/backupHelper';
 
 interface HomeViewProps {
   loadPredefinedGrade: (type: 'bcc' | 'eal') => void;
-  setView: (view: 'home' | 'schedule' | 'matriz') => void;
+  setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines') => void;
   themePreference: 'light' | 'dark' | 'system';
   cycleTheme: () => void;
   darkMode: boolean;
@@ -191,9 +191,14 @@ export function HomeView({
                   <p className="text-sm text-slate-500 dark:text-slate-400">Monte seu horário com as disciplinas ofertadas este semestre.</p>
                 </button>
                 
-                <button disabled className="w-full p-6 border border-slate-200 dark:border-slate-800 rounded-xl text-left opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900/50 flex flex-col gap-2">
-                  <h3 className="font-semibold text-slate-700 dark:text-slate-200 text-lg">Disciplinas</h3>
-                  <p className="text-sm text-slate-400 dark:text-slate-500">Em breve</p>
+                <button 
+                  onClick={() => setView('disciplines')}
+                  className="w-full p-6 border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 rounded-xl transition-all text-left shadow-sm group flex flex-col gap-2"
+                >
+                  <h3 className="font-semibold text-slate-800 dark:text-slate-100 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 text-lg">
+                    Disciplinas
+                  </h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Navegue por todo o catálogo de disciplinas cadastradas no curso.</p>
                 </button>
                 
                 <button disabled className="w-full p-6 border border-slate-200 dark:border-slate-800 rounded-xl text-left opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900/50 flex flex-col gap-2">

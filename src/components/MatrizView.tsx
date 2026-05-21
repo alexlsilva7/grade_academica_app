@@ -7,7 +7,6 @@ import {
   Search, 
   Filter, 
   RotateCcw, 
-  HelpCircle, 
   GraduationCap, 
   Info,
   ChevronRight,
@@ -102,7 +101,7 @@ interface Subject {
 }
 
 interface MatrizViewProps {
-  setView: (view: 'home' | 'schedule' | 'matriz') => void;
+  setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines') => void;
   course: string | null;
   darkMode: boolean;
   themePreference: ThemeMode;
@@ -139,7 +138,6 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
   const [filterType, setFilterType] = useState('todos');
   const [filterStatus, setFilterStatus] = useState('todos');
   const [isMobileGrid, setIsMobileGrid] = useState(false);
-  const [showHelp, setShowHelp] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   // --- PERSISTÊNCIA ---
@@ -562,16 +560,7 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
               <span>{isMobileGrid ? "Ver Grade Larga" : "Ver Lista Compacta"}</span>
             </button>
 
-            {/* Ajuda / Legenda & Limpar Progresso */}
-            <button 
-              onClick={() => setShowHelp(true)}
-              className="flex items-center gap-1.5 text-xs bg-white dark:bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 w-full sm:w-auto justify-center shrink-0 cursor-pointer font-semibold shadow-xs"
-              title="Mostrar legenda e ajuda"
-            >
-              <HelpCircle className="h-3.5 w-3.5 text-slate-500" />
-              <span>Ajuda / Legenda</span>
-            </button>
-
+            {/* Limpar Progresso */}
             <button 
               onClick={() => setShowResetConfirm(true)}
               className="flex items-center gap-1.5 text-xs bg-rose-50 dark:bg-rose-950/20 px-3 py-1.5 rounded-lg border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 w-full sm:w-auto justify-center shrink-0 cursor-pointer font-semibold shadow-xs"
@@ -713,7 +702,6 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
                           ${s.id === 'estagio' && !isMobileGrid ? 'h-[250px]' : 'min-h-[96px] xl:min-h-[105px]'}
                           ${!isFiltered ? 'hidden' : ''}
                         `}
-                        title="Clique: Alternar estado | Botão direito: Detalhes"
                       >
                         {/* Indicadores de Estado no Canto */}
                         <div className="absolute top-1.5 right-1.5 flex gap-1 items-center z-20">
@@ -1027,86 +1015,6 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
         </div>
       )}
 
-      {/* Modal de Ajuda / Legenda */}
-      {showHelp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowHelp(false)}>
-          <div 
-            className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-2xl animate-in zoom-in-95 duration-200 overflow-y-auto max-h-[90vh]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-start border-b border-slate-100 dark:border-slate-800 pb-4 mb-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-indigo-50 dark:bg-indigo-950/40 rounded-full flex items-center justify-center">
-                  <HelpCircle className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">Ajuda & Cores da Grade</h3>
-                  <p className="text-xs text-slate-400 dark:text-slate-500">Guia de funcionamento e fluxograma</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setShowHelp(false)} 
-                className="p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:text-slate-300 dark:hover:bg-slate-800 transition-colors"
-                title="Fechar"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-5 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-              <div>
-                <h4 className="font-bold text-slate-800 dark:text-slate-100 mb-1.5 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Como interagir?
-                </h4>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li><strong>Clique único:</strong> Altera o estado da disciplina sequencialmente (Pendente → Cursando → Concluída).</li>
-                  <li><strong>Botão direito ou toque longo:</strong> Abre o painel de detalhes com a ementa, pré-requisitos e libertações.</li>
-                  <li><strong>Passar o cursor (Hover):</strong> Realça os <strong>pré-requisitos (borda vermelha)</strong> e as disciplinas que ela <strong>libera/desbloqueia (borda verde)</strong>.</li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-slate-800 dark:text-slate-100 mb-2 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Código de Cores do Progresso
-                </h4>
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="p-2.5 rounded-lg border border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300 flex items-center gap-2 font-medium">
-                    <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full shrink-0"></span>
-                    <span>Concluída</span>
-                  </div>
-                  <div className="p-2.5 rounded-lg border border-amber-400 bg-amber-50/50 dark:bg-amber-950/20 text-amber-800 dark:text-amber-300 flex items-center gap-2 font-medium">
-                    <span className="w-2.5 h-2.5 bg-amber-400 rounded-full shrink-0 animate-pulse"></span>
-                    <span>Acursando</span>
-                  </div>
-                  <div className="p-2.5 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 flex items-center gap-2 font-medium">
-                    <span className="w-2.5 h-2.5 bg-slate-400 rounded-full shrink-0"></span>
-                    <span>Pendente</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-slate-150 dark:border-slate-800">
-                <h4 className="font-bold text-slate-800 dark:text-slate-100 mb-1 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Alerta de Bloqueio ⚠️
-                </h4>
-                <p className="text-slate-500 dark:text-slate-400">
-                  Um ícone de alerta em formato de triângulo significa que a disciplina possui pré-requisitos pendentes no fluxo que ainda não foram marcados como concluídos.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setShowHelp(false)}
-                className="w-full sm:w-auto px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer"
-              >
-                Entendi
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

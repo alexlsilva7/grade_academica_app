@@ -6,7 +6,7 @@ import { hasDisciplineDetails } from '../utils/detailsHelper';
 
 interface SidebarProps {
   mobileTab: string;
-  setView: (view: 'home' | 'schedule') => void;
+  setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines') => void;
   gradeTitle: string;
   periods: number[];
   selectedPeriod: number;

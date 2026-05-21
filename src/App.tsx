@@ -1,6 +1,7 @@
 import { useSchedule } from './hooks/useSchedule';
 import { HomeView } from './components/HomeView';
 import { MatrizView } from './components/MatrizView';
+import { DisciplinesView } from './components/DisciplinesView';
 import { Sidebar } from './components/Sidebar';
 import { ScheduleGrid } from './components/ScheduleGrid';
 import { MobileNav } from './components/MobileNav';
@@ -31,6 +32,14 @@ export default function App() {
           themePreference={scheduleProps.themePreference}
           cycleTheme={scheduleProps.cycleTheme}
           schedule={scheduleProps.schedule}
+        />
+      ) : scheduleProps.view === 'disciplines' ? (
+        <DisciplinesView
+          setView={scheduleProps.setView}
+          course={scheduleProps.selectedCourse}
+          darkMode={scheduleProps.darkMode}
+          themePreference={scheduleProps.themePreference}
+          cycleTheme={scheduleProps.cycleTheme}
         />
       ) : (
         <div className="h-[100dvh] bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans flex flex-col overflow-hidden animate-in fade-in duration-500">
