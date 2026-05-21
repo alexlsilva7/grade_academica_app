@@ -133,6 +133,8 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
 
   const [hoveredSubject, setHoveredSubject] = useState<Subject | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
+  const [svgSize, setSvgSize] = useState({ width: 0, height: 0 });
+  const [arrows, setArrows] = useState<{ id: string; type: 'prereq' | 'dependent'; path: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('todos');
   const [filterStatus, setFilterStatus] = useState('todos');
@@ -183,6 +185,135 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
       return pre && pre.status === 'concluido';
     });
   };
+
+  // --- CÁLCULO DAS COORDENADAS DOS CONECTORES (SETAS DE PRÉ-REQUISITOS / LIBERAÇÕES) ---
+  const getConnectorPoints = (sourceId: string, targetId: string, containerEl: HTMLElement) => {
+    const sourceEl = document.getElementById(`subject-card-${sourceId}`);
+    const targetEl = document.getElementById(`subject-card-${targetId}`);
+    if (!sourceEl || !targetEl || sourceEl.offsetParent === null || targetEl.offsetParent === null) return null;
+
+    const containerRect = containerEl.getBoundingClientRect();
+    const sourceRect = sourceEl.getBoundingClientRect();
+    const targetRect = targetEl.getBoundingClientRect();
+
+    const srcLeft = sourceRect.left - containerRect.left + containerEl.scrollLeft;
+    const srcTop = sourceRect.top - containerRect.top + containerEl.scrollTop;
+    const srcRight = srcLeft + sourceRect.width;
+    const srcHeight = sourceRect.height;
+
+    const tgtLeft = targetRect.left - containerRect.left + containerEl.scrollLeft;
+    const tgtTop = targetRect.top - containerRect.top + containerEl.scrollTop;
+    const tgtRight = tgtLeft + targetRect.width;
+    const tgtHeight = targetRect.height;
+
+    let startX = srcRight;
+    let startY = srcTop + srcHeight / 2;
+    let endX = tgtLeft;
+    let endY = tgtTop + tgtHeight / 2;
+
+    if (tgtLeft + 5 < srcLeft) {
+      startX = srcLeft;
+      endX = tgtRight;
+    } else if (Math.abs(srcLeft - tgtLeft) < 15) {
+      startX = srcLeft + sourceRect.width / 2;
+      endX = tgtLeft + targetRect.width / 2;
+      if (tgtTop > srcTop) {
+        startY = srcTop + srcHeight;
+        endY = tgtTop;
+      } else {
+        startY = srcTop;
+        endY = tgtTop + tgtHeight;
+      }
+    }
+
+    return { startX, startY, endX, endY };
+  };
+
+  const getCurvePath = (startX: number, startY: number, endX: number, endY: number) => {
+    const dx = endX - startX;
+    const dy = endY - startY;
+
+    const angle = Math.atan2(dy, dx);
+    const offset = 8;
+    const targetX = endX - Math.cos(angle) * offset;
+    const targetY = endY - Math.sin(angle) * offset;
+
+    const controlOffset = Math.max(30, Math.abs(dx) * 0.4);
+
+    let cp1x = startX;
+    let cp1y = startY;
+    let cp2x = targetX;
+    let cp2y = targetY;
+
+    if (Math.abs(dx) > 20) {
+      cp1x = startX + (dx > 0 ? controlOffset : -controlOffset);
+      cp2x = targetX - (dx > 0 ? controlOffset : -controlOffset);
+    } else {
+      const verticalControlOffset = Math.max(20, Math.abs(dy) * 0.3);
+      cp1y = startY + (dy > 0 ? verticalControlOffset : -verticalControlOffset);
+      cp2y = targetY - (dy > 0 ? verticalControlOffset : -verticalControlOffset);
+    }
+
+    return `M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${targetX} ${targetY}`;
+  };
+
+  const updateArrowCoordinates = () => {
+    const container = document.getElementById('matriz-scroll-container');
+    const active = hoveredSubject || selectedSubject;
+
+    if (!container || !active || isMobileGrid) {
+      setArrows([]);
+      setSvgSize({ width: 0, height: 0 });
+      return;
+    }
+
+    setSvgSize({
+      width: container.scrollWidth,
+      height: container.scrollHeight
+    });
+
+    const newArrows: typeof arrows = [];
+
+    active.prereqs.forEach(preId => {
+      const points = getConnectorPoints(preId, active.id, container);
+      if (points) {
+        const path = getCurvePath(points.startX, points.startY, points.endX, points.endY);
+        newArrows.push({
+          id: `${preId}-${active.id}`,
+          type: 'prereq',
+          path
+        });
+      }
+    });
+
+    const deps = dependentsMap[active.id] || [];
+    deps.forEach(depId => {
+      const points = getConnectorPoints(active.id, depId, container);
+      if (points) {
+        const path = getCurvePath(points.startX, points.startY, points.endX, points.endY);
+        newArrows.push({
+          id: `${active.id}-${depId}`,
+          type: 'dependent',
+          path
+        });
+      }
+    });
+
+    setArrows(newArrows);
+  };
+
+  useEffect(() => {
+    const handle = requestAnimationFrame(() => {
+      updateArrowCoordinates();
+    });
+
+    window.addEventListener('resize', updateArrowCoordinates);
+
+    return () => {
+      cancelAnimationFrame(handle);
+      window.removeEventListener('resize', updateArrowCoordinates);
+    };
+  }, [hoveredSubject, selectedSubject, isMobileGrid, searchQuery, filterType, filterStatus, subjects, dependentsMap]);
 
   // --- ACÇÕES ---
   const toggleSubjectStatus = (id: string) => {
@@ -458,10 +589,66 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
         
         {/* LADO ESQUERDO: A MATRIZ CURRICULAR */}
         <div className="w-full min-w-0">
-          <div className={`
-            ${isMobileGrid ? 'grid grid-cols-1 gap-4' : 'flex lg:grid lg:grid-cols-9 gap-3 overflow-x-auto pb-4 max-w-full lg:max-w-none px-1'}
-            scroll-smooth md:scroll-auto
-          `}>
+          <div 
+            id="matriz-scroll-container"
+            className={`
+              relative
+              ${isMobileGrid ? 'grid grid-cols-1 gap-4' : 'flex lg:grid lg:grid-cols-9 gap-3 overflow-x-auto pb-4 max-w-full lg:max-w-none px-1'}
+              scroll-smooth md:scroll-auto
+            `}
+          >
+            {/* SVG Connector Overlay */}
+            {!isMobileGrid && (hoveredSubject || selectedSubject) && arrows.length > 0 && (
+              <svg 
+                className="absolute top-0 left-0 pointer-events-none z-20 overflow-visible" 
+                style={{ 
+                  width: `${svgSize.width}px`, 
+                  height: `${svgSize.height}px` 
+                }}
+              >
+                <defs>
+                  {/* Arrowhead marker for prerequisites (rose-500) */}
+                  <marker
+                    id="arrow-prereq"
+                    viewBox="0 0 10 10"
+                    refX="8"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto-start-reverse"
+                  >
+                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" className="fill-rose-500 dark:fill-rose-400" />
+                  </marker>
+                  {/* Arrowhead marker for dependents (teal-500) */}
+                  <marker
+                    id="arrow-dependent"
+                    viewBox="0 0 10 10"
+                    refX="8"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto-start-reverse"
+                  >
+                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" className="fill-teal-500 dark:fill-teal-400" />
+                  </marker>
+                </defs>
+                {arrows.map(arrow => (
+                  <path
+                    key={arrow.id}
+                    d={arrow.path}
+                    className={`
+                      fill-none stroke-[2] stroke-linecap-round
+                      ${arrow.type === 'prereq' 
+                        ? 'stroke-rose-500/80 dark:stroke-rose-400/80 [stroke-dasharray:4,4] animate-dash-flow' 
+                        : 'stroke-teal-500/80 dark:stroke-teal-400/80 [stroke-dasharray:4,4] animate-dash-flow'
+                      }
+                    `}
+                    markerEnd={`url(#arrow-${arrow.type})`}
+                  />
+                ))}
+              </svg>
+            )}
+
             {periods.map(p => (
               <div 
                 key={p.number} 
@@ -499,11 +686,11 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
 
                     if (hoveredSubject || selectedSubject) {
                       if (relationship === 'self') {
-                        styles = `${baseStyles} shadow-md scale-[1.03] z-10`;
+                        styles = `${baseStyles} shadow-md scale-[1.03] z-30`;
                       } else if (relationship === 'prereq') {
-                        styles = `${baseStyles} ring-2 ring-rose-200 dark:ring-rose-900 shadow-md scale-[1.02] z-10 border-rose-400`;
+                        styles = `${baseStyles} ring-2 ring-rose-200 dark:ring-rose-900 shadow-md scale-[1.02] z-30 border-rose-400`;
                       } else if (relationship === 'dependent') {
-                        styles = `${baseStyles} ring-2 ring-teal-200 dark:ring-teal-900 shadow-md scale-[1.02] z-10 border-teal-400`;
+                        styles = `${baseStyles} ring-2 ring-teal-200 dark:ring-teal-900 shadow-md scale-[1.02] z-30 border-teal-400`;
                       } else if (relationship === 'unrelated') {
                         highlightClass = 'opacity-30 scale-95 saturate-50 grayscale-[0.5]';
                       }
@@ -512,6 +699,7 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
                     return (
                       <div
                         key={s.id}
+                        id={`subject-card-${s.id}`}
                         onMouseEnter={() => setHoveredSubject(s)}
                         onMouseLeave={() => setHoveredSubject(null)}
                         onClick={() => toggleSubjectStatus(s.id)}

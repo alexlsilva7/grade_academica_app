@@ -54,3 +54,13 @@
 .dark ::-webkit-scrollbar-track {
   background: transparent;
 }
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+.animate-dash-flow {
+  animation: dash 1s linear infinite;
+}
