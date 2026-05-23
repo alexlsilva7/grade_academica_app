@@ -24,7 +24,7 @@ import { ThemeMode } from '../hooks/useSchedule';
 import { Navbar } from './Navbar';
 
 // --- ESTRUTURA COMPLETA DA MATRIZ DO CURSO ---
-const INITIAL_SUBJECTS = [
+const INITIAL_SUBJECTS_NEW = [
   // 1º Período
   { id: 'log_mat_1', code: 'MATM3008', name: 'Lógica Matemática I', hours: 60, period: 1, type: 'basico', prereqs: [], desc: 'Introdução à lógica proposicional e de primeira ordem, sistemas de dedução natural, semântica e completude.' },
   { id: 'geo_anal', code: 'MATM3021', name: 'Geometria Analítica', hours: 60, period: 1, type: 'basico', prereqs: [], desc: 'Vetores no plano e no espaço, retas e planos, cónicas, quádricas e transformações de coordenadas.' },
@@ -87,6 +87,69 @@ const INITIAL_SUBJECTS = [
   { id: 'estagio', code: 'CCMP3061', name: 'Estágio Obrigatório', hours: 300, period: 9, type: 'estagio', prereqs: ['proj_soft'], desc: 'Atividade supervisionada profissional realizada em ambiente empresarial ou laboratorial externo de TI.' },
 ];
 
+const INITIAL_SUBJECTS_OLD = [
+  // 1º Período
+  { id: 'old_calc_1', name: 'Cálculo p/ Computação I', hours: 60, period: 1, type: 'basico', prereqs: [], desc: 'Cálculo Diferencial e Integral' },
+  { id: 'old_geo_anal', name: 'Geometria Analítica', hours: 60, period: 1, type: 'basico', prereqs: [], desc: 'Vetores, retas e planos' },
+  { id: 'old_log_mat', name: 'Lógica Matemática', hours: 60, period: 1, type: 'basico', prereqs: [], desc: 'Lógica proposicional' },
+  { id: 'old_intro_prog', name: 'Introdução à Programação', hours: 90, period: 1, type: 'computacao', prereqs: [], desc: 'Lógica de programação e algoritmos' },
+  { id: 'old_intro_comp', name: 'Introdução à Computação', hours: 30, period: 1, type: 'computacao', prereqs: [], desc: 'Fundamentos de computação' },
+
+  // 2º Período
+  { id: 'old_calc_2', name: 'Cálculo p/ Computação II', hours: 60, period: 2, type: 'basico', prereqs: ['old_calc_1'], desc: 'Integrais parciais e sequências' },
+  { id: 'old_fisica', name: 'Física p/ Computação', hours: 60, period: 2, type: 'basico', prereqs: ['old_calc_1', 'old_geo_anal'], desc: 'Física aplicada' },
+  { id: 'old_alg_lin', name: 'Álgebra Linear', hours: 60, period: 2, type: 'basico', prereqs: ['old_geo_anal'], desc: 'Espaços vetoriais e matrizes' },
+  { id: 'old_aed_1', name: 'Algoritmos e Estruturas de Dados I', hours: 60, period: 2, type: 'computacao', prereqs: ['old_intro_prog'], desc: 'Estruturas de dados básicas' },
+  { id: 'old_poo', name: 'Programação Orientada à Objetos', hours: 60, period: 2, type: 'computacao', prereqs: ['old_intro_prog'], desc: 'Paradigma orientado a objetos' },
+
+  // 3º Período
+  { id: 'old_prob_est', name: 'Probabilidade e Estatística', hours: 60, period: 3, type: 'basico', prereqs: ['old_calc_1'], desc: 'Probabilidade estatística' },
+  { id: 'old_sist_dig', name: 'Sistemas Digitais', hours: 60, period: 3, type: 'computacao', prereqs: ['old_fisica', 'old_log_mat'], desc: 'Circuitos digitais' },
+  { id: 'old_metod_cient', name: 'Metodologia Científica', hours: 30, period: 3, type: 'outros', prereqs: [], desc: 'Metodologia de pesquisa científica' },
+  { id: 'old_mat_disc', name: 'Matemática Discreta', hours: 60, period: 3, type: 'basico', prereqs: ['old_log_mat'], desc: 'Matemática finita' },
+  { id: 'old_aed_2', name: 'Algoritmos e Estruturas de Dados II', hours: 60, period: 3, type: 'computacao', prereqs: ['old_aed_1'], desc: 'Árvores e grafos' },
+  { id: 'old_ingles', name: 'Inglês', hours: 30, period: 3, type: 'outros', prereqs: [], desc: 'Inglês instrumental' },
+
+  // 4º Período
+  { id: 'old_arq_comp', name: 'Arquitetura de Computadores', hours: 60, period: 4, type: 'computacao', prereqs: ['old_sist_dig'], desc: 'Organização de computadores' },
+  { id: 'old_paa', name: 'Projeto e Análise de Algoritmos', hours: 60, period: 4, type: 'computacao', prereqs: ['old_mat_disc', 'old_aed_2'], desc: 'Complexidade de algoritmos' },
+  { id: 'old_eng_soft', name: 'Engenharia de Software', hours: 60, period: 4, type: 'computacao', prereqs: ['old_poo', 'old_aed_2'], desc: 'Processo de desenvolvimento' },
+  { id: 'old_paradigmas', name: 'Paradigmas de Linguagens de Programação', hours: 60, period: 4, type: 'computacao', prereqs: ['old_aed_2'], desc: 'Paradigmas convencionais e novos' },
+  { id: 'old_bd', name: 'Bancos de Dados', hours: 60, period: 4, type: 'computacao', prereqs: ['old_aed_2'], desc: 'Modelagem e SQL' },
+
+  // 5º Período
+  { id: 'old_sist_info', name: 'Sistemas de Informação e Tecnologias', hours: 60, period: 5, type: 'computacao', prereqs: ['old_bd'], desc: 'Sistemas corporativos' },
+  { id: 'old_sist_oper', name: 'Sistemas Operacionais', hours: 60, period: 5, type: 'computacao', prereqs: ['old_arq_comp'], desc: 'Gerenciamento de recursos' },
+  { id: 'old_ia', name: 'Inteligência Artificial', hours: 60, period: 5, type: 'computacao', prereqs: ['old_prob_est', 'old_paa'], desc: 'IA clássica e busca' },
+  { id: 'old_teoria_comp', name: 'Teoria da Computação', hours: 60, period: 5, type: 'computacao', prereqs: ['old_mat_disc'], desc: 'Autômatos e computabilidade' },
+  { id: 'old_redes', name: 'Redes de Computadores', hours: 60, period: 5, type: 'computacao', prereqs: ['old_arq_comp'], desc: 'Protocolos e arquitetura de redes' },
+
+  // 6º Período
+  { id: 'old_comp_graf', name: 'Computação Gráfica', hours: 60, period: 6, type: 'computacao', prereqs: ['old_alg_lin', 'old_aed_2'], desc: 'Rasterização e visualização 3D' },
+  { id: 'old_compiladores', name: 'Compiladores', hours: 60, period: 6, type: 'computacao', prereqs: ['old_teoria_comp'], desc: 'Design de compiladores' },
+  { id: 'old_rec_padroes', name: 'Reconhecimento de Padrões', hours: 60, period: 6, type: 'computacao', prereqs: ['old_alg_lin', 'old_prob_est', 'old_ia'], desc: 'ML e padrões' },
+  { id: 'old_emp_tic', name: 'Empreendimentos em TIC', hours: 60, period: 6, type: 'outros', prereqs: [], desc: 'Empreendedorismo' },
+  { id: 'old_sist_distr', name: 'Sistemas Distribuídos', hours: 60, period: 6, type: 'computacao', prereqs: ['old_redes', 'old_sist_oper'], desc: 'Sistemas tolerantes a falhas' },
+
+  // 7º Período
+  { id: 'old_proj_desenv', name: 'Projeto de Desenvolvimento', hours: 90, period: 7, type: 'computacao', prereqs: ['old_eng_soft'], desc: 'Projeto prático de software' },
+  { id: 'old_ihc', name: 'Interação Humano-Computador', hours: 60, period: 7, type: 'computacao', prereqs: ['old_eng_soft'], desc: 'Design de interfaces' },
+  { id: 'old_comp_soc', name: 'Computadores e Sociedade', hours: 30, period: 7, type: 'outros', prereqs: [], desc: 'Impactos éticos e sociais' },
+  { id: 'old_opt_1', name: 'Optativa 1', hours: 60, period: 7, type: 'optativa', prereqs: [], desc: 'Eletiva' },
+  { id: 'old_opt_2', name: 'Optativa 2', hours: 60, period: 7, type: 'optativa', prereqs: [], desc: 'Eletiva' },
+
+  // 8º Período
+  { id: 'old_opt_3', name: 'Optativa 3', hours: 60, period: 8, type: 'optativa', prereqs: [], desc: 'Eletiva' },
+  { id: 'old_opt_4', name: 'Optativa 4', hours: 60, period: 8, type: 'optativa', prereqs: [], desc: 'Eletiva' },
+  { id: 'old_opt_5', name: 'Optativa 5', hours: 60, period: 8, type: 'optativa', prereqs: [], desc: 'Eletiva' },
+  { id: 'old_opt_6', name: 'Optativa 6', hours: 60, period: 8, type: 'optativa', prereqs: [], desc: 'Eletiva' },
+  { id: 'old_opt_7', name: 'Optativa 7', hours: 60, period: 8, type: 'optativa', prereqs: [], desc: 'Eletiva' },
+
+  // 9º Período
+  { id: 'old_estagio', name: 'Estágio', hours: 300, period: 9, type: 'estagio', prereqs: [], desc: 'Estágio supervisionado' },
+  { id: 'old_tcc', name: 'TCC', hours: 180, period: 9, type: 'computacao', prereqs: [], desc: 'Trabalho de conclusão de curso' },
+];
+
 interface Subject {
   id: string;
   code?: string;
@@ -111,7 +174,11 @@ interface MatrizViewProps {
 
 export function MatrizView({ setView, course, darkMode, themePreference, cycleTheme, schedule }: MatrizViewProps) {
   // --- ESTADO ---
-  const [subjects, setSubjects] = useState<Subject[]>(() => {
+  const [matrixVersion, setMatrixVersion] = useState<'nova' | 'antiga'>(() => {
+    return (localStorage.getItem('bcc_matrix_version') as 'nova' | 'antiga') || 'nova';
+  });
+
+  const [subjectsNew, setSubjectsNew] = useState<Subject[]>(() => {
     const saved = localStorage.getItem('bcc_matriz_progress');
     if (saved) {
       try {
@@ -120,8 +187,52 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
         console.error("Erro ao carregar do localStorage", e);
       }
     }
-    return INITIAL_SUBJECTS.map(s => ({ ...s, status: 'pendente', grade: '' }));
+    return INITIAL_SUBJECTS_NEW.map(s => ({ ...s, status: 'pendente', grade: '' }));
   });
+
+  const [subjectsOld, setSubjectsOld] = useState<Subject[]>(() => {
+    const saved = localStorage.getItem('bcc_matriz_progress_antiga');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Erro ao carregar matriz antiga", e);
+      }
+    }
+    return INITIAL_SUBJECTS_OLD.map(s => ({ ...s, status: 'pendente', grade: '' }));
+  });
+
+  const subjects = matrixVersion === 'nova' ? subjectsNew : subjectsOld;
+  
+  const setSubjects = (updater: React.SetStateAction<Subject[]>) => {
+    if (matrixVersion === 'nova') {
+      setSubjectsNew(updater);
+    } else {
+      setSubjectsOld(updater);
+    }
+  };
+
+  useEffect(() => {
+    localStorage.setItem('bcc_matrix_version', matrixVersion);
+  }, [matrixVersion]);
+
+  useEffect(() => {
+    localStorage.setItem('bcc_matriz_progress', JSON.stringify(subjectsNew));
+    
+    // Synchronize completedDisciplines in localStorage with the completed subjects in the new matrix
+    try {
+      const completedList = subjectsNew
+        .filter(s => s.status === 'concluido')
+        .map(s => s.code || s.id);
+      localStorage.setItem('completedDisciplines', JSON.stringify(completedList));
+    } catch (e) {
+      console.error('Failed to sync completed list with localStorage', e);
+    }
+  }, [subjectsNew]);
+
+  useEffect(() => {
+    localStorage.setItem('bcc_matriz_progress_antiga', JSON.stringify(subjectsOld));
+  }, [subjectsOld]);
 
   const [acexHours, setAcexHours] = useState(() => {
     return Number(localStorage.getItem('bcc_acex_hours')) || 0;
@@ -139,21 +250,6 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
   const [filterStatus, setFilterStatus] = useState('todos');
   const [isMobileGrid, setIsMobileGrid] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
-
-  // --- PERSISTÊNCIA ---
-  useEffect(() => {
-    localStorage.setItem('bcc_matriz_progress', JSON.stringify(subjects));
-    
-    // Synchronize completedDisciplines in localStorage with the completed subjects in the matrix
-    try {
-      const completedList = subjects
-        .filter(s => s.status === 'concluido')
-        .map(s => s.code || s.id);
-      localStorage.setItem('completedDisciplines', JSON.stringify(completedList));
-    } catch (e) {
-      console.error('Failed to sync completed list with localStorage', e);
-    }
-  }, [subjects]);
 
   useEffect(() => {
     localStorage.setItem('bcc_acex_hours', acexHours.toString());
@@ -348,7 +444,11 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
   };
 
   const resetProgress = () => {
-    setSubjects(INITIAL_SUBJECTS.map(s => ({ ...s, status: 'pendente', grade: '' })));
+    if (matrixVersion === 'nova') {
+      setSubjectsNew(INITIAL_SUBJECTS_NEW.map(s => ({ ...s, status: 'pendente', grade: '' })));
+    } else {
+      setSubjectsOld(INITIAL_SUBJECTS_OLD.map(s => ({ ...s, status: 'pendente', grade: '' })));
+    }
     setAcexHours(0);
     setAccHours(0);
     setSelectedSubject(null);
@@ -549,6 +649,30 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
                 <option value="pendente" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Pendentes</option>
                 <option value="disponivel" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Desbloqueadas para Cursar</option>
               </select>
+            </div>
+            
+            {/* Seletor de Grade Curricular */}
+            <div className="flex items-center bg-white dark:bg-slate-900 rounded-lg border border-slate-300 dark:border-slate-700 p-1 w-full sm:w-auto h-[34px]">
+              <button
+                onClick={() => setMatrixVersion('nova')}
+                className={`flex-1 sm:flex-none px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
+                  matrixVersion === 'nova' 
+                    ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 shadow-sm' 
+                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                }`}
+              >
+                Grade Nova
+              </button>
+              <button
+                onClick={() => setMatrixVersion('antiga')}
+                className={`flex-1 sm:flex-none px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
+                  matrixVersion === 'antiga' 
+                    ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 shadow-sm' 
+                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                }`}
+              >
+                Grade Antiga
+              </button>
             </div>
 
             {/* Alternar Vista para Mobile */}
