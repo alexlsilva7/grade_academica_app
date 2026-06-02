@@ -2,6 +2,7 @@ import { useSchedule } from './hooks/useSchedule';
 import { HomeView } from './components/HomeView';
 import { MatrizView } from './components/MatrizView';
 import { DisciplinesView } from './components/DisciplinesView';
+import { PerfilCurricularView } from './components/PerfilCurricularView';
 import { Sidebar } from './components/Sidebar';
 import { ScheduleGrid } from './components/ScheduleGrid';
 import { MobileNav } from './components/MobileNav';
@@ -32,6 +33,11 @@ export default function App() {
           themePreference={scheduleProps.themePreference}
           cycleTheme={scheduleProps.cycleTheme}
           schedule={scheduleProps.schedule}
+        />
+      ) : scheduleProps.view === 'perfil' ? (
+        <PerfilCurricularView
+          setView={scheduleProps.setView}
+          darkMode={scheduleProps.darkMode}
         />
       ) : scheduleProps.view === 'disciplines' ? (
         <DisciplinesView

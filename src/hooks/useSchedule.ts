@@ -16,10 +16,10 @@ export interface SavedGrade {
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 export function useSchedule() {
-  const [view, setView] = useState<'home' | 'schedule' | 'matriz' | 'disciplines'>(() => {
+  const [view, setView] = useState<'home' | 'schedule' | 'matriz' | 'disciplines' | 'perfil'>(() => {
     try {
       const stored = localStorage.getItem('view_preference');
-      return (stored === 'home' || stored === 'schedule' || stored === 'matriz' || stored === 'disciplines') ? stored : 'home';
+      return (stored === 'home' || stored === 'schedule' || stored === 'matriz' || stored === 'disciplines' || stored === 'perfil') ? stored : 'home';
     } catch {
       return 'home';
     }

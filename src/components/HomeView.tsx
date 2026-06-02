@@ -84,7 +84,7 @@ export function HomeView({
           <img 
             src={darkMode ? "/my_ufape_logo_azul.png" : "/my_ufape_logo.png"} 
             alt="My UFAPE Logo" 
-            className="w-24 h-24 mx-auto object-contain drop-shadow-md animate-bounce" 
+            className="w-24 h-24 mx-auto object-contain drop-shadow-md" 
           />
           <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-50">My UFAPE</h1>
           <p className="text-slate-500 dark:text-slate-400 text-lg">Seu assistente acadêmico para o planejamento e acompanhamento curricular</p>
@@ -201,9 +201,22 @@ export function HomeView({
                   <p className="text-sm text-slate-500 dark:text-slate-400">Navegue por todo o catálogo de disciplinas cadastradas no curso.</p>
                 </button>
                 
-                <button disabled className="w-full p-6 border border-slate-200 dark:border-slate-800 rounded-xl text-left opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900/50 flex flex-col gap-2">
-                  <h3 className="font-semibold text-slate-700 dark:text-slate-200 text-lg">Perfil curricular</h3>
-                  <p className="text-sm text-slate-400 dark:text-slate-500">Em breve</p>
+                <button 
+                  onClick={() => selectedCourse === 'bcc' ? setView('perfil') : alert('Perfil curricular ainda não disponível para este curso.')}
+                  className={`w-full p-6 border rounded-xl text-left flex flex-col gap-2 transition-all ${
+                    selectedCourse === 'bcc' 
+                      ? 'border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 shadow-sm group cursor-pointer'
+                      : 'border-slate-200 dark:border-slate-800 opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900/50'
+                  }`}
+                >
+                  <h3 className={`font-semibold text-lg ${
+                    selectedCourse === 'bcc' ? 'text-slate-800 dark:text-slate-100 group-hover:text-indigo-700 dark:group-hover:text-indigo-400' : 'text-slate-700 dark:text-slate-200'
+                  }`}>
+                    Perfil curricular
+                  </h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    {selectedCourse === 'bcc' ? 'Explore os objetivos e perfil de formação do curso.' : 'Em breve'}
+                  </p>
                 </button>
 
                 <button 
