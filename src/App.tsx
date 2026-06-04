@@ -3,6 +3,7 @@ import { HomeView } from './components/HomeView';
 import { MatrizView } from './components/MatrizView';
 import { DisciplinesView } from './components/DisciplinesView';
 import { PerfilCurricularView } from './components/PerfilCurricularView';
+import { AdminView } from './components/AdminView';
 import { Sidebar } from './components/Sidebar';
 import { ScheduleGrid } from './components/ScheduleGrid';
 import { MobileNav } from './components/MobileNav';
@@ -38,6 +39,12 @@ export default function App() {
         <PerfilCurricularView
           setView={scheduleProps.setView}
           darkMode={scheduleProps.darkMode}
+        />
+      ) : scheduleProps.view === 'admin' ? (
+        <AdminView
+          setView={scheduleProps.setView}
+          setDisciplinesList={scheduleProps.setDisciplinesList}
+          setGradeTitle={scheduleProps.setGradeTitle}
         />
       ) : scheduleProps.view === 'disciplines' ? (
         <DisciplinesView

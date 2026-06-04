@@ -1,10 +1,10 @@
 import React, { useRef } from 'react';
-import { BookOpen, Sun, Moon, Monitor, Download, Upload } from 'lucide-react';
+import { BookOpen, Sun, Moon, Monitor, Download, Upload, BrainCircuit } from 'lucide-react';
 import { exportAllUserData, importAllUserData } from '../utils/backupHelper';
 
 interface HomeViewProps {
   loadPredefinedGrade: (type: 'bcc' | 'eal') => void;
-  setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines') => void;
+  setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines' | 'perfil' | 'admin') => void;
   themePreference: 'light' | 'dark' | 'system';
   cycleTheme: () => void;
   darkMode: boolean;
@@ -232,6 +232,19 @@ export function HomeView({
                   }`}>Matriz</h3>
                   <p className="text-sm text-slate-500 dark:text-slate-400">
                     {selectedCourse === 'bcc' ? 'Explore visualmente a grelha curricular do seu curso.' : 'Em breve'}
+                  </p>
+                </button>
+
+                <button 
+                  onClick={() => setView('admin')}
+                  className="w-full p-6 border border-dashed border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 rounded-xl transition-all text-left shadow-sm group flex flex-col gap-2 col-span-1 sm:col-span-2 cursor-pointer"
+                >
+                  <h3 className="font-semibold text-indigo-700 dark:text-indigo-400 text-lg flex items-center gap-2">
+                    <BrainCircuit className="w-5 h-5 text-indigo-500 shrink-0 animate-pulse" />
+                    <span>Painel do Administrador (IA Extração)</span>
+                  </h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Cole ementas ou PPCs brutos de qualquer curso. Extraia o currículo completo de disciplinas e horários com Inteligência Artificial, edite e guarde permanentemente no servidor.
                   </p>
                 </button>
               </div>

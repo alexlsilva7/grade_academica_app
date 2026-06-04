@@ -2,10 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { bcc2026_1, eal2026_1 } from '../data';
 import { Discipline, TimeSlot } from '../types';
 import { TIMESLOTS } from '../constants';
-import { GoogleGenAI, Type } from '@google/genai';
-
-const apiKey = process.env.GEMINI_API_KEY || (import.meta as any).env?.VITE_GEMINI_API_KEY;
-const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 export interface SavedGrade {
   id: string;
@@ -16,10 +12,10 @@ export interface SavedGrade {
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 export function useSchedule() {
-  const [view, setView] = useState<'home' | 'schedule' | 'matriz' | 'disciplines' | 'perfil'>(() => {
+  const [view, setView] = useState<'home' | 'schedule' | 'matriz' | 'disciplines' | 'perfil' | 'admin'>(() => {
     try {
       const stored = localStorage.getItem('view_preference');
-      return (stored === 'home' || stored === 'schedule' || stored === 'matriz' || stored === 'disciplines' || stored === 'perfil') ? stored : 'home';
+      return (stored === 'home' || stored === 'schedule' || stored === 'matriz' || stored === 'disciplines' || stored === 'perfil' || stored === 'admin') ? stored : 'home';
     } catch {
       return 'home';
     }
@@ -320,12 +316,6 @@ export function useSchedule() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (!ai) {
-      setConflictMsg("API key do Gemini não está configurada.");
-      setTimeout(() => setConflictMsg(null), 4000);
-      return;
-    }
-
     setIsProcessingPdf(true);
     
     try {
@@ -341,97 +331,56 @@ export function useSchedule() {
       
       const base64Data = await base64Promise;
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3.1-flash-lite",
-        contents: [
-          {
-            text: "Extraia todas as disciplinas deste PDF. Para cada disciplina, encontre o nome, o professor, o período e os horários das aulas. Mapeie os dias para 1 (Segunda) até 6 (Sábado). Mapeie os horários no formato HH:MM - HH:MM, por exemplo: '07:30 - 08:30', '13:00 - 14:00', '14:00 - 16:00', '16:00 - 18:00', '18:30 - 20:10' ou '20:10 - 21:50'. Se um horário não bater exatamente, adapte para a opção mais próxima. Gere um ID único para cada disciplina. Se o período não estiver claro, use 0."
-          },
-          {
-            inlineData: {
-              mimeType: file.type || "application/pdf",
-              data: base64Data
-            }
-          }
-        ],
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                id: { type: Type.STRING },
-                name: { type: Type.STRING },
-                professor: { type: Type.STRING },
-                period: { type: Type.INTEGER, description: "Use 0 for electives/optativas or if period is unknown." },
-                sessions: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      day: { type: Type.INTEGER, description: "1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday" },
-                      time: { type: Type.STRING, description: "Format: HH:MM - HH:MM" }
-                    },
-                    required: ["day", "time"]
-                  }
-                }
-              },
-              required: ["id", "name", "professor", "period", "sessions"]
-            }
-          }
-        }
+      const response = await fetch("/api/extract-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          base64Data,
+          mimeType: file.type || "application/pdf",
+          fileName: file.name
+        })
       });
 
-      if (response.text) {
-        let textResponse = response.text;
-        // Strip out markdown code blocks if the response includes them
-        if (textResponse.startsWith('```')) {
-          textResponse = textResponse.replace(/^```(json)?\n?/i, '').replace(/\n?```$/i, '');
-        }
-        
-        try {
-          const newDisciplines = JSON.parse(textResponse) as Discipline[];
-          if (!Array.isArray(newDisciplines) || newDisciplines.length === 0) {
-            throw new Error("Formato inválido ou nenhuma disciplina encontrada.");
-          }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Falha ao processar o PDF.");
+      }
 
-          const sanitizedDisciplines = newDisciplines.map(d => ({
-            ...d,
-            period: (d.period === null || d.period === undefined || d.period < 0) ? 0 : d.period,
-            sessions: d.sessions ? d.sessions.filter(s => 
-              [1, 2, 3, 4, 5, 6].includes(s.day)
-            ) : []
-          }));
-          
-          setDisciplinesList(sanitizedDisciplines);
-          const newTitle = file.name.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
-          setGradeTitle(newTitle);
-          setSchedule([]);
-          if (sanitizedDisciplines.length > 0) {
-            const availablePeriods = Array.from(new Set(sanitizedDisciplines.map(d => d.period))).sort((a, b) => {
-              const pA = a as number;
-              const pB = b as number;
-              if (pA === 0) return 1;
-              if (pB === 0) return -1;
-              return pA - pB;
-            });
-            setSelectedPeriod(availablePeriods[0] as number);
-          }
-          setView('schedule');
-          saveGradeToLocal(newTitle, sanitizedDisciplines);
-        } catch (parseError) {
-          console.error("Parse error:", parseError, textResponse);
-          setConflictMsg("O PDF não contém uma grade válida ou o formato não foi reconhecido.");
-          setTimeout(() => setConflictMsg(null), 5000);
+      const responseData = await response.json();
+      const newDisciplines = responseData.disciplines;
+
+      if (newDisciplines && Array.isArray(newDisciplines) && newDisciplines.length > 0) {
+        const sanitizedDisciplines = newDisciplines.map(d => ({
+          ...d,
+          period: (d.period === null || d.period === undefined || d.period < 0) ? 0 : d.period,
+          sessions: d.sessions ? d.sessions.filter(s => 
+            [1, 2, 3, 4, 5, 6].includes(s.day)
+          ) : []
+        }));
+        
+        setDisciplinesList(sanitizedDisciplines);
+        const newTitle = file.name.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
+        setGradeTitle(newTitle);
+        setSchedule([]);
+        if (sanitizedDisciplines.length > 0) {
+          const availablePeriods = Array.from(new Set(sanitizedDisciplines.map(d => d.period))).sort((a, b) => {
+            const pA = a as number;
+            const pB = b as number;
+            if (pA === 0) return 1;
+            if (pB === 0) return -1;
+            return pA - pB;
+          });
+          setSelectedPeriod(availablePeriods[0] as number);
         }
+        setView('schedule');
+        saveGradeToLocal(newTitle, sanitizedDisciplines);
       } else {
-        setConflictMsg("Não foi possível extrair conteúdo do PDF.");
+        setConflictMsg("O PDF não contém uma grade válida ou nenhuma disciplina foi encontrada.");
         setTimeout(() => setConflictMsg(null), 5000);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error("Generation error:", e);
-      setConflictMsg("Erro ao processar o PDF. Certifique-se de que é um documento válido.");
+      setConflictMsg(e.message || "Erro ao processar o PDF. Certifique-se de que é um documento válido.");
       setTimeout(() => setConflictMsg(null), 5000);
     } finally {
       setIsProcessingPdf(false);
@@ -561,14 +510,16 @@ export function useSchedule() {
   };
 
   return {
-    hasApiKey: !!ai,
+    hasApiKey: true,
     view,
     setView,
     gradeTitle,
+    setGradeTitle,
     selectedPeriod,
     setSelectedPeriod,
     schedule,
     disciplinesList,
+    setDisciplinesList,
     conflictMsg,
     isProcessingPdf,
     fileInputRef,
