@@ -1,0 +1,258 @@
+[
+  {
+    "id": "p1_matematica_aplicada_adm_cont",
+    "code": "ADM00003",
+    "name": "Matemática Aplicada à Administração e Contabilidade",
+    "professor": "Karla Carolina Alves da Silva",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "18:30 - 20:10"
+      },
+      {
+        "day": 1,
+        "time": "20:10 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "p1_introducao_economia",
+    "code": "ADM00002",
+    "name": "Introdução à Economia",
+    "professor": "Epaminondas Luiz Borges Filho",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "18:30 - 20:10"
+      },
+      {
+        "day": 2,
+        "time": "20:10 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "p1_introducao_administracao",
+    "code": "ADM00001",
+    "name": "Introdução à Administração",
+    "professor": "Luiza Cristina Jordão Braga Vilaça da Rocha",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "18:30 - 20:10"
+      },
+      {
+        "day": 3,
+        "time": "20:10 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "p1_introducao_contabilidade",
+    "code": "ADM00004",
+    "name": "Introdução à Contabilidade",
+    "professor": "Diego Fillipe de Souza",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "18:30 - 20:10"
+      },
+      {
+        "day": 4,
+        "time": "20:10 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "p1_filosofia_etica",
+    "code": "ADM00005",
+    "name": "Filosofia e Ética",
+    "professor": "Marcos Paulo do Nascimento Silva",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 5,
+        "time": "18:30 - 20:10"
+      },
+      {
+        "day": 5,
+        "time": "20:10 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "p2_instituicoes_direito",
+    "code": "ADM00010",
+    "name": "Instituições de Direito",
+    "professor": "A DEFINIR",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "18:30 - 20:10"
+      },
+      {
+        "day": 4,
+        "time": "20:10 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "p2_matematica_financeira",
+    "code": "ADM00007",
+    "name": "Matemática Financeira",
+    "professor": "Diego Fillipe de Souza",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "18:30 - 20:10"
+      },
+      {
+        "day": 2,
+        "time": "20:10 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "p2_comportamento_organizacional",
+    "code": "ADM00009",
+    "name": "Comportamento Organizacional",
+    "professor": "Cleysson Ricardo Jordão Braga Dias",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "18:30 - 20:10"
+      },
+      {
+        "day": 3,
+        "time": "20:10 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "p2_gestao_custos",
+    "code": "ADM00008",
+    "name": "Gestão de Custos",
+    "professor": "Marcello Angotti",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "18:30 - 20:10"
+      },
+      {
+        "day": 1,
+        "time": "20:10 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "p2_teoria_geral_administracao",
+    "code": "ADM00006",
+    "name": "Teoria Geral da Administração - TGA",
+    "professor": "Antonio Batista da Silva",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 5,
+        "time": "18:30 - 20:10"
+      },
+      {
+        "day": 5,
+        "time": "20:10 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "p3_organizacao_sistemas_metodos",
+    "code": "ADM00011",
+    "name": "Organização, Sistemas e Métodos",
+    "professor": "Luiza Cristina Jordão Braga Vilaça da Rocha",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "18:30 - 20:10"
+      },
+      {
+        "day": 2,
+        "time": "20:10 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "p3_gestao_financeira_1",
+    "code": "ADM00012",
+    "name": "Gestão Financeira 1",
+    "professor": "Marcello Angotti",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "20:10 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "p3_estatistica_basica",
+    "code": "ADM00013",
+    "name": "Estatística Básica",
+    "professor": "A DEFINIR",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 5,
+        "time": "20:10 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "p3_gestao_pessoas_1",
+    "code": "ADM00014",
+    "name": "Gestão de Pessoas 1",
+    "professor": "Cleysson Ricardo Jordão Braga Dias",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "20:10 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "p3_metodologia_cientifica",
+    "code": "ADM00015",
+    "name": "Metodologia Científica",
+    "professor": "A DEFINIR",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "18:30 - 20:10"
+      },
+      {
+        "day": 4,
+        "time": "20:10 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "opt_cooperativismo",
+    "code": "ADM00043",
+    "name": "Cooperativismo",
+    "professor": "Daniela Moreira",
+    "period": 0,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "14:00 - 16:00"
+      }
+    ]
+  }
+]

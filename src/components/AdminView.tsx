@@ -7,7 +7,7 @@ import {
 import { Discipline, Session, DayOfWeek } from '../types';
 
 interface AdminViewProps {
-  setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines' | 'perfil' | 'admin') => void;
+  setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines' | 'admin') => void;
   setDisciplinesList: (disciplines: Discipline[]) => void;
   setGradeTitle: (title: string) => void;
 }

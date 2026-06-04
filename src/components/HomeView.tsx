@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
-import { BookOpen, Sun, Moon, Monitor, Download, Upload, BrainCircuit } from 'lucide-react';
+import { BookOpen, Sun, Moon, Monitor, Download, Upload, BrainCircuit, CalendarDays, Layers, ArrowRight } from 'lucide-react';
 import { exportAllUserData, importAllUserData } from '../utils/backupHelper';
 import { isProduction } from '../utils/domain';
 
 interface HomeViewProps {
-  loadPredefinedGrade: (type: 'bcc' | 'eal') => void;
-  setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines' | 'perfil' | 'admin') => void;
+  loadPredefinedGrade: (type: 'bcc' | 'eal' | 'adm') => void;
+  setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines' | 'admin') => void;
   themePreference: 'light' | 'dark' | 'system';
   cycleTheme: () => void;
   darkMode: boolean;
@@ -105,9 +105,13 @@ export function HomeView({
               </div>
               
               <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-                <button disabled className="w-full px-4 py-3 border border-slate-200 dark:border-slate-800 rounded-xl text-left opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900/50">
-                  <div className="font-medium text-slate-700 dark:text-slate-200 text-sm">Administração</div>
-                  <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Em breve</div>
+                <button 
+                  onClick={() => changeCourse('adm')}
+                  className="w-full px-4 py-3 border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 rounded-xl transition-all text-left shadow-sm group"
+                >
+                  <div className="font-medium text-slate-700 dark:text-slate-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 text-sm">
+                    Administração
+                  </div>
                 </button>
                 
                 <button disabled className="w-full px-4 py-3 border border-slate-200 dark:border-slate-800 rounded-xl text-left opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900/50">
@@ -168,78 +172,122 @@ export function HomeView({
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">
-                      {selectedCourse === 'bcc' ? 'Ciência da Computação' : selectedCourse === 'eal' ? 'Engenharia de Alimentos' : 'Curso Selecionado'}
+                      {selectedCourse === 'bcc' 
+                        ? 'Ciência da Computação' 
+                        : selectedCourse === 'eal' 
+                          ? 'Engenharia de Alimentos' 
+                          : selectedCourse === 'adm'
+                            ? 'Administração'
+                            : 'Curso Selecionado'}
                     </h2>
                     <button onClick={() => changeCourse(null)} className="text-sm text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 mt-1 hover:underline text-left">
                       Alterar curso
                     </button>
                   </div>
                 </div>
-                
-                <select className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:w-auto p-2.5 cursor-pointer transition-colors outline-none font-medium">
-                  <option value="2026.1" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">2026.1</option>
-                </select>
               </div>
               
-              <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                {/* Card: Horário Letivo */}
                 <button 
-                  onClick={() => loadPredefinedGrade(selectedCourse as 'bcc' | 'eal')}
-                  className="w-full p-6 border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 rounded-xl transition-all text-left shadow-sm group flex flex-col gap-2"
+                  onClick={() => loadPredefinedGrade(selectedCourse as 'bcc' | 'eal' | 'adm')}
+                  className="w-full p-6 text-left border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/20 dark:hover:bg-indigo-950/10 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between h-full bg-white dark:bg-slate-900 cursor-pointer"
                 >
-                  <h3 className="font-semibold text-slate-800 dark:text-slate-100 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 text-lg">
-                    Horário Letivo
-                  </h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Monte seu horário com as disciplinas ofertadas este semestre.</p>
+                  <div>
+                    <div className="flex items-center justify-between w-full mb-5">
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-300">
+                        <CalendarDays className="w-6 h-6" />
+                      </div>
+                    </div>
+                    <h3 className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 text-lg tracking-tight transition-colors">
+                      Horário Letivo
+                    </h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                      Monte sua grade horária personalizada com as turmas ofertadas este semestre.
+                    </p>
+                  </div>
+                  
+                  <div className="mt-5 flex items-center text-xs font-semibold text-indigo-600 dark:text-indigo-400 gap-1 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
+                    <span>Montar Grade</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </div>
                 </button>
                 
+                {/* Card: Disciplinas */}
                 <button 
                   onClick={() => setView('disciplines')}
-                  className="w-full p-6 border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 rounded-xl transition-all text-left shadow-sm group flex flex-col gap-2"
+                  className="w-full p-6 text-left border border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-800 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/10 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between h-full bg-white dark:bg-slate-900 cursor-pointer"
                 >
-                  <h3 className="font-semibold text-slate-800 dark:text-slate-100 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 text-lg">
-                    Disciplinas
-                  </h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Navegue por todo o catálogo de disciplinas cadastradas no curso.</p>
-                </button>
-                
-                <button 
-                  onClick={() => selectedCourse === 'bcc' ? setView('perfil') : alert('Perfil curricular ainda não disponível para este curso.')}
-                  className={`w-full p-6 border rounded-xl text-left flex flex-col gap-2 transition-all ${
-                    selectedCourse === 'bcc' 
-                      ? 'border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 shadow-sm group cursor-pointer'
-                      : 'border-slate-200 dark:border-slate-800 opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900/50'
-                  }`}
-                >
-                  <h3 className={`font-semibold text-lg ${
-                    selectedCourse === 'bcc' ? 'text-slate-800 dark:text-slate-100 group-hover:text-indigo-700 dark:group-hover:text-indigo-400' : 'text-slate-700 dark:text-slate-200'
-                  }`}>
-                    Perfil curricular
-                  </h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
-                    {selectedCourse === 'bcc' ? 'Explore os objetivos e perfil de formação do curso.' : 'Em breve'}
-                  </p>
+                  <div>
+                    <div className="flex items-center justify-between w-full mb-5">
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform duration-300">
+                        <BookOpen className="w-6 h-6" />
+                      </div>
+                    </div>
+                    <h3 className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 text-lg tracking-tight transition-colors">
+                      Disciplinas
+                    </h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                      Consulte a lista completa de disciplinas, ementas e pré-requisitos do curso.
+                    </p>
+                  </div>
+                  
+                  <div className="mt-5 flex items-center text-xs font-semibold text-emerald-600 dark:text-emerald-400 gap-1 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
+                    <span>Consultar Catálogo</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </div>
                 </button>
 
+                {/* Card: Matriz */}
                 <button 
                   onClick={() => selectedCourse === 'bcc' ? setView('matriz') : alert('Matriz ainda não disponível para este curso.')}
-                  className={`w-full p-6 border rounded-xl text-left flex flex-col gap-2 transition-all ${
+                  disabled={selectedCourse !== 'bcc'}
+                  className={`w-full p-6 text-left border rounded-2xl flex flex-col justify-between h-full transition-all duration-300 ${
                     selectedCourse === 'bcc' 
-                      ? 'border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 shadow-sm group cursor-pointer'
-                      : 'border-slate-200 dark:border-slate-800 opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900/50'
+                      ? 'border-slate-200 dark:border-slate-800 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-violet-50/20 dark:hover:bg-violet-950/10 shadow-sm hover:shadow-md hover:-translate-y-1 group bg-white dark:bg-slate-900 cursor-pointer'
+                      : 'border-slate-200 dark:border-slate-900 opacity-60 bg-slate-50/60 dark:bg-slate-905/30 cursor-not-allowed'
                   }`}
                 >
-                  <h3 className={`font-semibold text-lg ${
-                    selectedCourse === 'bcc' ? 'text-slate-800 dark:text-slate-100 group-hover:text-indigo-700 dark:group-hover:text-indigo-400' : 'text-slate-700 dark:text-slate-200'
-                  }`}>Matriz</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
-                    {selectedCourse === 'bcc' ? 'Explore visualmente a grelha curricular do seu curso.' : 'Em breve'}
-                  </p>
+                  <div>
+                    <div className="flex items-center justify-between w-full mb-5">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                        selectedCourse === 'bcc'
+                          ? 'bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 group-hover:scale-110'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                      }`}>
+                        <Layers className="w-6 h-6" />
+                      </div>
+                    </div>
+                    <h3 className={`font-bold text-lg tracking-tight transition-colors ${
+                      selectedCourse === 'bcc' 
+                        ? 'text-slate-800 dark:text-slate-100 group-hover:text-violet-600 dark:group-hover:text-violet-400' 
+                        : 'text-slate-400 dark:text-slate-600'
+                    }`}>
+                      Matriz Curricular
+                    </h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                      {selectedCourse === 'bcc' 
+                        ? 'Visualize a estrutura curricular de forma organizada por períodos letivos.'
+                        : 'A matriz curricular interativa para este curso estará disponível em breve.'}
+                    </p>
+                  </div>
+                  
+                  {selectedCourse === 'bcc' ? (
+                    <div className="mt-5 flex items-center text-xs font-semibold text-violet-600 dark:text-violet-400 gap-1 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
+                      <span>Visualizar Grade</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </div>
+                  ) : (
+                    <div className="mt-5 text-xs text-slate-450 dark:text-slate-500">
+                      Indisponível
+                    </div>
+                  )}
                 </button>
 
                 {!isProduction() && (
                   <button 
                     onClick={() => setView('admin')}
-                    className="w-full p-6 border border-dashed border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 rounded-xl transition-all text-left shadow-sm group flex flex-col gap-2 col-span-1 sm:col-span-2 cursor-pointer"
+                    className="w-full p-6 border border-dashed border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 rounded-xl transition-all text-left shadow-sm group flex flex-col gap-2 md:col-span-3 cursor-pointer"
                   >
                     <h3 className="font-semibold text-indigo-700 dark:text-indigo-400 text-lg flex items-center gap-2">
                       <BrainCircuit className="w-5 h-5 text-indigo-500 shrink-0 animate-pulse" />

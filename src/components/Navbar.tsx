@@ -10,6 +10,7 @@ interface NavbarProps {
   darkMode: boolean;
   themePreference: ThemeMode;
   cycleTheme: () => void;
+  showAcademicPeriod?: boolean;
 }
 
 export function Navbar({
@@ -18,7 +19,8 @@ export function Navbar({
   course,
   darkMode,
   themePreference,
-  cycleTheme
+  cycleTheme,
+  showAcademicPeriod
 }: NavbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -34,6 +36,7 @@ export function Navbar({
   const getCourseName = () => {
     if (course === 'bcc') return 'Bacharelado em Ciência da Computação';
     if (course === 'eal') return 'Engenharia de Alimentos';
+    if (course === 'adm') return 'Administração';
     return '';
   };
 
@@ -75,6 +78,12 @@ export function Navbar({
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2">
+          
+          {showAcademicPeriod && (
+            <select className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 cursor-pointer transition-colors outline-none font-bold h-9">
+              <option value="2026.1" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">2026.1</option>
+            </select>
+          )}
           
           {/* Theme Switcher */}
           <button

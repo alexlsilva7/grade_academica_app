@@ -1,6 +1,6 @@
 import { Discipline } from '../types';
-import bccData from '../bcc_dados.json';
-import conteudosData from '../conteudos.json';
+import bccData from '../data/bcc/curriculo_bcc.json';
+import conteudosData from '../data/bcc/conteudos_bcc.json';
 
 // Normalize codes to match variations like BCC00022 and BCC0022
 const normalizeCode = (c?: string) => c?.toUpperCase().replace(/([A-Z]+)0+([0-9]+)/, '$1$2') || '';

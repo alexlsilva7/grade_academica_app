@@ -1,0 +1,298 @@
+[
+  {
+    "id": "p1_matematica_aplicada_adm_cont",
+    "code": "ADM00003",
+    "name": "Matemática Aplicada à Administração e Contabilidade",
+    "type": "Obrigatório",
+    "period": "1",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [],
+    "ementa": "Fundamentos de álgebra básica. Funções lineares, quadráticas, exponenciais e logarítmicas. Limites de funções e suas propriedades. Introdução ao cálculo diferencial: regras de derivação. Aplicações práticas na maximização de funções de lucro e receita, e na minimização de custos nas organizações."
+  },
+  {
+    "id": "p1_introducao_economia",
+    "code": "ADM00002",
+    "name": "Introdução à Economia",
+    "type": "Obrigatório",
+    "period": "1",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [],
+    "ementa": "Conceitos fundamentais da economia: escassez, escolha, custos de oportunidade e fronteira de possibilidades de produção. Introdução à Microeconomia: teoria do consumidor, mecanismos de mercado, oferta e demanda, e elasticidade. Introdução à Macroeconomia: agregados macroeconômicos (PIB, inflação, desemprego), políticas fiscais e monetárias."
+  },
+  {
+    "id": "p1_introducao_administracao",
+    "code": "ADM00001",
+    "name": "Introdução à Administração",
+    "type": "Obrigatório",
+    "period": "1",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [],
+    "ementa": "Evolução histórica do pensamento administrativo e suas diferentes escolas de pensamento. O papel do administrador na sociedade contemporânea e suas competências essenciais. O processo administrativo integrado: planejamento, organização, direção e controle (PODC). Áreas funcionais básicas de uma organização e novos paradigmas de gestão."
+  },
+  {
+    "id": "p1_introducao_contabilidade",
+    "code": "ADM00004",
+    "name": "Introdução à Contabilidade",
+    "type": "Obrigatório",
+    "period": "1",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [],
+    "ementa": "Visão geral da contabilidade como sistema de informação para tomada de decisões. Conceituação de patrimônio: ativos, passivos e patrimônio líquido. Mecanismo de débito e crédito (método das partidas dobradas). Registro das operações empresariais. Elaboração, estrutura e análise primordial das demonstrações contábeis obrigatórias: Balanço Patrimonial e Demonstração do Resultado do Exercício (DRE)."
+  },
+  {
+    "id": "p1_filosofia_etica",
+    "code": "ADM00005",
+    "name": "Filosofia e Ética",
+    "type": "Obrigatório",
+    "period": "1",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [],
+    "ementa": "Fundamentos históricos da filosofia e sua relação com as ciências sociais aplicadas. Moral e ética: distinções e convergências conceituais. Teorias éticas clássicas (utilitarismo, deontologia e ética das virtudes). A conduta ética no ambiente das corporações. Ética profissional do Administrador. Responsabilidade social e desenvolvimento sustentável."
+  },
+  {
+    "id": "p2_instituicoes_direito",
+    "code": "ADM00010",
+    "name": "Instituições de Direito",
+    "type": "Obrigatório",
+    "period": "2",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [],
+    "ementa": "Introdução ao estudo do Direito. O ordenamento jurídico brasileiro e a Constituição de 1988: princípios fundamentais, direitos e garantias. Ramos do Direito com especial foco no Direito Privado: pessoas, bens, propriedade e obrigações básicas. Teoria geral dos negócios jurídicos e contornos essenciais do Direito Administrativo e do Consumidor."
+  },
+  {
+    "id": "p2_matematica_financeira",
+    "code": "ADM00007",
+    "name": "Matemática Financeira",
+    "type": "Obrigatório",
+    "period": "2",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [
+      {
+        "code": "ADM00003",
+        "name": "Matemática Aplicada à Administração e Contabilidade"
+      }
+    ],
+    "ementa": "O valor do dinheiro no tempo e o conceito de equivalência de capitais. Regimes de capitalização de juros: simples e compostos. Estudo de desconto simples e composto (comercial e racional). Fluxos de caixa e séries de pagamentos (antecipadas, postecipadas e perpétuas). Sistemas clássicos de amortização de empréstimos e financiamentos: Tabela Price, Sistema de Amortização Constante (SAC)."
+  },
+  {
+    "id": "p2_comportamento_organizacional",
+    "code": "ADM00009",
+    "name": "Comportamento Organizacional",
+    "type": "Obrigatório",
+    "period": "2",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [
+      {
+        "code": "ADM00001",
+        "name": "Introdução à Administração"
+      }
+    ],
+    "ementa": "Análise sistêmica do comportamento no ambiente de trabalho. Nível individual: personalidade, valores, percepção, atitudes e teorias motivacionais clássicas e modernas. Nível grupal: dinâmica de grupo, formação de equipes de alto desempenho, liderança, poder, política e comunicação eficaz nas organizações. Nível organizacional: cultura de grupo, clima corporativo, gestão do estresse e mudança organizacional."
+  },
+  {
+    "id": "p2_gestao_custos",
+    "code": "ADM00008",
+    "name": "Gestão de Custos",
+    "type": "Obrigatório",
+    "period": "2",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [
+      {
+        "code": "ADM00004",
+        "name": "Introdução à Contabilidade"
+      }
+    ],
+    "ementa": "Fundamentos, importância histórica e conceitos básicos aplicáveis à gestão de custos: gastos, despesas, custos, investimentos e perdas. Abordagem de diferentes metodologias de apropriação: custeio por absorção e custeio variável (direto). Análise de custos indiretos de fabricação (CIF) e departamentalização. Relação custo-volume-lucro: cálculo do ponto de equilíbrio (contábil, financeiro, econômico) e margem de contribuição para apoio na precificação estratégica de serviços e produtos."
+  },
+  {
+    "id": "p2_teoria_geral_administracao",
+    "code": "ADM00006",
+    "name": "Teoria Geral da Administração - TGA",
+    "type": "Obrigatório",
+    "period": "2",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [
+      {
+        "code": "ADM00001",
+        "name": "Introdução à Administração"
+      }
+    ],
+    "ementa": "Aprofundamento cronológico e crítico nos pilares teóricos da Administração. Das abordagens clássicas (Administração Científica de Taylor e Clássica de Fayol) às visões humanísticas e comportamentais. Perspectivas estruturalista e burocrática da organização. Teorias sistêmica e contingencial, culminando no debate contemporâneo sobre flexibilidade, inovação, modelos horizontais e gestão tecnológica disruptiva."
+  },
+  {
+    "id": "p3_organizacao_sistemas_metodos",
+    "code": "ADM00011",
+    "name": "Organização, Sistemas e Métodos",
+    "type": "Obrigatório",
+    "period": "3",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [
+      {
+        "code": "ADM00006",
+        "name": "Teoria Geral da Administração - TGA"
+      }
+    ],
+    "ementa": "Fundamentos de Organização, Sistemas e Métodos (O&M). A organização como um sistema dinâmico. Análise de processos de negócios e fluxos administrativos. Ferramentas gráficas e modelagem de processos: fluxogramas, organogramas, matrizes de decisão. Diagnóstico de layout físico-operacional, manualização de procedimentos e implementação da gestão por processos de trabalho (BPM)."
+  },
+  {
+    "id": "p3_gestao_financeira_1",
+    "code": "ADM00012",
+    "name": "Gestão Financeira 1",
+    "type": "Obrigatório",
+    "period": "3",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [
+      {
+        "code": "ADM00007",
+        "name": "Matemática Financeira"
+      }
+    ],
+    "ementa": "Objetivos fundamentais e estruturação da administração financeira. Análise de liquidez, atividade, endividamento e rentabilidade de demonstrativos (Balanço, DRE e DFC). Gerenciamento estratégico do capital de giro operacional líquida. Políticas de crédito e cobrança (contas a receber). Otimização e administração do nível de estoques empresariais. Dinâmica de tesouraria de curto prazo."
+  },
+  {
+    "id": "p3_estatistica_basica",
+    "code": "ADM00013",
+    "name": "Estatística Básica",
+    "type": "Obrigatório",
+    "period": "3",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [
+      {
+        "code": "ADM00003",
+        "name": "Matemática Aplicada à Administração e Contabilidade"
+      }
+    ],
+    "ementa": "Introdução ao método estatístico e coleta de dados (censos e amostragem). Apresentação e organização visual de informações: tabelas de frequência de variáveis discretas/contínuas e representações por histogramas. Estatística descritiva: medidas de tendência central (média, mediana e moda) e medidas de dispersão dos dados (amplitude, desvio padrão, variância, coeficiente de variação). Teoria de probabilidades básicas aplicadas a negócios."
+  },
+  {
+    "id": "p3_gestao_pessoas_1",
+    "code": "ADM00014",
+    "name": "Gestão de Pessoas 1",
+    "type": "Obrigatório",
+    "period": "3",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [
+      {
+        "code": "ADM00009",
+        "name": "Comportamento Organizacional"
+      }
+    ],
+    "ementa": "Contextualização histórica e evolução estratégica das relações e práticas de trabalho. Modelagem e estrutura de cargos. O subsistema de provisão: processos decisórios de recrutamento e metodologias científicas de seleção de talentos. O desenvolvimento profissional: ambientação de novos colaboradores, plano de treinamento inicial e conceitos para a avaliação sistemática de desempenho humano."
+  },
+  {
+    "id": "p3_metodologia_cientifica",
+    "code": "ADM00015",
+    "name": "Metodologia Científica",
+    "type": "Obrigatório",
+    "period": "3",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [],
+    "ementa": "Fundamentos da ciência e os critérios da demarcação científica. Métodos científicos clássicos (dedutivo, indutivo, hipotético-dedutivo). Metodologia e percurso metodológico de pesquisa aplicada à administração. Estrutura acadêmica e formatação e normatização segundo os padrões da ABNT. Planejamento conceitual, elaboração formal e redação de artigos científicos de alta relevância, monografias, projetos e relatórios executivos de campo."
+  },
+  {
+    "id": "opt_cooperativismo",
+    "code": "ADM00043",
+    "name": "Cooperativismo",
+    "type": "Optativo",
+    "period": "Eletivo",
+    "credits": 4,
+    "workload": {
+      "teorica": 60,
+      "pratica": 0,
+      "extensao": 0,
+      "total": 60
+    },
+    "prerequisites": [],
+    "ementa": "Origem, evolução e doutrina do cooperativismo. Princípios clássicos de Rochdale e reformulações da Aliança Cooperativa Internacional (ACI). Marco regulatório e legislação no Brasil (Lei nº 5.764/71). Tipologias de cooperativas: crédito, agropecuária, consumo, trabalho e saúde. Desafios particulares na administração e governança participativa de sociedades cooperativas contemporâneas."
+  }
+]

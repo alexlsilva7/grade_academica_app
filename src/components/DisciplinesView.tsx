@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { Navbar } from './Navbar';
 import { Search, Filter, BookOpen, Clock, Info } from 'lucide-react';
-import bccData from '../bcc_dados.json';
-import ealData from '../eal_data.json';
+import bccData from '../data/bcc/curriculo_bcc.json';
+import ealData from '../data/eal/horario_eal_2026_1.json';
+import admData from '../data/adm/curriculo_adm.json';
 
 interface DisciplinesViewProps {
   setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines') => void;
@@ -24,7 +25,7 @@ export function DisciplinesView({
   const [selectedType, setSelectedType] = useState<string>('todos');
   const [selectedDiscipline, setSelectedDiscipline] = useState<any | null>(null);
 
-  const activeData: any = course === 'eal' ? ealData : bccData;
+  const activeData: any = course === 'eal' ? ealData : course === 'adm' ? admData : bccData;
   const subjects: any[] = Array.isArray(activeData) ? activeData : (activeData.subjects || []);
 
   const periods = useMemo(() => {

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { bcc2026_1, eal2026_1 } from '../data';
+import { bcc2026_1, eal2026_1, adm2026_1 } from '../data';
 import { Discipline, TimeSlot } from '../types';
 import { TIMESLOTS } from '../constants';
 import { isProduction } from '../utils/domain';
@@ -13,10 +13,10 @@ export interface SavedGrade {
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 export function useSchedule() {
-  const [view, setViewInternal] = useState<'home' | 'schedule' | 'matriz' | 'disciplines' | 'perfil' | 'admin'>(() => {
+  const [view, setViewInternal] = useState<'home' | 'schedule' | 'matriz' | 'disciplines' | 'admin'>(() => {
     try {
       const stored = localStorage.getItem('view_preference');
-      const validView = (stored === 'home' || stored === 'schedule' || stored === 'matriz' || stored === 'disciplines' || stored === 'perfil' || stored === 'admin') ? stored : 'home';
+      const validView = (stored === 'home' || stored === 'schedule' || stored === 'matriz' || stored === 'disciplines' || stored === 'admin') ? stored : 'home';
       if (validView === 'admin' && isProduction()) {
         return 'home';
       }
@@ -26,7 +26,7 @@ export function useSchedule() {
     }
   });
 
-  const setView = (newView: 'home' | 'schedule' | 'matriz' | 'disciplines' | 'perfil' | 'admin') => {
+  const setView = (newView: 'home' | 'schedule' | 'matriz' | 'disciplines' | 'admin') => {
     if (newView === 'admin' && isProduction()) {
       setViewInternal('home');
     } else {
@@ -299,10 +299,13 @@ export function useSchedule() {
       )
     : disciplinesList.filter(d => d.period === selectedPeriod);
 
-  const loadPredefinedGrade = (type: 'bcc' | 'eal') => {
+  const loadPredefinedGrade = (type: 'bcc' | 'eal' | 'adm') => {
     if (type === 'eal') {
       setDisciplinesList(eal2026_1);
       setGradeTitle('EAL - Engenharia de Alimentos - Período 2026.1');
+    } else if (type === 'adm') {
+      setDisciplinesList(adm2026_1);
+      setGradeTitle('ADM - Administração - Período 2026.1');
     } else {
       setDisciplinesList(bcc2026_1);
       setGradeTitle('BCC - Bacharelado em Ciência da Computação - Período 2026.1');

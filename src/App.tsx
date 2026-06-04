@@ -2,7 +2,6 @@ import { useSchedule } from './hooks/useSchedule';
 import { HomeView } from './components/HomeView';
 import { MatrizView } from './components/MatrizView';
 import { DisciplinesView } from './components/DisciplinesView';
-import { PerfilCurricularView } from './components/PerfilCurricularView';
 import { AdminView } from './components/AdminView';
 import { Sidebar } from './components/Sidebar';
 import { ScheduleGrid } from './components/ScheduleGrid';
@@ -36,11 +35,6 @@ export default function App() {
           cycleTheme={scheduleProps.cycleTheme}
           schedule={scheduleProps.schedule}
         />
-      ) : scheduleProps.view === 'perfil' ? (
-        <PerfilCurricularView
-          setView={scheduleProps.setView}
-          darkMode={scheduleProps.darkMode}
-        />
       ) : (scheduleProps.view === 'admin' && !isProduction()) ? (
         <AdminView
           setView={scheduleProps.setView}
@@ -64,6 +58,7 @@ export default function App() {
             darkMode={scheduleProps.darkMode}
             themePreference={scheduleProps.themePreference}
             cycleTheme={scheduleProps.cycleTheme}
+            showAcademicPeriod={true}
           />
           
           <div className="flex-1 flex flex-col md:flex-row overflow-hidden">

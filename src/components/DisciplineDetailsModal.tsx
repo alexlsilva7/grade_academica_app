@@ -1,8 +1,8 @@
 import React from 'react';
 import { X, Book, Clock, AlertCircle, Link, FileText, CheckCircle2, Circle } from 'lucide-react';
 import { Discipline } from '../types';
-import bccData from '../bcc_dados.json';
-import conteudosData from '../conteudos.json';
+import bccData from '../data/bcc/curriculo_bcc.json';
+import conteudosData from '../data/bcc/conteudos_bcc.json';
 
 interface DisciplineDetailsModalProps {
   discipline: Discipline;

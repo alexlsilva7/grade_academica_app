@@ -35,7 +35,7 @@ function getGeminiClient(): GoogleGenAI {
 }
 
 // Ensure custom courses file exists
-const CUSTOM_CURSOS_PATH = path.join(process.cwd(), "src", "custom_cursos.json");
+const CUSTOM_CURSOS_PATH = path.join(process.cwd(), "src", "data", "custom_cursos.json");
 if (!fs.existsSync(CUSTOM_CURSOS_PATH)) {
   fs.writeFileSync(CUSTOM_CURSOS_PATH, JSON.stringify({ courses: [] }, null, 2));
 }
