@@ -10,6 +10,7 @@ import { MobileNav } from './components/MobileNav';
 import { DisciplineDetailsModal } from './components/DisciplineDetailsModal';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { Navbar } from './components/Navbar';
+import { isProduction } from './utils/domain';
 
 export default function App() {
   const scheduleProps = useSchedule();
@@ -40,7 +41,7 @@ export default function App() {
           setView={scheduleProps.setView}
           darkMode={scheduleProps.darkMode}
         />
-      ) : scheduleProps.view === 'admin' ? (
+      ) : (scheduleProps.view === 'admin' && !isProduction()) ? (
         <AdminView
           setView={scheduleProps.setView}
           setDisciplinesList={scheduleProps.setDisciplinesList}

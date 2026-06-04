@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { bcc2026_1, eal2026_1 } from '../data';
 import { Discipline, TimeSlot } from '../types';
 import { TIMESLOTS } from '../constants';
+import { isProduction } from '../utils/domain';
 
 export interface SavedGrade {
   id: string;
@@ -12,14 +13,26 @@ export interface SavedGrade {
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 export function useSchedule() {
-  const [view, setView] = useState<'home' | 'schedule' | 'matriz' | 'disciplines' | 'perfil' | 'admin'>(() => {
+  const [view, setViewInternal] = useState<'home' | 'schedule' | 'matriz' | 'disciplines' | 'perfil' | 'admin'>(() => {
     try {
       const stored = localStorage.getItem('view_preference');
-      return (stored === 'home' || stored === 'schedule' || stored === 'matriz' || stored === 'disciplines' || stored === 'perfil' || stored === 'admin') ? stored : 'home';
+      const validView = (stored === 'home' || stored === 'schedule' || stored === 'matriz' || stored === 'disciplines' || stored === 'perfil' || stored === 'admin') ? stored : 'home';
+      if (validView === 'admin' && isProduction()) {
+        return 'home';
+      }
+      return validView;
     } catch {
       return 'home';
     }
   });
+
+  const setView = (newView: 'home' | 'schedule' | 'matriz' | 'disciplines' | 'perfil' | 'admin') => {
+    if (newView === 'admin' && isProduction()) {
+      setViewInternal('home');
+    } else {
+      setViewInternal(newView);
+    }
+  };
 
   const [gradeTitle, setGradeTitle] = useState<string>(() => {
     try {

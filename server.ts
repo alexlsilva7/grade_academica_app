@@ -113,97 +113,56 @@ app.delete("/api/courses/:id", (req, res) => {
   }
 });
 
-// Extract text syllabus/curriculum
-app.post("/api/extract-syllabus", async (req, res) => {
-  try {
-    const { text, promptContext } = req.body;
-    if (!text) {
-      return res.status(400).json({ error: "No text provided to extract curriculum data from." });
-    }
-
-    const ai = getGeminiClient();
-
-    const systemInstruction = 
-      "Você é um assistente especialista em estruturas curriculares acadêmicas e PPCs de universidades. " +
-      "Analise o texto fornecido que descreve disciplinas, plano de estudos ou ementas de um curso de nível superior. " +
-      "Extraia todas as disciplinas de forma detalhada e estruturada segundo o schema fornecido. " +
-      "Para cada uma: " +
-      "- Encontre o nome da disciplina (name) " +
-      "- Professor (professor), se não fornecido use uma string vazia ou '-' " +
-      "- Código acadêmico (code), se houver; se não houver use as iniciais/slugs " +
-      "- Período letivo recomendado (period) como inteiro (1, 2, ..., 9). Use 0 para disciplinas optativas, eletivas ou livre escolha. " +
-      "- Sessions/Grade Horária: Se houver horários descritos no texto (ex: seg 18:30), extraia-os. Se não houver, crie sugestões lógicas no formato 'HH:MM - HH:MM' (ex: '18:30 - 20:10', '20:10 - 21:50') com base no período da disciplina de modo que não haja conflitos diretos e distribua entre Segunda (day=1) a Sexta (day=5). " +
-      "- Mapeie os dias para números de 1 (Segunda) a 6 (Sábado).";
-
-    const promptText = `Texto a ser analisado:\n${text}\n\nContexto adicional: ${promptContext || "Nenhum"}`;
-
-    const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
-      contents: promptText,
-      config: {
-        systemInstruction,
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            title: { type: Type.STRING, description: "Título do Curso extraído ou nome sugerido para esta grade" },
-            disciplines: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  id: { type: Type.STRING, description: "ID único legível por exemplo: code de minúsculo ou base de slug" },
-                  code: { type: Type.STRING, description: "Código da disciplina, ex: CCMP3057" },
-                  name: { type: Type.STRING, description: "Nome estruturado da disciplina" },
-                  professor: { type: Type.STRING, description: "Nome do professor, ou '-' se indisponível" },
-                  period: { type: Type.INTEGER, description: "Inteiro do período sugerido (1 a 9). Use 0 se optativa / desconhecido." },
-                  sessions: {
-                    type: Type.ARRAY,
-                    items: {
-                      type: Type.OBJECT,
-                      properties: {
-                        day: { type: Type.INTEGER, description: "Dia letivo: 1=Segunda, 2=Terça, 3=Quarta, 4=Quinta, 5=Sexta, 6=Sábado" },
-                        time: { type: Type.STRING, description: "Format: HH:MM - HH:MM, ex: '18:30 - 20:10'" }
-                      },
-                      required: ["day", "time"]
-                    }
-                  }
-                },
-                required: ["id", "name", "professor", "period", "sessions"]
-              }
-            }
-          },
-          required: ["title", "disciplines"]
-        }
-      }
-    });
-
-    if (!response.text) {
-      throw new Error("Zero response characters returned from Gemini.");
-    }
-
-    res.json(JSON.parse(response.text.trim()));
-  } catch (error: any) {
-    console.error("Extraction error:", error);
-    res.status(500).json({ error: error.message || "Erro inesperado na inteligência artificial." });
-  }
-});
 
 // Secure endpoint for PDF upload extraction (migrated server-side as required by guidelines)
 app.post("/api/extract-pdf", async (req, res) => {
   try {
-    const { base64Data, mimeType, fileName } = req.body;
+    const { base64Data, mimeType, fileName, model } = req.body;
     if (!base64Data) {
       return res.status(400).json({ error: "Missing PDF base64Data upload." });
     }
 
     const ai = getGeminiClient();
 
+    const systemInstruction = 
+      "Você é um cientista de dados acadêmicos especialista em extração e mapeamento de grades horárias e grades curriculares universitárias da UFAPE (Universidade Federal do Agreste de Pernambuco).\n" +
+      "Analise detalhadamente o documento PDF fornecido contendo os quadros de horário letivo.\n\n" +
+      "--- REGRAS DE EXTRAÇÃO CRITICAS (PADRÃO DO SISTEMA) ---\n" +
+      "1. IDENTIFICAÇÃO DE TURMA E PERÍODO:\n" +
+      "   - Cada tabela começa com um cabeçalho identificando a turma, por exemplo: 'TURMA: 1º período (Turma 1) CC5' ou 'TURMA: 2º período (Turma 2) CC2'.\n" +
+      "   - Extraia o período recomendado como um número inteiro. Ex: '1º período' -> 1, '2º período' -> 2, '6º período' -> 6. Se for eletiva/optativa ou desconhecido, use 0.\n" +
+      "   - Inclua a informação da turma no nome da disciplina caso a tabela indique. Ex: 'Introdução à Programação I (Turma 1)' ou 'Introdução à Programação I (Turma 2)'.\n\n" +
+      "2. MAPEAMENTO DE DIAS DA SEMANA (INTEIROS SEGUNDO O SISTEMA):\n" +
+      "   - seg ou Segunda -> 1\n" +
+      "   - ter ou Terça -> 2\n" +
+      "   - qua ou Quarta -> 3\n" +
+      "   - qui ou Quinta -> 4\n" +
+      "   - sex ou Sexta -> 5\n" +
+      "   - sab, Sábado ou Sábado -> 6\n\n" +
+      "3. ADAPTAÇÃO E DIVISÃO DE HORÁRIOS PARA OS TIMESLOTS PADRÃO DO SISTEMA:\n" +
+      "   O sistema suporta estritamente os seguintes horários de aulas (TimeSlots):\n" +
+      "   - '14:00 - 16:00'\n" +
+      "   - '16:00 - 18:00'\n" +
+      "   - '18:30 - 20:10'\n" +
+      "   - '20:10 - 21:50'\n" +
+      "   Qualquer horário extraído deve se adaptar para uma dessas fatias. Se houver um bloco de 4 horas como 'h1400_1800' ou '14:00 - 18:00', divida-o obrigatoriamente em DUAS sessões para aquela mesma disciplina no mesmo dia: uma na faixa '14:00 - 16:00' e outra na faixa '16:00 - 18:00'!\n" +
+      "   Mapeie 'h1830_2010' para '18:30 - 20:10' e 'h2010_2150' para '20:10 - 21:50'.\n\n" +
+      "4. AGREGAÇÃO DAS SESSÕES POR DISCIPLINA (MUITO IMPORTANTE):\n" +
+      "   - NÃO crie múltiplos itens de disciplina repetidos para a mesma matéria e mesma turma!\n" +
+      "   - Uma disciplina deve ser um único objeto no array de resultado, aglutinando todas as suas aulas encontradas na tabela dentro do seu array 'sessions'.\n" +
+      "   - Por exemplo, se 'Lógica Matemática I (Marcius)' ocorre na Quarta às 18:30 - 20:10 e na Sexta às 18:30 - 20:10, crie apenas uma disciplina no array contendo as duas sessões dentro do parâmetro 'sessions'.\n\n" +
+      "5. NOMES DOS PROFESSORES:\n" +
+      "   - Identifique e extraia o professor fornecido entre parênteses no final do conteúdo da célula. Ex: 'Cálculo I (Normando)' -> Nome da disciplina: 'Cálculo I', Professor: 'Normando'.\n" +
+      "   - Caso o professor não esteja disponível, preencha com '-'.\n\n" +
+      "6. CÓDIGOS ACADÊMICOS INTERNOS (CODE):\n" +
+      "   - Gere um código acadêmico realista se ele não tiver na célula, seguindo o padrão de 4 letras e 4 números (ex: CCMP3057 para Introdução à Programação, MATM3008 para matemática, ou baseado nas iniciais da disciplina como ALGE3021 para Álgebra Linear, etc.).\n" +
+      "   - O ID deve ser um slug amigável em minúsculo do nome e turma, por exemplo: 'p1_introducao_programacao_t1'.";
+
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: model || "gemini-3.5-flash",
       contents: [
         {
-          text: "Extraia todas as disciplinas deste PDF de grade/horário letivo. Para cada disciplina, encontre o nome, o professor, o período e os horários das aulas. Mapeie os dias para 1 (Segunda) até 6 (Sábado). Mapeie os horários no formato HH:MM - HH:MM, por exemplo: '18:30 - 20:10' ou '20:10 - 21:50'. Gere um ID único para cada disciplina. Se o período não estiver claro, use 0."
+          text: `Extraia cuidadosamente todas as turmas, horários e disciplinas descritos neste documento curricular seguindo os critérios estruturais sistêmicos descritos.`
         },
         {
           inlineData: {
@@ -213,40 +172,50 @@ app.post("/api/extract-pdf", async (req, res) => {
         }
       ],
       config: {
+        systemInstruction,
         responseMimeType: "application/json",
         responseSchema: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              id: { type: Type.STRING },
-              code: { type: Type.STRING },
-              name: { type: Type.STRING },
-              professor: { type: Type.STRING },
-              period: { type: Type.INTEGER, description: "Use 0 for electives/optativas or if period is unknown." },
-              sessions: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    day: { type: Type.INTEGER, description: "1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday" },
-                    time: { type: Type.STRING, description: "Format: HH:MM - HH:MM" }
-                  },
-                  required: ["day", "time"]
-                }
+          type: Type.OBJECT,
+          properties: {
+            title: { type: Type.STRING, description: "Título do curso ou nome sugerido para a grade baseada no arquivo, por exemplo: 'BCC 2026.1 - Horário Letivo'" },
+            disciplines: {
+              type: Type.ARRAY,
+              description: "Lista estruturada de todas as disciplinas encontradas unificadas sem duplicações",
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  id: { type: Type.STRING, description: "ID único em minúsculo, por exemplo: p1_intro_prog_t1" },
+                  code: { type: Type.STRING, description: "Código acadêmico de 4 letras e 4 números, ex: CCMP1234" },
+                  name: { type: Type.STRING, description: "Nome limpo da disciplina com respectiva turma (se aplicável), ex: Introdução à Programação I (Turma 1)" },
+                  professor: { type: Type.STRING, description: "Nome do professor da disciplina" },
+                  period: { type: Type.INTEGER, description: "Período correto extraído do cabeçalho da turma (de 1 a 9). Use 0 se for optativa/eletiva." },
+                  sessions: {
+                    type: Type.ARRAY,
+                    items: {
+                      type: Type.OBJECT,
+                      properties: {
+                        day: { type: Type.INTEGER, description: "Inteiro do dia da semana: 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sáb" },
+                        time: { type: Type.STRING, description: "Formatado estritamente em um dos slots do sistema: '14:00 - 16:00', '16:00 - 18:00', '18:30 - 20:10', '20:10 - 21:50'" }
+                      },
+                      required: ["day", "time"]
+                    }
+                  }
+                },
+                required: ["id", "code", "name", "professor", "period", "sessions"]
               }
-            },
-            required: ["id", "name", "professor", "period", "sessions"]
-          }
+            }
+          },
+          required: ["title", "disciplines"]
         }
       }
     });
 
     if (!response.text) {
-      throw new Error("Zero content extracted from document.");
+      throw new Error("Não foi possível extrair nenhum dado texto do documento PDF.");
     }
 
-    res.json({ disciplines: JSON.parse(response.text.trim()) });
+    const parsedResult = JSON.parse(response.text.trim());
+    res.json(parsedResult);
   } catch (error: any) {
     console.error("PDF generation extraction error:", error);
     res.status(500).json({ error: error.message || "Falha ao analisar o documento com IA." });
