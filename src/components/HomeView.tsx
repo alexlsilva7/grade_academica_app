@@ -96,6 +96,16 @@ export function HomeView({
         }
         const profilesList = Array.from(set).sort();
         setCourseProfiles(profilesList);
+
+        // Pre-select saved profile if present in localStorage
+        try {
+          const storedProf = localStorage.getItem(`selected_profile_${selectedCourse}`);
+          if (storedProf && storedProf !== 'todos') {
+            if (setSelectedProfile && (storedProf === 'all' || profilesList.includes(storedProf))) {
+              setSelectedProfile(storedProf);
+            }
+          }
+        } catch {}
       })
       .catch(() => {
         if (isMounted) setCourseProfiles([]);

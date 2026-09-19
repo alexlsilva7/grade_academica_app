@@ -351,14 +351,26 @@ export function useSchedule() {
     }
   }, [selectedProfile, selectedCourse]);
 
-  // If availableProfiles changes and does not include current selection, fall back to 'all'
+  // Synchronize and restore profile selection from localStorage when course or availableProfiles change
   useEffect(() => {
-    if (availableProfiles.length === 0 && selectedProfile !== 'all') {
-      setSelectedProfile('all');
-    } else if (availableProfiles.length > 0 && selectedProfile !== 'all' && !availableProfiles.includes(selectedProfile)) {
+    if (selectedCourse) {
+      try {
+        const stored = localStorage.getItem(`selected_profile_${selectedCourse}`);
+        if (stored && stored !== 'todos') {
+          if (availableProfiles.length === 0 || availableProfiles.includes(stored) || stored === 'all') {
+            if (selectedProfile !== stored) {
+              setSelectedProfile(stored);
+            }
+            return;
+          }
+        }
+      } catch {}
+    }
+    // Only fall back to 'all' if availableProfiles is populated and current selection is not in it
+    if (availableProfiles.length > 0 && selectedProfile !== 'all' && !availableProfiles.includes(selectedProfile)) {
       setSelectedProfile('all');
     }
-  }, [availableProfiles]);
+  }, [availableProfiles, selectedCourse]);
 
   const isDisciplineOptativaOrCommon = (d: Discipline): boolean => {
     if (d.period === 0) return true;

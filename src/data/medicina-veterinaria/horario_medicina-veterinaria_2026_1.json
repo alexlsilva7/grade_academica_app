@@ -2,9 +2,10 @@
   {
     "id": "p1_anatomia_descritiva_dos_animais_domesticos_t1",
     "code": "MVET0001",
-    "name": "ANATOMIA DESCRITIVA DOS ANIMAIS DOMÉSTICOS",
+    "name": "Anatomia Descritiva dos Animais Domésticos",
     "professor": "DANIELA OLIVEIRA",
     "period": 1,
+    "profile": "MVET03",
     "sessions": [
       {
         "day": 1,
@@ -14,15 +15,15 @@
         "day": 3,
         "time": "07:30 - 12:30"
       }
-    ],
-    "profile": "MVET03"
+    ]
   },
   {
     "id": "p1_genetica_t1",
     "code": "MVET0002",
-    "name": "GENÉTICA",
+    "name": "Genética",
     "professor": "CLÁUDIO GALVÃO",
     "period": 1,
+    "profile": "MVET03",
     "sessions": [
       {
         "day": 1,
@@ -32,85 +33,85 @@
         "day": 2,
         "time": "07:30 - 10:30"
       }
-    ],
-    "profile": "MVET03"
+    ]
   },
   {
     "id": "p1_bioquimica_e_biofisica_veterinaria_t1",
     "code": "MVET0003",
-    "name": "BIOQUÍMICA E BIOFÍSICA VETERINÁRIA",
+    "name": "Bioquímica e Biofísica Veterinária",
     "professor": "KEILA MOREIRA",
     "period": 1,
+    "profile": "MVET03",
     "sessions": [
       {
         "day": 4,
         "time": "07:30 - 12:30"
       }
-    ],
-    "profile": "MVET03"
+    ]
   },
   {
     "id": "p1_quimica_veterinaria_t1",
     "code": "MVET0004",
-    "name": "QUÍMICA VETERINÁRIA",
+    "name": "Química Veterinária",
     "professor": "FABRÍCIO ALVES",
     "period": 1,
+    "profile": "MVET03",
     "sessions": [
       {
         "day": 5,
         "time": "07:30 - 10:30"
       }
-    ],
-    "profile": "MVET03"
+    ]
   },
   {
     "id": "p1_introducao_a_medicina_veterinaria_t1",
     "code": "MVET0005",
-    "name": "INTRODUÇÃO À MEDICINA VETERINÁRIA",
+    "name": "Introdução à Medicina Veterinária",
     "professor": "MARCOS RENATO/CARLOS UBIRAJARA",
     "period": 1,
+    "profile": "MVET03",
     "sessions": [
       {
         "day": 5,
         "time": "10:30 - 12:30"
       }
-    ],
-    "profile": "MVET03"
+    ]
   },
   {
     "id": "p1_sociologia_rural_t1",
     "code": "MVET0006",
-    "name": "SOCIOLOGIA RURAL",
+    "name": "Sociologia Rural",
     "professor": "ROBERTO MIRANDA",
     "period": 1,
+    "profile": "MVET03",
     "sessions": [
       {
         "day": 2,
         "time": "10:30 - 12:30"
       }
-    ],
-    "profile": "MVET03"
+    ]
   },
   {
     "id": "p1_economia_t1",
     "code": "MVET0007",
-    "name": "ECONOMIA",
+    "name": "Economia",
     "professor": "EPAMINONDAS FILHO",
     "period": 1,
+    "profile": "MVET03",
     "sessions": [
       {
         "day": 1,
         "time": "10:30 - 12:30"
       }
-    ],
-    "profile": "MVET03"
+    ]
   },
   {
-    "id": "p1_morf3003_anatomia_descritiva_dos_animais_domesticos_i_t1",
+    "id": "p1_anatomia_descritiva_dos_animais_domesticos_i_t2",
     "code": "MORF3003",
-    "name": "ANATOMIA DESCRITIVA DOS ANIMAIS DOMÉSTICOS I",
+    "name": "Anatomia Descritiva dos Animais Domésticos I",
     "professor": "SUBSTITUTO (A)",
     "period": 1,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
@@ -120,15 +121,15 @@
         "day": 3,
         "time": "07:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p1_quim3002_quimica_biologica_i_t1",
+    "id": "p1_quimica_biologica_i_t2",
     "code": "QUIM3002",
-    "name": "QUÍMICA BIOLÓGICA I",
+    "name": "Química Biológica I",
     "professor": "PEDRO AQUINO",
     "period": 1,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
@@ -138,43 +139,43 @@
         "day": 5,
         "time": "10:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p1_quim3003_analise_quimica_veterinaria_t1",
+    "id": "p1_analise_quimica_veterinaria_t2",
     "code": "QUIM3003",
-    "name": "ANÁLISE QUÍMICA VETERINÁRIA",
+    "name": "Análise Química Veterinária",
     "professor": "FABRÍCIO ALVES",
     "period": 1,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 2,
         "time": "09:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p1_prbe3001_bioestatistica_basica_t1",
+    "id": "p1_bioestatistica_basica_t2",
     "code": "PRBE3001",
-    "name": "BIOESTATÍSTICA BÁSICA",
+    "name": "Bioestatística Básica",
     "professor": "LUCIANO SOUZA",
     "period": 1,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 4,
         "time": "07:30 - 10:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p1_econ3001_introducao_a_economia_t1",
+    "id": "p1_introducao_a_economia_t2",
     "code": "ECON3001",
-    "name": "INTRODUÇÃO À ECONOMIA",
+    "name": "Introdução à Economia",
     "professor": "EPAMINONDAS FILHO",
     "period": 1,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 2,
@@ -184,29 +185,29 @@
         "day": 4,
         "time": "10:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p1_fisl3001_filosofia_da_ciencia_e_etica_t1",
+    "id": "p1_filosofia_da_ciencia_e_etica_t2",
     "code": "FISL3001",
-    "name": "FILOSOFIA DA CIÊNCIA E ÉTICA",
+    "name": "Filosofia da Ciência e Ética",
     "professor": "MARCOS PAULO",
     "period": 1,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 5,
         "time": "07:30 - 10:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p2_morf3004_anatomia_topografica_dos_animais_domesticos_t1",
+    "id": "p2_anatomia_topografica_dos_animais_domesticos_t1",
     "code": "MORF3004",
-    "name": "ANATOMIA TOPOGRÁFICA DOS ANIMAIS DOMÉSTICOS",
+    "name": "Anatomia Topográfica dos Animais Domésticos",
     "professor": "SUBSTITUTO (A)",
     "period": 2,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
@@ -216,15 +217,15 @@
         "day": 2,
         "time": "13:00 - 16:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p2_biof3001_biofisica_t1",
+    "id": "p2_biofisica_t1",
     "code": "BIOF3001",
-    "name": "BIOFÍSICA",
+    "name": "Biofísica",
     "professor": "KEILA MOREIRA",
     "period": 2,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 3,
@@ -234,15 +235,15 @@
         "day": 5,
         "time": "16:00 - 18:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p2_bioq3002_bioquimica_iv_t1",
+    "id": "p2_bioquimica_iv_t1",
     "code": "BIOQ3002",
-    "name": "BIOQUÍMICA IV",
+    "name": "Bioquímica IV",
     "professor": "KEILA MOREIRA",
     "period": 2,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 3,
@@ -252,15 +253,15 @@
         "day": 5,
         "time": "13:00 - 16:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p2_prbe3002_bioestatistica_experimental_t1",
+    "id": "p2_bioestatistica_experimental_t1",
     "code": "PRBE3002",
-    "name": "BIOESTATÍSTICA EXPERIMENTAL",
+    "name": "Bioestatística Experimental",
     "professor": "ANTÔNIO RICARDO",
     "period": 2,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 2,
@@ -270,29 +271,29 @@
         "day": 4,
         "time": "13:00 - 15:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p2_econ3002_fundamentos_de_economia_rural_t1",
+    "id": "p2_fundamentos_de_economia_rural_t1",
     "code": "ECON3002",
-    "name": "FUNDAMENTOS DE ECONOMIA RURAL",
+    "name": "Fundamentos de Economia Rural",
     "professor": "EPAMINONDAS FILHO",
     "period": 2,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 4,
         "time": "15:00 - 18:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p3_micr3001_microbiologia_geral_t1",
+    "id": "p3_microbiologia_geral_t1",
     "code": "MICR3001",
-    "name": "MICROBIOLOGIA GERAL",
+    "name": "Microbiologia Geral",
     "professor": "ELIZABETE RODRIGUES",
     "period": 3,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 3,
@@ -302,15 +303,15 @@
         "day": 4,
         "time": "07:30 - 09:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p3_morf3005_histologia_e_embriologia_veterinaria_i_t1",
+    "id": "p3_histologia_e_embriologia_veterinaria_i_t1",
     "code": "MORF3005",
-    "name": "HISTOLOGIA E EMBRIOLOGIA VETERINÁRIA I",
+    "name": "Histologia e Embriologia Veterinária I",
     "professor": "DAIANE ANTUNES",
     "period": 3,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 2,
@@ -320,15 +321,15 @@
         "day": 3,
         "time": "07:30 - 09:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p3_pars3001_parasitologia_veterinaria_t1",
+    "id": "p3_parasitologia_veterinaria_t1",
     "code": "PARS3001",
-    "name": "PARASITOLOGIA VETERINÁRIA",
-    "professor": " - ",
+    "name": "Parasitologia Veterinária",
+    "professor": "",
     "period": 3,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 2,
@@ -338,15 +339,15 @@
         "day": 5,
         "time": "07:30 - 10:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p3_zoot3007_agrostologia_t1",
+    "id": "p3_agrostologia_t1",
     "code": "ZOOT3007",
-    "name": "AGROSTOLOGIA",
+    "name": "Agrostologia",
     "professor": "GEANE DIAS",
     "period": 3,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
@@ -356,15 +357,15 @@
         "day": 4,
         "time": "09:30 - 10:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p3_fisl3003_fisiologia_veterinaria_basica_t1",
+    "id": "p3_fisiologia_veterinaria_basica_t1",
     "code": "FISL3003",
-    "name": "FISIOLOGIA VETERINÁRIA BÁSICA",
+    "name": "Fisiologia Veterinária Básica",
     "professor": "SAULO DE TARSO",
     "period": 3,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 4,
@@ -374,15 +375,15 @@
         "day": 5,
         "time": "10:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p3_rurl3001_administracao_e_planejamento_rural_t1",
+    "id": "p3_administracao_e_planejamento_rural_t1",
     "code": "RURL3001",
-    "name": "ADMINISTRAÇÃO E PLANEJAMENTO RURAL",
+    "name": "Administração e Planejamento Rural",
     "professor": "DANIELA CARVALHO",
     "period": 3,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
@@ -392,47 +393,47 @@
         "day": 2,
         "time": "10:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p4_zoot3003_zootecnia_geral_s_t1",
+    "id": "p4_zootecnia_geral_s_t1",
     "code": "ZOOT3003",
-    "name": "ZOOTECNIA GERAL S",
+    "name": "Zootecnia Geral S",
     "professor": "RAYANE/ELTON OLIVEIRA/JORGE LUCENA",
     "period": 4,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 4,
         "time": "15:00 - 18:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p4_gent3001_genetica_basica_e_biotecnologia_t1",
+    "id": "p4_genetica_basica_e_biotecnologia_t1",
     "code": "GENT3001",
-    "name": "GENÉTICA BÁSICA E BIOTECNOLOGIA",
+    "name": "Genética Básica e Biotecnologia",
     "professor": "CLÁUDIO GALVÃO",
     "period": 4,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 3,
-        "time": "13:00 - 16:00"
+        "time": "13:00 - 15:00"
       },
       {
         "day": 5,
         "time": "13:00 - 16:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p4_zoot3006_nutricao_animal_t1",
+    "id": "p4_nutricao_animal_t1",
     "code": "ZOOT3006",
-    "name": "NUTRIÇÃO ANIMAL",
+    "name": "Nutrição Animal",
     "professor": "DENISE FIGUEIREDO/DULCIENE KARLA",
     "period": 4,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 2,
@@ -442,15 +443,15 @@
         "day": 4,
         "time": "13:00 - 17:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p4_fisl3004_fisiologia_especial_dos_animais_domesticos_t1",
+    "id": "p4_fisiologia_especial_dos_animais_domesticos_t1",
     "code": "FISL3004",
-    "name": "FISIOLOGIA ESPECIAL DOS ANIMAIS DOMÉSTICOS",
+    "name": "Fisiologia Especial dos Animais Domésticos",
     "professor": "MARCOS RENATO",
     "period": 4,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 2,
@@ -460,15 +461,15 @@
         "day": 5,
         "time": "16:00 - 18:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p4_morf3006_histologia_e_embriologia_veterinaria_ii_t1",
+    "id": "p4_histologia_e_embriologia_veterinaria_ii_t1",
     "code": "MORF3006",
-    "name": "HISTOLOGIA E EMBRIOLOGIA VETERINÁRIA II",
+    "name": "Histologia e Embriologia Veterinária II",
     "professor": "DAIANE ANTUNES",
     "period": 4,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
@@ -478,43 +479,43 @@
         "day": 3,
         "time": "15:00 - 17:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p4_imun3001_imunologia_veterinaria_t1",
+    "id": "p4_imunologia_veterinaria_t1",
     "code": "IMUN3001",
-    "name": "IMUNOLOGIA VETERINÁRIA",
+    "name": "Imunologia Veterinária",
     "professor": "LUCILENE SIMÕES",
     "period": 4,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
         "time": "13:00 - 16:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p5_vetr3002_anestesiologia_veterinaria_t1",
+    "id": "p5_anestesiologia_veterinaria_t1",
     "code": "VETR3002",
-    "name": "ANESTESIOLOGIA VETERINÁRIA",
+    "name": "Anestesiologia Veterinária",
     "professor": "FLÁVIA MENEZES/SÍLVIA ELAINE",
     "period": 5,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 5,
         "time": "10:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p5_vetr3001_semiologia_veterinaria_t1",
+    "id": "p5_semiologia_veterinaria_t1",
     "code": "VETR3001",
-    "name": "SEMIOLOGIA VETERINÁRIA",
+    "name": "Semiologia Veterinária",
     "professor": "RUTE CHAMIÉ/CARLOS UBIRAJARA",
     "period": 5,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
@@ -524,15 +525,15 @@
         "day": 3,
         "time": "10:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p5_vetr3007_patologia_clinica_veterinaria_s_t1",
+    "id": "p5_patologia_clinica_veterinaria_s_t1",
     "code": "VETR3007",
-    "name": "PATOLOGIA CLÍNICA VETERINÁRIA S",
+    "name": "Patologia Clínica Veterinária S",
     "professor": "LUIZ CARLOS",
     "period": 5,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
@@ -542,29 +543,33 @@
         "day": 3,
         "time": "07:30 - 09:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p5_zoot3004_zootecnia_especial_i_t1",
+    "id": "p5_zootecnia_especial_i_t1",
     "code": "ZOOT3004",
-    "name": "ZOOTECNIA ESPECIAL I",
+    "name": "Zootecnia Especial I",
     "professor": "ALMIR CHALEGRE/ELTON OLIVEIRA JORGE LUCENA",
     "period": 5,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 4,
         "time": "09:30 - 12:30"
+      },
+      {
+        "day": 5,
+        "time": "09:30 - 10:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p5_famc3001_farmacologia_t1",
+    "id": "p5_farmacologia_t1",
     "code": "FAMC3001",
-    "name": "FARMACOLOGIA",
+    "name": "Farmacologia",
     "professor": "SÍLVIA ELAINE",
     "period": 5,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 2,
@@ -574,15 +579,15 @@
         "day": 5,
         "time": "07:30 - 09:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p5_vetr3022_patologia_geral_e_tecnica_de_necropsia_dos_animais_domesticos_t1",
+    "id": "p5_patologia_geral_e_tecnica_de_necropsia_dos_animais_domesticos_t1",
     "code": "VETR3022",
-    "name": "PATOLOGIA GERAL E TÉCNICA DE NECROPSIA DOS ANIMAIS DOMÉSTICOS",
+    "name": "Patologia Geral e Técnica de Necropsia dos Animais Domésticos",
     "professor": "MÁRCIA BERSANE",
     "period": 5,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 2,
@@ -596,37 +601,37 @@
         "day": 4,
         "time": "07:30 - 09:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p6_vetr3021_patologia_especial_dos_animais_domesticos_t1",
+    "id": "p6_patologia_especial_dos_animais_domesticos_t1",
     "code": "VETR3021",
-    "name": "PATOLOGIA ESPECIAL DOS ANIMAIS DOMÉSTICOS",
+    "name": "Patologia Especial dos Animais Domésticos",
     "professor": "NAIR LIRA",
     "period": 6,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
         "time": "13:00 - 16:00"
       },
       {
-        "day": 3,
-        "time": "16:00 - 18:00"
+        "day": 2,
+        "time": "13:00 - 15:00"
       },
       {
-        "day": 4,
-        "time": "13:00 - 15:00"
+        "day": 3,
+        "time": "16:00 - 18:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p6_zoot3005_zootecnia_especial_ii_t1",
+    "id": "p6_zootecnia_especial_ii_t1",
     "code": "ZOOT3005",
-    "name": "ZOOTECNIA ESPECIAL II",
+    "name": "Zootecnia Especial II",
     "professor": "ROBSON VERAS/RAYANE",
     "period": 6,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 3,
@@ -636,15 +641,15 @@
         "day": 5,
         "time": "15:00 - 18:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p6_vetr3010_terapeutica_veterinaria_t1",
+    "id": "p6_terapeutica_veterinaria_t1",
     "code": "VETR3010",
-    "name": "TERAPÊUTICA VETERINÁRIA",
+    "name": "Terapêutica Veterinária",
     "professor": "FLÁVIA MENEZES",
     "period": 6,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 3,
@@ -654,15 +659,15 @@
         "day": 4,
         "time": "13:00 - 16:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p6_ecol3001_ecologia_basica_e_conservacionismo_t1",
+    "id": "p6_ecologia_basica_e_conservacionismo_t1",
     "code": "ECOL3001",
-    "name": "ECOLOGIA BÁSICA E CONSERVACIONISMO",
+    "name": "Ecologia Básica e Conservacionismo",
     "professor": "MOLICA/RACHEL/WALLACE",
     "period": 6,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
@@ -672,15 +677,15 @@
         "day": 4,
         "time": "16:00 - 18:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p6_vetr3009_tecnica_cirurgica_veterinaria_s_t1",
+    "id": "p6_tecnica_cirurgica_veterinaria_s_t1",
     "code": "VETR3009",
-    "name": "TÉCNICA CIRÚRGICA VETERINÁRIA S",
+    "name": "Técnica Cirúrgica Veterinária S",
     "professor": "DENISE CHUNG",
     "period": 6,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 2,
@@ -690,15 +695,15 @@
         "day": 5,
         "time": "13:00 - 15:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p7_zoot3002_melhoramento_animal_t1",
+    "id": "p7_melhoramento_animal_t1",
     "code": "ZOOT3002",
-    "name": "MELHORAMENTO ANIMAL",
+    "name": "Melhoramento Animal",
     "professor": "KLEBER RÉGIS",
     "period": 7,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
@@ -708,15 +713,15 @@
         "day": 2,
         "time": "10:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p7_socl3001_sociologia_rural_t1",
+    "id": "p7_sociologia_rural_t1",
     "code": "SOCL3001",
-    "name": "SOCIOLOGIA RURAL",
+    "name": "Sociologia Rural",
     "professor": "ROBERTO MIRANDA",
     "period": 7,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 2,
@@ -726,15 +731,15 @@
         "day": 3,
         "time": "10:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p7_vetr3024_andrologia_e_biotecnologia_da_reproducao_t1",
+    "id": "p7_andrologia_e_biotecnologia_da_reproducao_t1",
     "code": "VETR3024",
-    "name": "ANDROLOGIA E BIOTECNOLOGIA DA REPRODUÇÃO",
+    "name": "Andrologia e Biotecnologia da Reprodução",
     "professor": "RITA DE CÁSSIA",
     "period": 7,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 4,
@@ -744,15 +749,15 @@
         "day": 5,
         "time": "07:30 - 09:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p7_vetr3025_ginecologia_veterinaria_t1",
+    "id": "p7_ginecologia_veterinaria_t1",
     "code": "VETR3025",
-    "name": "GINECOLOGIA VETERINÁRIA",
+    "name": "Ginecologia Veterinária",
     "professor": "RITA DE CÁSSIA",
     "period": 7,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 4,
@@ -762,15 +767,15 @@
         "day": 5,
         "time": "09:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p7_vetr3003_clinica_cirurgica_veterinaria_s_t1",
+    "id": "p7_clinica_cirurgica_veterinaria_s_t1",
     "code": "VETR3003",
-    "name": "CLÍNICA CIRÚRGICA VETERINÁRIA S",
+    "name": "Clínica Cirúrgica Veterinária S",
     "professor": "DENISE CHUNG",
     "period": 7,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 3,
@@ -780,15 +785,15 @@
         "day": 4,
         "time": "10:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p7_vetr3015_epidemiologia_e_planejamento_em_saude_animal_t1",
+    "id": "p7_epidemiologia_e_planejamento_em_saude_animal_t1",
     "code": "VETR3015",
-    "name": "EPIDEMIOLOGIA E PLANEJAMENTO EM SAÚDE ANIMAL",
+    "name": "Epidemiologia e Planejamento em Saúde Animal",
     "professor": "CARLOS UBIRAJARA",
     "period": 7,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
@@ -798,75 +803,71 @@
         "day": 2,
         "time": "09:30 - 10:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p8_vetr3023_obstetricia_veterinaria_t1",
+    "id": "p8_obstetricia_veterinaria_t1",
     "code": "VETR3023",
-    "name": "OBSTETRÍCIA VETERINÁRIA",
+    "name": "Obstetrícia Veterinária",
     "professor": "VICTOR MAIA",
     "period": 8,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 3,
         "time": "15:00 - 18:00"
-      },
-      {
-        "day": 5,
-        "time": "15:00 - 16:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p8_vetr3013_bacterioses_dos_animais_domesticos_t1",
+    "id": "p8_bacterioses_dos_animais_domesticos_t1",
     "code": "VETR3013",
-    "name": "BACTERIOSES DOS ANIMAIS DOMÉSTICOS",
+    "name": "Bacterioses dos Animais Domésticos",
     "professor": "TANIA ALEN",
     "period": 8,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 4,
         "time": "13:00 - 18:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p8_vetr3018_viroses_dos_animais_domesticos_t1",
+    "id": "p8_viroses_dos_animais_domesticos_t1",
     "code": "VETR3018",
-    "name": "VIROSES DOS ANIMAIS DOMÉSTICOS",
+    "name": "Viroses dos Animais Domésticos",
     "professor": "TANIA ALEN",
     "period": 8,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
         "time": "13:00 - 18:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p8_vetr3008_radiologia_veterinaria_t1",
+    "id": "p8_radiologia_veterinaria_t1",
     "code": "VETR3008",
-    "name": "RADIOLOGIA VETERINÁRIA",
+    "name": "Radiologia Veterinária",
     "professor": "LUIZ CARLOS",
     "period": 8,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 5,
         "time": "13:00 - 15:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p8_vetr3014_doencas_parasitarias_dos_animais_domesticos_s_t1",
+    "id": "p8_doencas_parasitarias_dos_animais_domesticos_s_t1",
     "code": "VETR3014",
-    "name": "DOENÇAS PARASITÁRIAS DOS ANIMAIS DOMÉSTICOS S",
+    "name": "Doenças Parasitárias dos Animais Domésticos S",
     "professor": "LUCILENE SIMÕES",
     "period": 8,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 2,
@@ -876,15 +877,15 @@
         "day": 3,
         "time": "13:00 - 15:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p8_alim3003_microbiologia_dos_alimentos_de_origem_animal_a_t1",
+    "id": "p8_microbiologia_dos_alimentos_de_origem_animal_a_t1",
     "code": "ALIM3003",
-    "name": "MICROBIOLOGIA DOS ALIMENTOS DE ORIGEM ANIMAL A",
+    "name": "Microbiologia dos Alimentos de Origem Animal A",
     "professor": "MARCELO MENDONÇA",
     "period": 8,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 2,
@@ -894,15 +895,15 @@
         "day": 5,
         "time": "16:00 - 18:00"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p9_vetr3004_clinica_medica_de_caninos_e_felinos_t1",
+    "id": "p9_clinica_medica_de_caninos_e_felinos_t1",
     "code": "VETR3004",
-    "name": "CLÍNICA MÉDICA DE CANINOS E FELINOS",
+    "name": "Clínica Médica de Caninos e Felinos",
     "professor": "RUTE CHAMIÉ",
     "period": 9,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 3,
@@ -912,15 +913,15 @@
         "day": 4,
         "time": "10:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p9_vetr3020_ornitopatologia_veterinaria_t1",
+    "id": "p9_ornitopatologia_veterinaria_t1",
     "code": "VETR3020",
-    "name": "ORNITOPATOLOGIA VETERINÁRIA",
+    "name": "Ornitopatologia Veterinária",
     "professor": "RUBEN VASCONCELOS",
     "period": 9,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 4,
@@ -930,43 +931,43 @@
         "day": 5,
         "time": "07:30 - 10:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p9_alim3001_tecnologia_de_carne_e_produtos_derivados_t1",
+    "id": "p9_tecnologia_de_carne_e_produtos_derivados_t1",
     "code": "ALIM3001",
-    "name": "TECNOLOGIA DE CARNE E PRODUTOS DERIVADOS",
+    "name": "Tecnologia de Carne e Produtos Derivados",
     "professor": "ANAMÉLIA SALES",
     "period": 9,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
         "time": "09:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p9_alim3002_tecnologia_de_leite_e_produtos_derivados_t1",
+    "id": "p9_tecnologia_de_leite_e_produtos_derivados_t1",
     "code": "ALIM3002",
-    "name": "TECNOLOGIA DE LEITE E PRODUTOS DERIVADOS",
+    "name": "Tecnologia de Leite e Produtos Derivados",
     "professor": "ANAMÉLIA SALES",
     "period": 9,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 2,
         "time": "07:30 - 11:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p9_vetr3006_clinica_medica_dos_ruminantes_t1",
+    "id": "p9_clinica_medica_dos_ruminantes_t1",
     "code": "VETR3006",
-    "name": "CLÍNICA MÉDICA DOS RUMINANTES",
+    "name": "Clínica Médica dos Ruminantes",
     "professor": "TACIANA RAMALHO/LUIZ CARLOS",
     "period": 9,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 1,
@@ -976,15 +977,15 @@
         "day": 3,
         "time": "09:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p9_vetr3012_higiene_veterinaria_e_saude_publica_t1",
+    "id": "p9_higiene_veterinaria_e_saude_publica_t1",
     "code": "VETR3012",
-    "name": "HIGIENE VETERINÁRIA E SAÚDE PÚBLICA",
+    "name": "Higiene Veterinária e Saúde Pública",
     "professor": "MARCELO MENDONÇA",
     "period": 9,
+    "profile": "MVET02",
     "sessions": [
       {
         "day": 4,
@@ -994,15 +995,15 @@
         "day": 5,
         "time": "10:30 - 12:30"
       }
-    ],
-    "profile": "MVET02"
+    ]
   },
   {
-    "id": "p0_vetr3005_clinica_medica_de_equinos_e_suinos_t1",
+    "id": "p0_clinica_medica_de_equinos_e_suinos_t1",
     "code": "VETR3005",
-    "name": "CLÍNICA MÉDICA DE EQUINOS E SUÍNOS",
+    "name": "Clínica Médica de Equinos e Suínos",
     "professor": "VICTOR MAIA",
     "period": 0,
+    "profile": "",
     "sessions": [
       {
         "day": 3,
@@ -1012,15 +1013,15 @@
         "day": 5,
         "time": "13:00 - 15:00"
       }
-    ],
-    "profile": ""
+    ]
   },
   {
-    "id": "p0_vetr3016_inspecao_de_carnes_produtos_derivados_t1",
+    "id": "p0_inspecao_de_carnes_produtos_derivados_t1",
     "code": "VETR3016",
-    "name": "INSPEÇÃO DE CARNES PRODUTOS DERIVADOS",
+    "name": "Inspeção de Carnes Produtos Derivados",
     "professor": "MARCOS FRANQUE",
     "period": 0,
+    "profile": "",
     "sessions": [
       {
         "day": 2,
@@ -1030,15 +1031,15 @@
         "day": 5,
         "time": "16:00 - 18:00"
       }
-    ],
-    "profile": ""
+    ]
   },
   {
-    "id": "p0_vetr3017_inspecao_de_leite_produtos_derivados_t1",
+    "id": "p0_inspecao_de_leite_produtos_derivados_t1",
     "code": "VETR3017",
-    "name": "INSPEÇÃO DE LEITE PRODUTOS DERIVADOS",
+    "name": "Inspeção de Leite Produtos Derivados",
     "professor": "MARCOS FRANQUE",
     "period": 0,
+    "profile": "",
     "sessions": [
       {
         "day": 3,
@@ -1048,109 +1049,126 @@
         "day": 5,
         "time": "15:00 - 16:00"
       }
-    ],
-    "profile": ""
+    ]
   },
   {
-    "id": "p0_agro3001_extensao_rural_t1",
+    "id": "p0_extensao_rural_t1",
     "code": "AGRO3001",
-    "name": "EXTENSÃO RURAL",
+    "name": "Extensão Rural",
     "professor": "VALCILENE RODRIGUES",
     "period": 0,
+    "profile": "",
     "sessions": [
       {
         "day": 4,
         "time": "13:00 - 18:00"
       }
-    ],
-    "profile": ""
+    ]
   },
   {
-    "id": "p0_vetr3011_doencas_carenciais_metabolicas_e_intox_de_ruminantes_t1",
+    "id": "p0_doencas_carenciais_metabolicas_e_intox_de_ruminantes_t1",
     "code": "VETR3011",
-    "name": "DOENÇAS CARENCIAIS METABÓLICAS E INTOX.DE RUMINANTES",
+    "name": "Doenças Carenciais Metabólicas e Intox.de Ruminantes",
     "professor": "CARLOS UBIRAJARA",
     "period": 0,
+    "profile": "",
     "sessions": [
-      {
-        "day": 2,
-        "time": "13:00 - 15:00"
-      },
       {
         "day": 1,
         "time": "16:00 - 18:00"
+      },
+      {
+        "day": 2,
+        "time": "13:00 - 15:00"
       }
-    ],
-    "profile": ""
+    ]
   },
   {
-    "id": "p0_vetr3019_deontologia_e_medicina_legal_veterinaria_t1",
+    "id": "p0_deontologia_e_medicina_legal_veterinaria_t1",
     "code": "VETR3019",
-    "name": "DEONTOLOGIA E MEDICINA LEGAL VETERINÁRIA",
+    "name": "Deontologia e Medicina Legal Veterinária",
     "professor": "MÁRCIA BERSANE",
     "period": 0,
+    "profile": "",
     "sessions": [
       {
         "day": 1,
         "time": "13:00 - 16:00"
       }
-    ],
-    "profile": ""
+    ]
   },
   {
-    "id": "p0_mvet0061_dor_e_analgesia_em_medicina_veterinaria_t1",
+    "id": "p0_dor_e_analgesia_em_medicina_veterinaria_t1",
     "code": "MVET0061",
     "name": "Dor e Analgesia em Medicina Veterinária",
-    "professor": "Silvia Elaine",
+    "professor": "Sílvia Elaine",
     "period": 0,
+    "profile": "",
     "sessions": [
       {
         "day": 1,
         "time": "13:30 - 16:30"
       }
-    ],
-    "profile": ""
+    ]
   },
   {
-    "id": "p0_mvet0059_clinica_medica_de_animais_silvestres_e_exoticos_t1",
+    "id": "p0_clinica_medica_de_animais_silvestres_e_exoticos_t1",
     "code": "MVET0059",
     "name": "Clínica Médica de Animais Silvestres e Exóticos",
     "professor": "Ruben Horn",
     "period": 0,
+    "profile": "",
     "sessions": [
       {
         "day": 2,
         "time": "07:30 - 11:30"
       }
-    ],
-    "profile": ""
+    ]
   },
   {
-    "id": "p0_mvet0056_biosseguranca_e_gestao_de_residuos_t1",
+    "id": "p0_biosseguranca_e_gestao_de_residuos_t1",
     "code": "MVET0056",
     "name": "Biossegurança e Gestão de Resíduos",
     "professor": "Nair Lira",
     "period": 0,
+    "profile": "",
     "sessions": [
       {
         "day": 3,
         "time": "13:00 - 15:00"
       }
-    ],
-    "profile": ""
+    ]
   },
   {
-    "id": "p0_econ3002_fundamentos_de_economia_rural_optativa_t1",
+    "id": "p0_fundamentos_de_economia_rural_t2",
     "code": "ECON3002",
     "name": "Fundamentos de Economia Rural",
     "professor": "Epaminondas Filho",
     "period": 0,
+    "profile": "",
     "sessions": [
       {
         "day": 3,
         "time": "18:30 - 21:30"
       }
-    ],
-    "profile": ""
+    ]
+  },
+  {
+    "id": "p0_aulas_de_reposicao_defesas_de_tcc_t1",
+    "code": "TCC0001",
+    "name": "Aulas de Reposição/ Defesas de TCC",
+    "professor": "Docentes do Curso/ Orientadores",
+    "period": 0,
+    "profile": "",
+    "sessions": [
+      {
+        "day": 4,
+        "time": "13:00 - 18:00"
+      },
+      {
+        "day": 5,
+        "time": "13:00 - 18:00"
+      }
+    ]
   }
 ]

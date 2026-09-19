@@ -1242,7 +1242,10 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
   const availableScheduleProfiles = useMemo(() => {
     const set = new Set<string>();
     disciplines.forEach(d => {
-      if (d.profile && d.profile.trim()) set.add(d.profile.trim());
+      const prof = (d.profile || '').trim();
+      if (prof && prof.toLowerCase() !== 'optativa' && prof.toLowerCase() !== 'sem perfil') {
+        set.add(prof);
+      }
     });
     return Array.from(set).sort();
   }, [disciplines]);
@@ -1250,7 +1253,10 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
   const availableCurriculumProfiles = useMemo(() => {
     const set = new Set<string>();
     curriculumSubjects.forEach(s => {
-      if (s.profile && s.profile.trim()) set.add(s.profile.trim());
+      const prof = (s.profile || '').trim();
+      if (prof && prof.toLowerCase() !== 'optativa' && prof.toLowerCase() !== 'sem perfil') {
+        set.add(prof);
+      }
     });
     return Array.from(set).sort();
   }, [curriculumSubjects]);
