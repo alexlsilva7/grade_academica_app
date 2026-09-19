@@ -25,6 +25,8 @@ export default function App() {
           darkMode={scheduleProps.darkMode}
           selectedCourse={scheduleProps.selectedCourse}
           changeCourse={scheduleProps.changeCourse}
+          selectedProfile={scheduleProps.selectedProfile}
+          setSelectedProfile={scheduleProps.setSelectedProfile}
         />
       ) : scheduleProps.view === 'matriz' ? (
         <MatrizView 
@@ -34,6 +36,8 @@ export default function App() {
           themePreference={scheduleProps.themePreference}
           cycleTheme={scheduleProps.cycleTheme}
           schedule={scheduleProps.schedule}
+          selectedProfile={scheduleProps.selectedProfile}
+          setSelectedProfile={scheduleProps.setSelectedProfile}
         />
       ) : (scheduleProps.view === 'admin' && !isProduction()) ? (
         <AdminView
@@ -69,6 +73,9 @@ export default function App() {
               periods={scheduleProps.periods}
               selectedPeriod={scheduleProps.selectedPeriod}
               setSelectedPeriod={scheduleProps.setSelectedPeriod}
+              availableProfiles={scheduleProps.availableProfiles}
+              selectedProfile={scheduleProps.selectedProfile}
+              setSelectedProfile={scheduleProps.setSelectedProfile}
               searchQuery={scheduleProps.searchQuery}
               setSearchQuery={scheduleProps.setSearchQuery}
               disciplinesList={scheduleProps.disciplinesList}

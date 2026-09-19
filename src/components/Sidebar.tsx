@@ -1,5 +1,5 @@
 import React, { RefObject } from 'react';
-import { ArrowLeft, BookOpen, Search, X, CheckCircle2, Info, CheckCircle, Circle, Square, CheckSquare, AlertCircle, Sun, Moon, Monitor } from 'lucide-react';
+import { ArrowLeft, BookOpen, Search, X, CheckCircle2, Info, CheckCircle, Circle, Square, CheckSquare, AlertCircle, Sun, Moon, Monitor, ChevronDown } from 'lucide-react';
 import { Discipline } from '../types';
 import { DAYS } from '../constants';
 import { hasDisciplineDetails } from '../utils/detailsHelper';
@@ -19,6 +19,9 @@ interface SidebarProps {
   toggleDiscipline: (disc: Discipline) => void;
   onShowDetails: (disc: Discipline) => void;
   hasApiKey: boolean;
+  availableProfiles?: string[];
+  selectedProfile?: string;
+  setSelectedProfile?: (p: string) => void;
   completedDisciplines: string[];
   toggleCompleted: (id: string) => void;
   getDisciplineConflictInstance: (disc: Discipline) => { withName: string } | null;
@@ -34,6 +37,9 @@ export function Sidebar({
   periods,
   selectedPeriod,
   setSelectedPeriod,
+  availableProfiles,
+  selectedProfile = 'all',
+  setSelectedProfile,
   searchQuery,
   setSearchQuery,
   disciplinesList,
@@ -49,9 +55,46 @@ export function Sidebar({
   themePreference,
   cycleTheme
 }: SidebarProps) {
+  const getCleanDisciplineName = (name: string) => {
+    return name
+      .replace(/\s*\((?:(?:matriz|grade)\s+(?:nova|antiga)\s*[-–:]*\s*|perfil\s*[-–:]*\s*)?[a-z0-9_-]+\)/gi, '')
+      .replace(/\s*\((?:matriz|grade)\s+(?:nova|antiga)\)/gi, '')
+      .trim();
+  };
+
   return (
     <div className={`w-full md:w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col h-full overflow-hidden ${mobileTab === 'disciplines' ? 'flex' : 'hidden md:flex'}`}>
       <div className="p-4 border-b border-slate-100 dark:border-slate-800/80 flex flex-col gap-3 shrink-0">
+        {/* Profile / Matriz select when multiple profiles exist - DISPLAYED ON TOP */}
+        {availableProfiles && availableProfiles.length > 1 && (
+          <div className="flex flex-col gap-1.5 pb-2 border-b border-slate-100 dark:border-slate-800/60">
+            <div className="flex items-center justify-between">
+              <label htmlFor="sidebar-profile-select" className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                Perfil / Matriz
+              </label>
+              {selectedProfile !== 'all' && (
+                <span className="text-[9px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.2 rounded border border-indigo-200/60 dark:border-indigo-800/40">
+                  {selectedProfile}
+                </span>
+              )}
+            </div>
+            <div className="relative">
+              <select
+                id="sidebar-profile-select"
+                value={selectedProfile}
+                onChange={(e) => setSelectedProfile?.(e.target.value)}
+                className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-indigo-600 dark:text-indigo-400 text-xs font-semibold rounded-lg py-2 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer appearance-none shadow-xs transition-colors"
+              >
+                <option value="all">Todos os Perfis ({availableProfiles.length})</option>
+                {availableProfiles.map(p => (
+                  <option key={p} value={p}>Perfil: {p}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+            </div>
+          </div>
+        )}
+
         <div className="flex justify-between items-center">
           <h2 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Períodos</h2>
         </div>
@@ -142,7 +185,7 @@ export function Sidebar({
                 <div className="flex justify-between items-start">
                   <div className="flex-1 pr-2">
                     <h4 className={`text-sm ${scheduled ? 'font-semibold text-indigo-900 dark:text-indigo-200' : isCompleted ? 'font-medium text-emerald-800 dark:text-emerald-300 line-through decoration-emerald-300 dark:decoration-emerald-500' : 'font-medium text-slate-700 dark:text-slate-200'}`}>
-                      {disc.name}
+                      {getCleanDisciplineName(disc.name)}
                     </h4>
                     {isCompleted && (
                       <span className="inline-flex items-center text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 mt-1">
@@ -194,6 +237,11 @@ export function Sidebar({
                    <span className={`inline-flex items-center text-[9px] uppercase font-black px-1.5 py-0.5 rounded shadow-sm ${scheduled ? 'bg-indigo-600 dark:bg-indigo-750 text-white' : isCompleted ? 'bg-emerald-600 dark:bg-emerald-750 text-white' : 'bg-slate-800 dark:bg-slate-700 text-white'}`}>
                     {disc.period === 0 ? 'Opt' : `${disc.period}º`}
                   </span>
+                  {disc.profile && (
+                    <span className="inline-flex items-center text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                      {disc.profile}
+                    </span>
+                  )}
                   <div className={`h-3 w-[1px] ${isCompleted ? 'bg-emerald-200 dark:bg-emerald-900/50' : 'bg-slate-300 dark:bg-slate-700'}`} />
                   {disc.sessions.map((session, i) => (
                     <span key={i} className={`inline-flex items-center text-[9px] uppercase font-bold px-1.5 py-0.5 rounded ${scheduled ? 'bg-indigo-100 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-300' : isCompleted ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>

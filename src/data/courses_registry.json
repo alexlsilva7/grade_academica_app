@@ -1,0 +1,51 @@
+[
+  {
+    "id": "bcc",
+    "name": "Ciência da Computação",
+    "shortName": "BCC",
+    "hasCurriculum": true,
+    "hasSchedule": true,
+    "semesters": [
+      "2026.1"
+    ],
+    "profiles": [
+      "BCC03",
+      "BCC02"
+    ]
+  },
+  {
+    "id": "adm",
+    "name": "Administração",
+    "shortName": "ADM",
+    "hasCurriculum": true,
+    "hasSchedule": true,
+    "semesters": [
+      "2026.1"
+    ]
+  },
+  {
+    "id": "eal",
+    "name": "Engenharia de Alimentos",
+    "shortName": "EAL",
+    "hasCurriculum": false,
+    "hasSchedule": true,
+    "semesters": [
+      "2026.1"
+    ]
+  },
+  {
+    "id": "bacharelado-em-medicina-veterinaria-ufape",
+    "name": "Bacharelado em Medicina Veterinária UFAPE",
+    "shortName": "MVET",
+    "hasCurriculum": true,
+    "hasSchedule": true,
+    "semesters": [
+      "2026.1"
+    ],
+    "profiles": [
+      "MVET03",
+      "MVET02",
+      "Optativa"
+    ]
+  }
+]

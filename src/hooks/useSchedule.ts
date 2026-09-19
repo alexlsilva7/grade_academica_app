@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { bcc2026_1, eal2026_1, adm2026_1 } from '../data';
 import { Discipline, TimeSlot } from '../types';
 import { TIMESLOTS } from '../constants';
@@ -11,6 +11,32 @@ export interface SavedGrade {
 }
 
 export type ThemeMode = 'light' | 'dark' | 'system';
+
+export function sanitizeDiscipline(d: Discipline): Discipline {
+  if (!d) return d;
+  let cleanName = d.name || '';
+  let profile = (d.profile || '').trim();
+
+  // Pattern: "(Matriz Nova - MVET03)", "(Matriz Antiga - MVET02)", "(Perfil MVET02)", "(Perfil - MVET02)", "(MVET03)", "(Grade Nova - BCC03)"
+  const profileRegex = /\s*\((?:(?:matriz|grade)\s+(?:nova|antiga)\s*[-–:]*\s*|perfil\s*[-–:]*\s*)?([A-Za-z0-9_-]+)\)/i;
+  const match = cleanName.match(profileRegex);
+  if (match) {
+    const candidateCode = match[1]?.trim();
+    if (!profile && candidateCode) {
+      profile = candidateCode;
+    }
+    cleanName = cleanName.replace(match[0], '').trim();
+  }
+
+  // Also clean generic labels like "(Matriz Nova)" or "(Matriz Antiga)"
+  cleanName = cleanName.replace(/\s*\((?:matriz|grade)\s+(?:nova|antiga)\)/gi, '').trim();
+
+  return {
+    ...d,
+    name: cleanName,
+    profile
+  };
+}
 
 export function useSchedule() {
   const [view, setViewInternal] = useState<'home' | 'schedule' | 'matriz' | 'disciplines' | 'admin'>(() => {
@@ -56,7 +82,7 @@ export function useSchedule() {
       const course = localStorage.getItem('selectedCourse');
       if (course) {
         const stored = localStorage.getItem(`schedule_${course}`);
-        return stored ? JSON.parse(stored) : [];
+        return stored ? JSON.parse(stored).map(sanitizeDiscipline) : [];
       }
     } catch (e) {
       console.error('Failed to load schedule', e);
@@ -67,7 +93,7 @@ export function useSchedule() {
   const [disciplinesList, setDisciplinesList] = useState<Discipline[]>(() => {
     try {
       const stored = localStorage.getItem('saved_disciplinesList');
-      return stored ? JSON.parse(stored) : [];
+      return stored ? JSON.parse(stored).map(sanitizeDiscipline) : [];
     } catch {
       return [];
     }
@@ -141,6 +167,12 @@ export function useSchedule() {
     setSelectedCourse(course);
     if (course) {
       localStorage.setItem('selectedCourse', course);
+      try {
+        const stored = localStorage.getItem(`selected_profile_${course}`);
+        setSelectedProfile(stored && stored !== 'todos' ? stored : 'all');
+      } catch {
+        setSelectedProfile('all');
+      }
     } else {
       localStorage.removeItem('selectedCourse');
     }
@@ -278,13 +310,68 @@ export function useSchedule() {
     setView('schedule');
   };
 
-  const periods = Array.from(new Set(disciplinesList.map(d => d.period))).sort((a, b) => {
-    const periodA = a as number;
-    const periodB = b as number;
-    if (periodA === 0) return 1;
-    if (periodB === 0) return -1;
-    return periodA - periodB;
-  }) as number[];
+  const availableProfiles = useMemo(() => {
+    const set = new Set<string>();
+    disciplinesList.forEach(d => {
+      if (d.profile && d.profile.trim()) set.add(d.profile.trim());
+    });
+    return Array.from(set).sort();
+  }, [disciplinesList]);
+
+  const [selectedProfile, setSelectedProfile] = useState<string>(() => {
+    try {
+      const course = localStorage.getItem('selectedCourse');
+      const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
+      const stored = localStorage.getItem(key) || localStorage.getItem('saved_selectedProfile');
+      if (stored && stored !== 'todos') {
+        return stored;
+      }
+      return 'all';
+    } catch {
+      return 'all';
+    }
+  });
+
+  // Persist profile selection
+  useEffect(() => {
+    try {
+      const key = selectedCourse ? `selected_profile_${selectedCourse}` : 'saved_selectedProfile';
+      localStorage.setItem(key, selectedProfile);
+      localStorage.setItem('saved_selectedProfile', selectedProfile);
+    } catch (e) {
+      console.error('Failed to save selectedProfile', e);
+    }
+  }, [selectedProfile, selectedCourse]);
+
+  // If availableProfiles changes and does not include current selection, fall back to 'all'
+  useEffect(() => {
+    if (availableProfiles.length === 0 && selectedProfile !== 'all') {
+      setSelectedProfile('all');
+    } else if (availableProfiles.length > 0 && selectedProfile !== 'all' && !availableProfiles.includes(selectedProfile)) {
+      setSelectedProfile('all');
+    }
+  }, [availableProfiles]);
+
+  const periods = useMemo(() => {
+    const filteredList = (selectedProfile === 'all' || availableProfiles.length <= 1)
+      ? disciplinesList
+      : disciplinesList.filter(d => d.profile === selectedProfile || !d.profile);
+
+    const listToUse = filteredList.length > 0 ? filteredList : disciplinesList;
+    return Array.from(new Set(listToUse.map(d => d.period))).sort((a, b) => {
+      const periodA = a as number;
+      const periodB = b as number;
+      if (periodA === 0) return 1;
+      if (periodB === 0) return -1;
+      return periodA - periodB;
+    }) as number[];
+  }, [disciplinesList, selectedProfile, availableProfiles]);
+
+  useEffect(() => {
+    if (periods.length > 0 && !periods.includes(selectedPeriod)) {
+      setSelectedPeriod(periods[0]);
+    }
+  }, [periods, selectedPeriod]);
   
   const normalizeString = (str: string) => {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -292,30 +379,49 @@ export function useSchedule() {
 
   const normalizedSearchQuery = normalizeString(searchQuery);
 
-  const displayedDisciplines = searchQuery 
+  const displayedDisciplines = (searchQuery 
     ? disciplinesList.filter(d => 
         normalizeString(d.name).includes(normalizedSearchQuery) || 
-        normalizeString(d.professor).includes(normalizedSearchQuery)
+        normalizeString(d.professor).includes(normalizedSearchQuery) ||
+        (d.profile && normalizeString(d.profile).includes(normalizedSearchQuery))
       )
-    : disciplinesList.filter(d => d.period === selectedPeriod);
+    : disciplinesList.filter(d => d.period === selectedPeriod)
+  ).filter(d => {
+    if (selectedProfile === 'all' || availableProfiles.length <= 1) return true;
+    return d.profile === selectedProfile || (!d.profile && selectedProfile === 'Sem Perfil');
+  });
 
-  const loadPredefinedGrade = (type: 'bcc' | 'eal' | 'adm') => {
+  const loadPredefinedGrade = async (type: string) => {
     if (type === 'eal') {
-      setDisciplinesList(eal2026_1);
+      setDisciplinesList(eal2026_1.map(sanitizeDiscipline));
       setGradeTitle('EAL - Engenharia de Alimentos - Período 2026.1');
     } else if (type === 'adm') {
-      setDisciplinesList(adm2026_1);
+      setDisciplinesList(adm2026_1.map(sanitizeDiscipline));
       setGradeTitle('ADM - Administração - Período 2026.1');
-    } else {
-      setDisciplinesList(bcc2026_1);
+    } else if (type === 'bcc') {
+      setDisciplinesList(bcc2026_1.map(sanitizeDiscipline));
       setGradeTitle('BCC - Bacharelado em Ciência da Computação - Período 2026.1');
+    } else {
+      // Dynamic custom course fetched from server API
+      try {
+        const res = await fetch(`/api/courses/${type}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.schedule && Array.isArray(data.schedule)) {
+            setDisciplinesList(data.schedule.map(sanitizeDiscipline));
+            setGradeTitle(`${data.course?.name || type.toUpperCase()} - Período 2026.1`);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to fetch schedule for dynamic course', e);
+      }
     }
     
     // Restore the saved schedule for this course instead of resetting to empty
     try {
       const stored = localStorage.getItem(`schedule_${type}`);
       if (stored) {
-        setSchedule(JSON.parse(stored));
+        setSchedule(JSON.parse(stored).map(sanitizeDiscipline));
       } else {
         setSchedule([]);
       }
@@ -324,6 +430,17 @@ export function useSchedule() {
     }
 
     setSelectedPeriod(1);
+    // Restore the saved profile for this course instead of resetting to 'all'
+    try {
+      const storedProf = localStorage.getItem(`selected_profile_${type}`);
+      if (storedProf && storedProf !== 'todos') {
+        setSelectedProfile(storedProf);
+      } else {
+        setSelectedProfile('all');
+      }
+    } catch {
+      setSelectedProfile('all');
+    }
     setSearchQuery('');
     setView('schedule');
   };
@@ -347,7 +464,7 @@ export function useSchedule() {
       
       const base64Data = await base64Promise;
 
-      const response = await fetch("/api/extract-pdf", {
+      const response = await fetch("/api/extract-schedule", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -375,7 +492,7 @@ export function useSchedule() {
         }));
         
         setDisciplinesList(sanitizedDisciplines);
-        const newTitle = file.name.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
+        const newTitle = responseData.title || (responseData.courseName ? `${responseData.courseName} - Horário 2026.1` : file.name.replace(/\.[^/.]+$/, "").replace(/_/g, " "));
         setGradeTitle(newTitle);
         setSchedule([]);
         if (sanitizedDisciplines.length > 0) {
@@ -388,6 +505,7 @@ export function useSchedule() {
           });
           setSelectedPeriod(availablePeriods[0] as number);
         }
+        setSelectedProfile('all');
         setView('schedule');
         saveGradeToLocal(newTitle, sanitizedDisciplines);
       } else {
@@ -544,6 +662,9 @@ export function useSchedule() {
     searchQuery,
     setSearchQuery,
     periods,
+    availableProfiles,
+    selectedProfile,
+    setSelectedProfile,
     displayedDisciplines,
     loadPredefinedGrade,
     handleFileUpload,
