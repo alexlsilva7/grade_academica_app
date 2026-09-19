@@ -1013,7 +1013,7 @@
         "time": "13:00 - 15:00"
       }
     ],
-    "profile": "Optativa"
+    "profile": ""
   },
   {
     "id": "p0_vetr3016_inspecao_de_carnes_produtos_derivados_t1",
@@ -1031,7 +1031,7 @@
         "time": "16:00 - 18:00"
       }
     ],
-    "profile": "Optativa"
+    "profile": ""
   },
   {
     "id": "p0_vetr3017_inspecao_de_leite_produtos_derivados_t1",
@@ -1049,7 +1049,7 @@
         "time": "15:00 - 16:00"
       }
     ],
-    "profile": "Optativa"
+    "profile": ""
   },
   {
     "id": "p0_agro3001_extensao_rural_t1",
@@ -1063,7 +1063,7 @@
         "time": "13:00 - 18:00"
       }
     ],
-    "profile": "Optativa"
+    "profile": ""
   },
   {
     "id": "p0_vetr3011_doencas_carenciais_metabolicas_e_intox_de_ruminantes_t1",
@@ -1081,7 +1081,7 @@
         "time": "16:00 - 18:00"
       }
     ],
-    "profile": "Optativa"
+    "profile": ""
   },
   {
     "id": "p0_vetr3019_deontologia_e_medicina_legal_veterinaria_t1",
@@ -1095,7 +1095,7 @@
         "time": "13:00 - 16:00"
       }
     ],
-    "profile": "Optativa"
+    "profile": ""
   },
   {
     "id": "p0_mvet0061_dor_e_analgesia_em_medicina_veterinaria_t1",
@@ -1109,7 +1109,7 @@
         "time": "13:30 - 16:30"
       }
     ],
-    "profile": "Optativa"
+    "profile": ""
   },
   {
     "id": "p0_mvet0059_clinica_medica_de_animais_silvestres_e_exoticos_t1",
@@ -1123,7 +1123,7 @@
         "time": "07:30 - 11:30"
       }
     ],
-    "profile": "Optativa"
+    "profile": ""
   },
   {
     "id": "p0_mvet0056_biosseguranca_e_gestao_de_residuos_t1",
@@ -1137,7 +1137,7 @@
         "time": "13:00 - 15:00"
       }
     ],
-    "profile": "Optativa"
+    "profile": ""
   },
   {
     "id": "p0_econ3002_fundamentos_de_economia_rural_optativa_t1",
@@ -1151,6 +1151,6 @@
         "time": "18:30 - 21:30"
       }
     ],
-    "profile": "Optativa"
+    "profile": ""
   }
 ]

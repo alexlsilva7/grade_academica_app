@@ -745,6 +745,9 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
               cleanName = cleanName.replace(match[0], "").trim();
             }
             cleanName = cleanName.replace(/\s*\((?:matriz|grade)\s+(?:nova|antiga)\)/gi, "").trim();
+            if (profile.toLowerCase() === 'optativa' || profile.toLowerCase() === 'sem perfil' || d.period === 0) {
+              profile = '';
+            }
             return { ...d, name: cleanName, profile };
           });
           setDisciplines(sanitizedDisciplines);

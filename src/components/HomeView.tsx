@@ -71,9 +71,16 @@ export function HomeView({
         if (!isMounted) return;
         const set = new Set<string>();
         if (data) {
+          if (Array.isArray(data.course?.profiles)) {
+            data.course.profiles.forEach((p: string) => {
+              if (p && p.trim() && p.trim().toLowerCase() !== 'optativa' && p.trim().toLowerCase() !== 'sem perfil') {
+                set.add(p.trim());
+              }
+            });
+          }
           if (Array.isArray(data.schedule)) {
             data.schedule.forEach((d: any) => {
-              if (d.profile && typeof d.profile === 'string' && d.profile.trim()) {
+              if (d.profile && typeof d.profile === 'string' && d.profile.trim() && d.profile.trim().toLowerCase() !== 'optativa' && d.profile.trim().toLowerCase() !== 'sem perfil') {
                 set.add(d.profile.trim());
               }
             });
@@ -81,7 +88,7 @@ export function HomeView({
           const curr = Array.isArray(data.curriculum) ? data.curriculum : (data.curriculum?.subjects || []);
           if (Array.isArray(curr)) {
             curr.forEach((s: any) => {
-              if (s.profile && typeof s.profile === 'string' && s.profile.trim()) {
+              if (s.profile && typeof s.profile === 'string' && s.profile.trim() && s.profile.trim().toLowerCase() !== 'optativa' && s.profile.trim().toLowerCase() !== 'sem perfil') {
                 set.add(s.profile.trim());
               }
             });

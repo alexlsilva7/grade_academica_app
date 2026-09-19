@@ -31,6 +31,11 @@ export function sanitizeDiscipline(d: Discipline): Discipline {
   // Also clean generic labels like "(Matriz Nova)" or "(Matriz Antiga)"
   cleanName = cleanName.replace(/\s*\((?:matriz|grade)\s+(?:nova|antiga)\)/gi, '').trim();
 
+  // "Optativa" não é perfil curricular: limpa o atributo profile para optativas
+  if (profile.toLowerCase() === 'optativa' || profile.toLowerCase() === 'sem perfil' || d.period === 0) {
+    profile = '';
+  }
+
   return {
     ...d,
     name: cleanName,
@@ -313,7 +318,10 @@ export function useSchedule() {
   const availableProfiles = useMemo(() => {
     const set = new Set<string>();
     disciplinesList.forEach(d => {
-      if (d.profile && d.profile.trim()) set.add(d.profile.trim());
+      const prof = (d.profile || '').trim();
+      if (prof && prof.toLowerCase() !== 'optativa' && prof.toLowerCase() !== 'sem perfil') {
+        set.add(prof);
+      }
     });
     return Array.from(set).sort();
   }, [disciplinesList]);
@@ -352,10 +360,17 @@ export function useSchedule() {
     }
   }, [availableProfiles]);
 
+  const isDisciplineOptativaOrCommon = (d: Discipline): boolean => {
+    if (d.period === 0) return true;
+    const prof = (d.profile || '').trim().toLowerCase();
+    if (!prof || prof === 'optativa' || prof === 'sem perfil') return true;
+    return false;
+  };
+
   const periods = useMemo(() => {
     const filteredList = (selectedProfile === 'all' || availableProfiles.length <= 1)
       ? disciplinesList
-      : disciplinesList.filter(d => d.profile === selectedProfile || !d.profile);
+      : disciplinesList.filter(d => isDisciplineOptativaOrCommon(d) || d.profile === selectedProfile);
 
     const listToUse = filteredList.length > 0 ? filteredList : disciplinesList;
     return Array.from(new Set(listToUse.map(d => d.period))).sort((a, b) => {
@@ -388,7 +403,9 @@ export function useSchedule() {
     : disciplinesList.filter(d => d.period === selectedPeriod)
   ).filter(d => {
     if (selectedProfile === 'all' || availableProfiles.length <= 1) return true;
-    return d.profile === selectedProfile || (!d.profile && selectedProfile === 'Sem Perfil');
+    // Optativa não é perfil: disciplinas optativas ou comuns pertencem a todos os perfis!
+    if (isDisciplineOptativaOrCommon(d)) return true;
+    return d.profile === selectedProfile;
   });
 
   const loadPredefinedGrade = async (type: string) => {

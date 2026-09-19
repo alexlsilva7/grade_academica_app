@@ -34,18 +34,17 @@
     ]
   },
   {
-    "id": "bacharelado-em-medicina-veterinaria-ufape",
-    "name": "Bacharelado em Medicina Veterinária UFAPE",
+    "id": "medicina-veterinaria",
+    "name": "Medicina Veterinária",
     "shortName": "MVET",
-    "hasCurriculum": true,
+    "hasCurriculum": false,
     "hasSchedule": true,
     "semesters": [
       "2026.1"
     ],
     "profiles": [
       "MVET03",
-      "MVET02",
-      "Optativa"
+      "MVET02"
     ]
   }
 ]

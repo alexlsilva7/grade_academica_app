@@ -97,22 +97,27 @@ app.get("/api/health", (req, res) => {
 // Helper to extract profile IDs from curriculum data
 function extractProfilesFromCurriculum(curr: any): string[] {
   if (!curr) return [];
+  let list: string[] = [];
   if (curr.profiles && Array.isArray(curr.profiles)) {
-    return curr.profiles.map((p: any) => p.id || p.name).filter(Boolean);
+    list = curr.profiles.map((p: any) => p.id || p.name).filter(Boolean);
+  } else if (Array.isArray(curr.subjects)) {
+    list = curr.subjects.map((s: any) => s.profile).filter(Boolean);
+  } else if (Array.isArray(curr)) {
+    list = curr.map((s: any) => s.profile).filter(Boolean);
   }
-  if (Array.isArray(curr.subjects)) {
-    return Array.from(new Set(curr.subjects.map((s: any) => s.profile).filter(Boolean)));
-  }
-  if (Array.isArray(curr)) {
-    return Array.from(new Set(curr.map((s: any) => s.profile).filter(Boolean)));
-  }
-  return [];
+  return Array.from(new Set(
+    list.filter((p: any) => typeof p === 'string' && p.trim().length > 0 && p.trim().toLowerCase() !== 'optativa' && p.trim().toLowerCase() !== 'sem perfil')
+  ));
 }
 
 // Helper to extract profile IDs from schedule data
 function extractProfilesFromSchedule(sched: any): string[] {
   if (!sched || !Array.isArray(sched)) return [];
-  return Array.from(new Set(sched.map((s: any) => s.profile).filter((p: any) => typeof p === 'string' && p.trim().length > 0)));
+  return Array.from(new Set(
+    sched
+      .map((s: any) => s.profile)
+      .filter((p: any) => typeof p === 'string' && p.trim().length > 0 && p.trim().toLowerCase() !== 'optativa' && p.trim().toLowerCase() !== 'sem perfil')
+  ));
 }
 
 // GET all courses metadata
@@ -731,9 +736,9 @@ async function handleExtractSchedule(req: express.Request, res: express.Response
       "7. PERFIL CURRICULAR OU MATRIZ (profile) - CAMPO OBRIGATÓRIO SEPARADO:\n" +
       "   - NUNCA, SOB HIPÓTESE ALGUMA, CONCATENE O PERFIL, MATRIZ OU SUFIXOS COMO '(Matriz Nova - MVET03)', '(Perfil MVET02)', '(Matriz Antiga)' NO CAMPO 'name'!\n" +
       "   - O campo 'name' deve conter ESTRITAMENTE o nome limpo e oficial da matéria (ex: 'Anatomia Descritiva dos Animais Domésticos', 'Genética', 'Bioquímica e Biofísica Veterinária').\n" +
-      "   - O código do perfil curricular ou matriz DEVE ser colocado EXCLUSIVAMENTE no atributo separado 'profile' (ex: 'MVET03', 'MVET02', 'BCC03', 'Optativa').\n" +
+      "   - O código do perfil curricular ou matriz DEVE ser colocado EXCLUSIVAMENTE no atributo separado 'profile' (ex: 'MVET03', 'MVET02', 'BCC03').\n" +
+      "   - ATENÇÃO: 'Optativa' NÃO é um perfil curricular! Disciplinas optativas pertencem a todos os perfis. Para disciplinas de tabelas de optativas, preencha o campo 'profile' com string vazia \"\" e 'period' com 0.\n" +
       "   - Observe atentamente os cabeçalhos de cada período/página para detectar perfis ou matrizes curriculares (ex: 'PERFIL: MVET03', 'MATRIZ NOVA', 'PERFIL - MVET02', 'MATRIZ ANTIGA').\n" +
-      "   - Para disciplinas de tabelas de optativas, preencha com 'Optativa' ou o perfil correspondente.\n" +
       "   - Se o documento não fizer divisão de perfis, preencha com string vazia \"\".\n\n" +
       "8. IDENTIFICAÇÃO DO CURSO E TÍTULO (courseName, courseShortName, title):\n" +
       "   - Analise os cabeçalhos, rodapés ou texto do documento para identificar o Curso de Graduação (ex: 'Medicina Veterinária', 'Agronomia', 'Bacharelado em Ciência da Computação', 'Engenharia de Alimentos', 'Zootecnia', 'Administração', 'Pedagogia', 'Letras').\n" +
@@ -775,7 +780,7 @@ async function handleExtractSchedule(req: express.Request, res: express.Response
             profiles: {
               type: Type.ARRAY,
               items: { type: Type.STRING },
-              description: "Lista de todos os códigos de perfis/matrizes identificados no documento (ex: ['MVET03', 'MVET02', 'Optativa'])"
+              description: "Lista de todos os códigos de perfis/matrizes curriculares identificados (ex: ['MVET03', 'MVET02'])"
             },
             disciplines: {
               type: Type.ARRAY,
@@ -788,7 +793,7 @@ async function handleExtractSchedule(req: express.Request, res: express.Response
                   name: { type: Type.STRING, description: "Nome oficial LIMPO da disciplina (SEM sufixos de matriz/perfil)" },
                   professor: { type: Type.STRING, description: "Nome do professor da disciplina" },
                   period: { type: Type.INTEGER, description: "Período correto (de 1 a 9). 0 para optativas." },
-                  profile: { type: Type.STRING, description: "Código do perfil curricular ou matriz correspondente (ex: 'MVET03', 'MVET02', 'Optativa'). NUNCA coloque no campo 'name'!" },
+                  profile: { type: Type.STRING, description: "Código do perfil curricular ou matriz correspondente (ex: 'MVET03', 'MVET02'). Não preencha com 'Optativa' nem com o nome no campo 'name'!" },
                   sessions: {
                     type: Type.ARRAY,
                     items: {
@@ -821,7 +826,9 @@ async function handleExtractSchedule(req: express.Request, res: express.Response
       const detectedProfiles = new Set<string>();
       if (Array.isArray(parsedResult.profiles)) {
         parsedResult.profiles.forEach((p: any) => {
-          if (typeof p === "string" && p.trim()) detectedProfiles.add(p.trim());
+          if (typeof p === "string" && p.trim() && p.trim().toLowerCase() !== 'optativa' && p.trim().toLowerCase() !== 'sem perfil') {
+            detectedProfiles.add(p.trim());
+          }
         });
       }
 
@@ -843,7 +850,15 @@ async function handleExtractSchedule(req: express.Request, res: express.Response
         // Also clean general matrix labels like "(Matriz Nova)", "(Matriz Antiga)"
         cleanName = cleanName.replace(/\s*\((?:matriz\s+nova|matriz\s+antiga)\)/gi, "").trim();
 
-        if (extractedProfile) {
+        // "Optativa" não é perfil curricular
+        if (extractedProfile && (extractedProfile.toLowerCase() === 'optativa' || extractedProfile.toLowerCase() === 'sem perfil')) {
+          extractedProfile = "";
+        }
+        if (d.period === 0 && extractedProfile.toLowerCase() === 'optativa') {
+          extractedProfile = "";
+        }
+
+        if (extractedProfile && extractedProfile.toLowerCase() !== 'optativa' && extractedProfile.toLowerCase() !== 'sem perfil') {
           detectedProfiles.add(extractedProfile);
         }
 

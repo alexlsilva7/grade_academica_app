@@ -72,7 +72,10 @@ export function DisciplinesView({
   const profiles = useMemo(() => {
     const p = new Set<string>();
     subjects.forEach((s: any) => {
-      if (s.profile && s.profile.trim()) p.add(s.profile.trim());
+      const prof = s.profile ? s.profile.trim() : '';
+      if (prof && prof.toLowerCase() !== 'optativa' && prof.toLowerCase() !== 'sem perfil') {
+        p.add(prof);
+      }
     });
     return Array.from(p).sort();
   }, [subjects]);
@@ -98,7 +101,9 @@ export function DisciplinesView({
   const periods = useMemo(() => {
     const p = new Set<string>();
     subjects.forEach((s: any) => {
-      if (s.period) p.add(s.period.toString());
+      if (s.period !== undefined && s.period !== null) {
+        p.add(s.period.toString());
+      }
     });
     return Array.from(p).sort((a, b) => {
       const numA = parseInt(a);
@@ -114,10 +119,11 @@ export function DisciplinesView({
                          (s.code && s.code.toLowerCase().includes(searchQuery.toLowerCase())) ||
                          (s.profile && s.profile.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchPeriod = selectedPeriod === 'todos' || s.period?.toString() === selectedPeriod;
-      const matchProfile = selectedProfile === 'todos' || profiles.length <= 1 || s.profile === selectedProfile || (!s.profile && selectedProfile === 'Sem Perfil');
+      const isOptativa = s.period === 0 || s.period === '0' || s.period === 'Optativa' || s.type?.toLowerCase().includes('optat') || (s.profile && s.profile.toLowerCase() === 'optativa');
+      const matchProfile = selectedProfile === 'todos' || profiles.length <= 1 || isOptativa || s.profile === selectedProfile || (!s.profile && selectedProfile === 'Sem Perfil');
       const matchType = selectedType === 'todos' || 
                         (selectedType === 'obrigatoria' && s.type?.toLowerCase().includes('obrigat')) ||
-                        (selectedType === 'optativa' && !s.type?.toLowerCase().includes('obrigat'));
+                        (selectedType === 'optativa' && (isOptativa || !s.type?.toLowerCase().includes('obrigat')));
       return matchQuery && matchPeriod && matchProfile && matchType;
     });
   }, [subjects, searchQuery, selectedPeriod, selectedProfile, selectedType, profiles]);
