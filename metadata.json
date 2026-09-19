@@ -1,6 +1,6 @@
 {
   "name": "My UFAPE",
-  "description": "Aplicativo para gerenciar a grade horária do BCC",
+  "description": "Aplicativo para gerenciar a grade horária e matriz curricular na UFAPE",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
