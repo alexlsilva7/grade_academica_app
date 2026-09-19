@@ -17,5 +17,77 @@ export interface Discipline {
   name: string;
   professor: string;
   period: number;
+  profile?: string;
   sessions: Session[];
+}
+
+export interface Workload {
+  teorica: number;
+  pratica: number;
+  extensao: number;
+  total: number;
+}
+
+export interface Prerequisite {
+  code: string;
+  name: string;
+}
+
+export interface CurriculumSubject {
+  id?: string;
+  code: string;
+  name: string;
+  type: string;
+  period: string | number;
+  profile?: string;
+  credits?: number;
+  workload: Workload;
+  prerequisites?: Prerequisite[];
+  corequisites?: Prerequisite[];
+  equivalences?: Prerequisite[];
+  ementa: string;
+}
+
+export interface TreeSubjectNode {
+  id: string;
+  code?: string;
+  name: string;
+  period: number;
+  hours: number;
+  type: 'basico' | 'computacao' | 'optativa' | 'estagio' | 'outros' | string;
+  prereqs: string[];
+  desc?: string;
+  equivalences?: Array<{ code: string; name: string; targetProfile?: string }>;
+}
+
+export interface CurriculumProfile {
+  id: string;
+  name: string;
+  description?: string;
+  validFromSemester?: string;
+  totalHours: number;
+  acexHours: number;
+  accHours: number;
+  optativeHours: number;
+  mandatoryHours?: number;
+  subjects: TreeSubjectNode[];
+}
+
+export interface CurriculumData {
+  export_date?: string;
+  courseName?: string;
+  courseShortName?: string;
+  activeProfileId?: string;
+  profiles?: CurriculumProfile[];
+  subjects: CurriculumSubject[];
+}
+
+export interface CourseMeta {
+  id: string;
+  name: string;
+  shortName: string;
+  hasCurriculum: boolean;
+  hasSchedule: boolean;
+  semesters?: string[];
+  profiles?: string[];
 }

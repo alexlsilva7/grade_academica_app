@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ConteudosProgramaticosSchema",
+  "description": "Schema JSON para validação do arquivo de conteúdos programáticos (conteudos_bcc.json)",
+  "type": "object",
+  "required": ["curso", "disciplinas"],
+  "properties": {
+    "curso": {
+      "type": "string",
+      "description": "Nome do curso correspondente aos planos de aula"
+    },
+    "disciplinas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["codigo", "nome", "tipo", "conteudo_programatico"],
+        "properties": {
+          "codigo": { "type": "string" },
+          "nome": { "type": "string" },
+          "tipo": { "type": "string" },
+          "conteudo_programatico": {
+            "type": "string",
+            "description": "Lista de tópicos programáticos separados por ponto e vírgula"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

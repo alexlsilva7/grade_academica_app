@@ -1,0 +1,291 @@
+openapi: 3.0.3
+info:
+  title: My UFAPE API
+  description: |
+    Especificação formal dos endpoints de backend do aplicativo My UFAPE.
+    Inclui operações para verificação de integridade, gestão de cursos customizados e extração de horários de PDFs via IA (Google Gemini).
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Servidor de desenvolvimento local
+
+paths:
+  /api/health:
+    get:
+      summary: Verificação de Integridade do Servidor
+      description: Retorna o status operacional da API e indica se a chave da API do Gemini está configurada.
+      responses:
+        '200':
+          description: Servidor operando normalmente
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                  - gemini_api_configured
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  gemini_api_configured:
+                    type: boolean
+                    example: true
+
+  /api/courses:
+    get:
+      summary: Listar Cursos Customizados
+      description: Retorna todos os cursos e grades customizadas persistidas localmente no arquivo `custom_cursos.json`.
+      responses:
+        '200':
+          description: Lista de cursos recuperada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - courses
+                properties:
+                  courses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CustomCourse'
+        '500':
+          description: Erro interno de leitura do arquivo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Salvar ou Atualizar Curso Customizado (Upsert)
+      description: Insere um novo curso customizado ou atualiza um existente com base no campo `id`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - title
+                - disciplines
+              properties:
+                id:
+                  type: string
+                  example: "bcc_2026_1"
+                title:
+                  type: string
+                  example: "BCC 2026.1 - Horário Letivo"
+                disciplines:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Discipline'
+      responses:
+        '200':
+          description: Curso salvo com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - course
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  course:
+                    $ref: '#/components/schemas/CustomCourse'
+        '400':
+          description: Dados inválidos (faltando id, title ou disciplines)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Falha na gravação do curso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/courses/{id}:
+    delete:
+      summary: Excluir Curso Customizado
+      description: Remove o curso identificado pelo `id` do arquivo `custom_cursos.json`.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único do curso a ser excluído
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Curso removido com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Curso não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Falha ao remover curso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/extract-pdf:
+    post:
+      summary: Extrair Horários e Turmas de PDF via Gemini
+      description: |
+        Recebe o conteúdo de um arquivo PDF codificado em Base64, processa no modelo multimodal do Google Gemini
+        com prompt estruturado e regras de timeslots da UFAPE, e retorna a lista normalizada de disciplinas.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - base64Data
+              properties:
+                base64Data:
+                  type: string
+                  description: Conteúdo bruto do PDF codificado em base64 (sem o prefixo data:application/pdf;base64,)
+                mimeType:
+                  type: string
+                  default: "application/pdf"
+                  example: "application/pdf"
+                fileName:
+                  type: string
+                  example: "horario_bcc_2026_1.pdf"
+                model:
+                  type: string
+                  default: "gemini-3.5-flash"
+                  example: "gemini-3.5-flash"
+      responses:
+        '200':
+          description: PDF extraído com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - title
+                  - disciplines
+                properties:
+                  title:
+                    type: string
+                    example: "BCC 2026.1 - Horário Letivo"
+                  disciplines:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Discipline'
+        '400':
+          description: Requisição inválida (falta base64Data)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro no processamento da IA ou chave não configurada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Session:
+      type: object
+      required:
+        - day
+        - time
+      properties:
+        day:
+          type: integer
+          minimum: 1
+          maximum: 6
+          description: "1 = Segunda, 2 = Terça, 3 = Quarta, 4 = Quinta, 5 = Sexta, 6 = Sábado"
+          example: 1
+        time:
+          type: string
+          description: Faixa de horário
+          example: "18:30 - 20:10"
+
+    Discipline:
+      type: object
+      required:
+        - id
+        - name
+        - professor
+        - period
+        - sessions
+      properties:
+        id:
+          type: string
+          example: "p1_intro_prog_t1"
+        code:
+          type: string
+          example: "CCMP3057"
+        name:
+          type: string
+          example: "Introdução à Programação I (Turma 1)"
+        professor:
+          type: string
+          example: "Renê"
+        period:
+          type: integer
+          example: 1
+        sessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Session'
+
+    CustomCourse:
+      type: object
+      required:
+        - id
+        - title
+        - disciplines
+        - updated_at
+      properties:
+        id:
+          type: string
+          example: "bcc_2026_1"
+        title:
+          type: string
+          example: "BCC 2026.1 - Horário Letivo"
+        disciplines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Discipline'
+        updated_at:
+          type: string
+          format: date-time
+          example: "2026-09-18T21:00:00.000Z"
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          example: "Falha ao processar o PDF."
+        details:
+          type: string
+          example: "GEMINI_API_KEY environment variable is required."

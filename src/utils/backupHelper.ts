@@ -1,26 +1,44 @@
 // Backup and restore utility for all customized user data
 
 export function exportAllUserData() {
-  const keys = [
+  const staticKeys = [
     'themePreference',
     'selectedCourse',
     'view_preference',
     'saved_gradeTitle',
     'saved_selectedPeriod',
+    'saved_selectedProfile',
     'saved_disciplinesList',
-    'schedule_bcc',
-    'schedule_eal',
     'completedDisciplines',
     'savedGrades',
     'bcc_matriz_progress',
+    'bcc_matriz_progress_antiga',
+    'bcc_matrix_version',
     'bcc_acex_hours',
     'bcc_acc_hours'
   ];
   
   const data: Record<string, string | null> = {};
-  keys.forEach(key => {
+  staticKeys.forEach(key => {
     data[key] = localStorage.getItem(key);
   });
+
+  // Also include all dynamically-named keys (courses, profiles, schedules, matrices)
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && (
+        k.startsWith('schedule_') || 
+        k.startsWith('selected_profile_') || 
+        k.startsWith('disciplines_selectedProfile_') || 
+        k.startsWith('matrix_version_')
+      )) {
+        data[k] = localStorage.getItem(k);
+      }
+    }
+  } catch (e) {
+    console.error('Error reading localStorage for backup', e);
+  }
   
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
   const downloadAnchor = document.createElement('a');

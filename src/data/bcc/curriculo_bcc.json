@@ -1,5 +1,5 @@
 {
-  "export_date": "2026-05-10T12:09:30.758119",
+  "export_date": "2026-09-19T03:54:49.394Z",
   "subjects": [
     {
       "code": "CCMP3006",
@@ -2709,1079 +2709,964 @@
       "ementa": "Apresentar os conceitos básicos de Segurança da Informação, com destaques para seus os seus pilares e criptografia moderna, seus fundamentos, cifras simétricas e assimétricas, RSA, autenticação, hash, assinaturas e certificados digitais. Auditoria de Sistemas de Informação: segurança lógica, segurança física, continuidade operacional, planos de contingência, controle de acesso, pontos de controle.\nDesenvolver a capacidade de reconhecimento de riscos e ameaças aos ativos de Tecnologia da Informação e apresentar propostas de medidas preventivas e corretivas para eliminar, corrigir ou defender os ativos contra ameaças. Despertar o aluno para a importância e o valor da informação como um ativo da organização ou do indivíduo."
     }
   ],
-  "grades": [
+  "courseName": "Ciência da Computação",
+  "courseShortName": "BCC",
+  "activeProfileId": "BCC03",
+  "profiles": [
     {
-      "nome": "CCMP3043 - RECONHECIMENTO DE PADRÕES - CC5",
-      "semestre": "2025.2",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "F",
-        "VA2": "F",
-        "VA3": "F"
-      },
-      "teacher": "TIAGO BUARQUE ASSUNCAO DE CARVALHO"
+      "id": "BCC03",
+      "name": "Grade Nova (Perfil 3/2024)",
+      "description": "Perfil curricular vigente a partir do semestre 2024.2",
+      "validFromSemester": "2024.2",
+      "totalHours": 3200,
+      "acexHours": 320,
+      "accHours": 90,
+      "optativeHours": 480,
+      "mandatoryHours": 2310,
+      "subjects": [
+        {
+          "id": "log_mat_1",
+          "code": "MATM3008",
+          "name": "Lógica Matemática I",
+          "hours": 60,
+          "period": 1,
+          "type": "basico",
+          "prereqs": [],
+          "desc": "Introdução à lógica proposicional e de primeira ordem, sistemas de dedução natural, semântica e completude."
+        },
+        {
+          "id": "geo_anal",
+          "code": "MATM3021",
+          "name": "Geometria Analítica",
+          "hours": 60,
+          "period": 1,
+          "type": "basico",
+          "prereqs": [],
+          "desc": "Vetores no plano e no espaço, retas e planos, cónicas, quádricas e transformações de coordenadas."
+        },
+        {
+          "id": "intro_prog_1",
+          "code": "CCMP3057",
+          "name": "Introdução à Programação I",
+          "hours": 90,
+          "period": 1,
+          "type": "computacao",
+          "prereqs": [],
+          "desc": "Desenvolvimento do pensamento algorítmico, lógica de programação, variáveis, estruturas condicionais/repetição e funções."
+        },
+        {
+          "id": "intro_comp",
+          "code": "CCMP3056",
+          "name": "Introdução à Computação",
+          "hours": 30,
+          "period": 1,
+          "type": "computacao",
+          "prereqs": [],
+          "desc": "História da computação, arquitetura básica de computadores, sistemas de numeração, representação de dados e ética."
+        },
+        {
+          "id": "metod_cient",
+          "code": "CIEN3005",
+          "name": "Metodologia Científica para Computação",
+          "hours": 60,
+          "period": 1,
+          "type": "outros",
+          "prereqs": [],
+          "desc": "Método científico, técnicas de pesquisa, leitura e redação de artigos técnicos, normas ABNT e ética científica."
+        },
+        {
+          "id": "alg_lin",
+          "code": "MATM3019",
+          "name": "Álgebra Linear",
+          "hours": 60,
+          "period": 2,
+          "type": "basico",
+          "prereqs": [
+            "geo_anal"
+          ],
+          "desc": "Espaços vetoriais, transformações lineares, matrizes, determinantes, autovalores, autovetores e diagonalização."
+        },
+        {
+          "id": "calc_1",
+          "code": "MATM3031",
+          "name": "Cálculo I",
+          "hours": 60,
+          "period": 2,
+          "type": "basico",
+          "prereqs": [
+            "geo_anal"
+          ],
+          "desc": "Limites e continuidade, derivadas de funções de uma variável, aplicações da derivada e introdução à integração."
+        },
+        {
+          "id": "aed_1",
+          "code": "CCMP3006",
+          "name": "Algoritmos e Estruturas de Dados I",
+          "hours": 60,
+          "period": 2,
+          "type": "computacao",
+          "prereqs": [
+            "intro_prog_1"
+          ],
+          "desc": "Ponteiros, alocação dinâmica de memória, estruturas lineares (listas, pilhas, filas) e algoritmos de pesquisa/ordenação."
+        },
+        {
+          "id": "poo",
+          "code": "CCMP3017",
+          "name": "Programação Orientada ao Objeto",
+          "hours": 60,
+          "period": 2,
+          "type": "computacao",
+          "prereqs": [
+            "intro_prog_1"
+          ],
+          "desc": "Conceitos de objetos, classes, encapsulamento, herança, polimorfismo, interfaces, tratamento de exceções e padrões de projeto básicos."
+        },
+        {
+          "id": "sist_dig",
+          "code": "CCMP3058",
+          "name": "Sistemas Digitais",
+          "hours": 60,
+          "period": 2,
+          "type": "computacao",
+          "prereqs": [
+            "intro_comp"
+          ],
+          "desc": "Álgebra de Boole, minimização de funções lógicas, circuitos combinacionais e sequenciais, flip-flops, contadores e registradores."
+        },
+        {
+          "id": "mat_disc",
+          "code": "CCMP3059",
+          "name": "Matemática Discreta",
+          "hours": 60,
+          "period": 3,
+          "type": "basico",
+          "prereqs": [
+            "log_mat_1"
+          ],
+          "desc": "Teoria dos conjuntos, relações, funções, indução matemática, análise combinatória e teoria dos grafos."
+        },
+        {
+          "id": "calc_2",
+          "code": "MATM3032",
+          "name": "Cálculo II",
+          "hours": 60,
+          "period": 3,
+          "type": "basico",
+          "prereqs": [
+            "calc_1"
+          ],
+          "desc": "Técnicas de integração, sequências e séries numéricas, funções de várias variáveis, derivadas parciais e integrais múltiplas."
+        },
+        {
+          "id": "aed_2",
+          "code": "CCMP3016",
+          "name": "Algoritmos e Estruturas de Dados II",
+          "hours": 60,
+          "period": 3,
+          "type": "computacao",
+          "prereqs": [
+            "aed_1"
+          ],
+          "desc": "Árvores binárias de pesquisa, árvores balanceadas (AVL, Rubro-Negra), árvores B, tabelas Hash e manipulação de arquivos."
+        },
+        {
+          "id": "comp_graf",
+          "code": "CCMP3019",
+          "name": "Computação Gráfica",
+          "hours": 60,
+          "period": 3,
+          "type": "computacao",
+          "prereqs": [
+            "aed_1",
+            "alg_lin"
+          ],
+          "desc": "Transformações geométricas 2D/3D, projeções, pipeline gráfico, modelos de iluminação, texturização e rasterização."
+        },
+        {
+          "id": "arq_comp",
+          "code": "CCMP3010",
+          "name": "Arquitetura de Computadores",
+          "hours": 60,
+          "period": 3,
+          "type": "computacao",
+          "prereqs": [
+            "sist_dig"
+          ],
+          "desc": "Conjunto de instruções (ISA), organização da CPU, barramentos, hierarquia de memória (cache/virtual) e sistemas de E/S."
+        },
+        {
+          "id": "banco_dados",
+          "code": "CCMP3066",
+          "name": "Banco de Dados",
+          "hours": 60,
+          "period": 4,
+          "type": "computacao",
+          "prereqs": [
+            "aed_2"
+          ],
+          "desc": "Modelagem de dados (Entidade-Relacionamento), modelo relacional, álgebra relacional, linguagem SQL e normalização."
+        },
+        {
+          "id": "prob_est",
+          "code": "PRBE3006",
+          "name": "Probabilidade e Estatística",
+          "hours": 60,
+          "period": 4,
+          "type": "basico",
+          "prereqs": [
+            "calc_2"
+          ],
+          "desc": "Análise exploratória de dados, probabilidade, variáveis aleatórias, distribuições, amostragem e testes de hipóteses."
+        },
+        {
+          "id": "paradigmas",
+          "code": "CCMP3065",
+          "name": "Paradigmas de Linguagens de Programação I",
+          "hours": 60,
+          "period": 4,
+          "type": "computacao",
+          "prereqs": [
+            "aed_2"
+          ],
+          "desc": "Estudo comparativo dos paradigmas de programação: funcional, lógico, imperativo e orientado a objetos."
+        },
+        {
+          "id": "paa",
+          "code": "CCMP3064",
+          "name": "Projeto e Análise de Algoritmos I",
+          "hours": 60,
+          "period": 4,
+          "type": "computacao",
+          "prereqs": [
+            "aed_2",
+            "mat_disc"
+          ],
+          "desc": "Análise assintótica (notação Big-O), recorrências, algoritmos gulosos, divisão e conquista, e programação dinâmica."
+        },
+        {
+          "id": "eng_soft_1",
+          "code": "CCMP3018",
+          "name": "Engenharia de Software I",
+          "hours": 60,
+          "period": 4,
+          "type": "computacao",
+          "prereqs": [
+            "poo"
+          ],
+          "desc": "Ciclo de vida do software, processos de desenvolvimento (Ágeis/Tradicionais), elicitação de requisitos e modelagem UML."
+        },
+        {
+          "id": "ihc",
+          "code": "CCMP3070",
+          "name": "Interação Humano-Computador I",
+          "hours": 60,
+          "period": 5,
+          "type": "computacao",
+          "prereqs": [
+            "eng_soft_1"
+          ],
+          "desc": "Design de interface de utilizador, avaliação de usabilidade, acessibilidade, prototipagem e fatores humanos."
+        },
+        {
+          "id": "teoria_comp",
+          "code": "CCMP3068",
+          "name": "Teoria da Computação",
+          "hours": 60,
+          "period": 5,
+          "type": "computacao",
+          "prereqs": [
+            "mat_disc"
+          ],
+          "desc": "Linguagens regulares, autômatos finitos, gramáticas livres de contexto, máquinas de Turing e decidibilidade."
+        },
+        {
+          "id": "ia_1",
+          "code": "CCMP3014",
+          "name": "Inteligência Artificial I",
+          "hours": 60,
+          "period": 5,
+          "type": "computacao",
+          "prereqs": [
+            "paa"
+          ],
+          "desc": "Algoritmos de busca (cega e heurística), jogos, representação do conhecimento, sistemas especialistas e introdução ao ML."
+        },
+        {
+          "id": "sist_oper",
+          "code": "CCMP3009",
+          "name": "Sistemas Operacionais",
+          "hours": 60,
+          "period": 5,
+          "type": "computacao",
+          "prereqs": [
+            "arq_comp"
+          ],
+          "desc": "Estrutura do SO, gerência de processos (escalonamento/sincronização), gerência de memória e sistemas de arquivos."
+        },
+        {
+          "id": "redes",
+          "code": "CCMP3023",
+          "name": "Redes de Computadores",
+          "hours": 60,
+          "period": 5,
+          "type": "computacao",
+          "prereqs": [
+            "arq_comp"
+          ],
+          "desc": "Arquitetura em camadas, protocolos de aplicação, camada de transporte (TCP/UDP), IP, roteamento e enlace."
+        },
+        {
+          "id": "empreendedorismo",
+          "code": "BCC00003",
+          "name": "Empreendedorismo I",
+          "hours": 60,
+          "period": 6,
+          "type": "outros",
+          "prereqs": [],
+          "desc": "Criação de novos empreendimentos, planos de negócios, inovação tecnológica, marketing e captação de recursos."
+        },
+        {
+          "id": "compiladores",
+          "code": "CCMP3020",
+          "name": "Compiladores",
+          "hours": 60,
+          "period": 6,
+          "type": "computacao",
+          "prereqs": [
+            "teoria_comp"
+          ],
+          "desc": "Fases do compilador: análise léxica, análise sintática, análise semântica, geração de código intermédio e otimização."
+        },
+        {
+          "id": "reconhecimento_padroes",
+          "code": "CCMP3043",
+          "name": "Reconhecimento de Padrão I",
+          "hours": 60,
+          "period": 6,
+          "type": "computacao",
+          "prereqs": [
+            "ia_1",
+            "prob_est"
+          ],
+          "desc": "Pré-processamento de dados, extração de características, classificadores estatísticos, redes neuronais e agrupamento (clustering)."
+        },
+        {
+          "id": "sist_info",
+          "code": "CCMP3067",
+          "name": "Sistemas de Informação e Tecnologias I",
+          "hours": 60,
+          "period": 6,
+          "type": "computacao",
+          "prereqs": [
+            "banco_dados"
+          ],
+          "desc": "Sistemas de informação organizacionais, segurança, auditoria de TI, governança de TI (COBIT/ITIL) e tendências."
+        },
+        {
+          "id": "sist_distrib",
+          "code": "CCMP3021",
+          "name": "Sistemas Distribuídos I",
+          "hours": 60,
+          "period": 6,
+          "type": "computacao",
+          "prereqs": [
+            "redes",
+            "sist_oper"
+          ],
+          "desc": "Modelos de sistemas distribuídos, comunicação RPC/RMI, sincronização de relógios, replicação de dados e tolerância a falhas."
+        },
+        {
+          "id": "proj_soft",
+          "code": "CCMP3069",
+          "name": "Projeto de Desenvolvimento de Software",
+          "hours": 60,
+          "period": 7,
+          "type": "computacao",
+          "prereqs": [
+            "eng_soft_1"
+          ],
+          "desc": "Desenvolvimento integrado de um sistema real, aplicando engenharia de requisitos, testes, arquitetura de software e gestão ágil."
+        },
+        {
+          "id": "opt_7_1",
+          "name": "Optativa I",
+          "hours": 60,
+          "period": 7,
+          "type": "optativa",
+          "prereqs": [],
+          "desc": "Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento."
+        },
+        {
+          "id": "opt_7_2",
+          "name": "Optativa II",
+          "hours": 60,
+          "period": 7,
+          "type": "optativa",
+          "prereqs": [],
+          "desc": "Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento."
+        },
+        {
+          "id": "opt_7_3",
+          "name": "Optativa III",
+          "hours": 60,
+          "period": 7,
+          "type": "optativa",
+          "prereqs": [],
+          "desc": "Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento."
+        },
+        {
+          "id": "opt_7_4",
+          "name": "Optativa IV",
+          "hours": 60,
+          "period": 7,
+          "type": "optativa",
+          "prereqs": [],
+          "desc": "Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento."
+        },
+        {
+          "id": "seg_info",
+          "code": "BCC00045",
+          "name": "Segurança de Informação",
+          "hours": 60,
+          "period": 8,
+          "type": "computacao",
+          "prereqs": [
+            "redes"
+          ],
+          "desc": "Ameaças comuns, criptografia simétrica/assimétrica, protocolos seguros (SSL/TLS), firewalls e políticas corporativas de segurança."
+        },
+        {
+          "id": "opt_8_1",
+          "name": "Optativa V",
+          "hours": 60,
+          "period": 8,
+          "type": "optativa",
+          "prereqs": [],
+          "desc": "Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento."
+        },
+        {
+          "id": "opt_8_2",
+          "name": "Optativa VI",
+          "hours": 60,
+          "period": 8,
+          "type": "optativa",
+          "prereqs": [],
+          "desc": "Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento."
+        },
+        {
+          "id": "opt_8_3",
+          "name": "Optativa VII",
+          "hours": 60,
+          "period": 8,
+          "type": "optativa",
+          "prereqs": [],
+          "desc": "Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento."
+        },
+        {
+          "id": "opt_8_4",
+          "name": "Optativa VIII",
+          "hours": 60,
+          "period": 8,
+          "type": "optativa",
+          "prereqs": [],
+          "desc": "Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento."
+        },
+        {
+          "id": "tcc",
+          "code": "CCMP3063",
+          "name": "Trabalho de Conclusão de Curso de BCC",
+          "hours": 60,
+          "period": 9,
+          "type": "computacao",
+          "prereqs": [
+            "proj_soft",
+            "metod_cient"
+          ],
+          "desc": "Pesquisa, desenvolvimento, escrita e defesa pública de uma monografia original ou projeto de fim de curso sob supervisão docente."
+        },
+        {
+          "id": "comp_sociedade",
+          "code": "CCMP3071",
+          "name": "Computadores e Sociedade",
+          "hours": 30,
+          "period": 9,
+          "type": "computacao",
+          "prereqs": [],
+          "desc": "Impactos éticos, profissionais, sociais e legais da computação na sociedade contemporânea e privacidade de dados."
+        },
+        {
+          "id": "estagio",
+          "code": "CCMP3061",
+          "name": "Estágio Obrigatório",
+          "hours": 300,
+          "period": 9,
+          "type": "estagio",
+          "prereqs": [
+            "proj_soft"
+          ],
+          "desc": "Atividade supervisionada profissional realizada em ambiente empresarial ou laboratorial externo de TI."
+        }
+      ]
     },
     {
-      "nome": "CCMP3073 - PROGRAMAÇÃO WEB - CC5",
-      "semestre": "2025.2",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "10.0",
-        "VA2": "10.0",
-        "Média": "10.0",
-        "MFIN": "10.0"
-      },
-      "teacher": "IGOR MEDEIROS VANDERLEI"
-    },
-    {
-      "nome": "CCMP3021 - SISTEMAS DISTRIBUÍDOS - CC5",
-      "semestre": "2025.2",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "16",
-        "VA1": "6.5",
-        "VA2": "3.0",
-        "VA3": "F",
-        "Média": "4.75"
-      },
-      "teacher": "JEAN CARLOS TEIXEIRA DE ARAUJO"
-    },
-    {
-      "nome": "CCMP3088 - TÓPICOS ESPECIAIS EM MÍDIA E INTERAÇÃO - CC5",
-      "semestre": "2025.2",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "10.0",
-        "VA2": "10.0",
-        "Média": "10.0",
-        "MFIN": "10.0"
-      },
-      "teacher": "RODRIGO CARDOSO AMARAL DE ANDRADE"
-    },
-    {
-      "nome": "CCMP3064 - PROJETO E ANÁLISE DE ALGORITMOS - CC5",
-      "semestre": "2025.2",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "8",
-        "VA1": "F",
-        "VA2": "F",
-        "VA3": "F"
-      },
-      "teacher": "ALVARO ALVARES DE CARVALHO CESAR SOBRINHO"
-    },
-    {
-      "nome": "BCC00003 - EMPREENDEDORISMO I - CC5",
-      "semestre": "2025.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "9.0",
-        "VA2": "10.0",
-        "Média": "9.5",
-        "MFIN": "9.5"
-      },
-      "teacher": "ASSUERO FONSECA XIMENES"
-    },
-    {
-      "nome": "CCMP3019 - COMPUTAÇÃO GRÁFICA - CC5",
-      "semestre": "2025.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "6.64",
-        "VA2": "9.5",
-        "Média": "8.07",
-        "MFIN": "8.07"
-      },
-      "teacher": "ICARO LINS LEITAO DA CUNHA"
-    },
-    {
-      "nome": "PRBE3006 - PROBABILIDADE E ESTATÍSTICA - CC5",
-      "semestre": "2025.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "7.25",
-        "VA2": "8.5",
-        "Média": "7.88",
-        "MFIN": "7.88"
-      },
-      "teacher": "ROMERO LUIZ MENDONCA SALES FILHO"
-    },
-    {
-      "nome": "CCMP3064 - PROJETO E ANÁLISE DE ALGORITMOS - CC5",
-      "semestre": "2025.1",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "32",
-        "VA1": "F",
-        "VA2": "F",
-        "VA3": "F"
-      },
-      "teacher": "ALVARO ALVARES DE CARVALHO CESAR SOBRINHO"
-    },
-    {
-      "nome": "UAG00300 - FUNDAMENTOS EM CIÊNCIA DE DADOS - CC5",
-      "semestre": "2025.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "9.0",
-        "VA2": "9.0",
-        "Média": "9.0",
-        "MFIN": "9.0"
-      },
-      "teacher": "RYAN RIBEIRO DE AZEVEDO"
-    },
-    {
-      "nome": "CCMP3010 - ARQUITETURA DE COMPUTADORES - CC5",
-      "semestre": "2025.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "9.3",
-        "VA2": "10.0",
-        "VA3": "F",
-        "Média": "9.65",
-        "MFIN": "9.65"
-      },
-      "teacher": "HELDER FERNANDO DE ARAUJO OLIVEIRA"
-    },
-    {
-      "nome": "CCMP3023 - REDE DE COMPUTADORES - CC5",
-      "semestre": "2024.2",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "4",
-        "VA1": "9.8",
-        "VA2": "8.4",
-        "Média": "9.1",
-        "MFIN": "9.1"
-      },
-      "teacher": "KADNA MARIA ALVES CAMBOIM VALE"
-    },
-    {
-      "nome": "CCMP3067 - SISTEMAS DE INFORMAÇÃO E TECNOLOGIAS - CC5",
-      "semestre": "2024.2",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "8.0",
-        "VA2": "8.0",
-        "VA3": "F",
-        "Média": "8.0",
-        "MFIN": "8.0"
-      },
-      "teacher": "ASSUERO FONSECA XIMENES"
-    },
-    {
-      "nome": "CCMP3078 - DESENVOLVIMENTO DE APLICAÇÕES MÓVEIS - CC3",
-      "semestre": "2024.2",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "9.0",
-        "VA2": "10.0",
-        "Média": "9.5",
-        "MFIN": "9.5"
-      },
-      "teacher": "THAIS ALVES BURITY ROCHA"
-    },
-    {
-      "nome": "BCC00029 - CÁLCULO II - CC2",
-      "semestre": "2024.2",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "4",
-        "VA1": "9.41",
-        "VA2": "8.5",
-        "VA3": "F",
-        "Média": "8.95",
-        "MFIN": "8.95"
-      },
-      "teacher": "MARIO SANSUKE MARANHAO WATANABE, EVERSON FERNANDO SANTOS FEITOSA"
-    },
-    {
-      "nome": "CCMP3058 - SISTEMAS DIGITAIS - CC2",
-      "semestre": "2024.2",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "10.0",
-        "VA2": "10.0",
-        "VA3": "F",
-        "Média": "10.0",
-        "MFIN": "10.0"
-      },
-      "teacher": "HELDER FERNANDO DE ARAUJO OLIVEIRA"
-    },
-    {
-      "nome": "CCMP3071 - COMPUTADORES E SOCIEDADE - CC5",
-      "semestre": "2024.2",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "8.8",
-        "VA2": "F",
-        "VA3": "8.5",
-        "Média": "8.65",
-        "MFIN": "8.65"
-      },
-      "teacher": "RYAN RIBEIRO DE AZEVEDO"
-    },
-    {
-      "nome": "FISC3004 - FÍSICA PARA COMPUTAÇÃO - CC5",
-      "semestre": "2024.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "F",
-        "VA2": "10.0",
-        "VA3": "4.0",
-        "Média": "7.0",
-        "MFIN": "7.0"
-      },
-      "teacher": "WELLINGTON ROMERO SERAFIM FREIRE"
-    },
-    {
-      "nome": "CCMP3059 - MATEMÁTICA DISCRETA - CC5",
-      "semestre": "2024.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "6.5",
-        "VA2": "9.0",
-        "Média": "7.75",
-        "MFIN": "7.75"
-      },
-      "teacher": "GERSONILO OLIVEIRA DA SILVA"
-    },
-    {
-      "nome": "MATM3019 - ÁLGEBRA LINEAR I - CC5",
-      "semestre": "2024.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "10.0",
-        "VA2": "9.0",
-        "Média": "9.5",
-        "MFIN": "9.5"
-      },
-      "teacher": "GERSONILO OLIVEIRA DA SILVA"
-    },
-    {
-      "nome": "CCMP3080 - TÓPICOS ESPECIAIS EM ENGENHARIA DE SOFTWARE - CC3",
-      "semestre": "2024.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "9.0",
-        "VA2": "9.5",
-        "Média": "9.25",
-        "MFIN": "9.25"
-      },
-      "teacher": "IGOR MEDEIROS VANDERLEI"
-    },
-    {
-      "nome": "MATM3031 - CÁLCULO PARA COMPUTAÇÃO I - CC5",
-      "semestre": "2023.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "10.0",
-        "VA2": "9.55",
-        "VA3": "F",
-        "Média": "9.77",
-        "MFIN": "9.77"
-      },
-      "teacher": "WILLAMES FERREIRA DE MAGALHÃES"
-    },
-    {
-      "nome": "CCMP3066 - BANCO DE DADOS I - CC5",
-      "semestre": "2022.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "8.2",
-        "VA2": "9.69",
-        "Média": "8.94",
-        "MFIN": "8.94"
-      },
-      "teacher": "JEAN CARLOS TEIXEIRA DE ARAUJO, PRISCILLA KELLY MACHADO VIEIRA AZEVEDO"
-    },
-    {
-      "nome": "MATM3031 - CÁLCULO PARA COMPUTAÇÃO I - CC5",
-      "semestre": "2022.1",
-      "situacao": "REPROVADO",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "3.0",
-        "VA2": "2.0",
-        "VA3": "F",
-        "Média": "2.5",
-        "MFIN": "2.5"
-      },
-      "teacher": "MARCIUS PETRUCIO DE ALMEIDA CAVALCANTE"
-    },
-    {
-      "nome": "CCMP3059 - MATEMÁTICA DISCRETA - CC5",
-      "semestre": "2022.1",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "8.0",
-        "VA2": "F",
-        "VA3": "F"
-      },
-      "teacher": "GERSONILO OLIVEIRA DA SILVA"
-    },
-    {
-      "nome": "MATM3019 - ÁLGEBRA LINEAR I - CC5",
-      "semestre": "2022.1",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "7.0",
-        "VA2": "F",
-        "VA3": "F"
-      },
-      "teacher": "GERSONILO OLIVEIRA DA SILVA"
-    },
-    {
-      "nome": "CCMP3065 - PARADIGMAS DE LINGUAGENS DE PROGRAMAÇÃO - CC5",
-      "semestre": "2021.2",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "6.2",
-        "VA2": "8.2",
-        "VA3": "F",
-        "Média": "7.2",
-        "MFIN": "7.2"
-      },
-      "teacher": "DIMAS CASSIMIRO DO NASCIMENTO FILHO"
-    },
-    {
-      "nome": "CCMP3018 - ENGENHARIA DE SOFTWARE - CC5",
-      "semestre": "2021.2",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "10.0",
-        "VA2": "10.0",
-        "Média": "10.0",
-        "MFIN": "10.0"
-      },
-      "teacher": "RODRIGO CARDOSO AMARAL DE ANDRADE"
-    },
-    {
-      "nome": "CCMP3016 - ALGORITMOS E ESTRUTURA DE DADOS II - CC5",
-      "semestre": "2021.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "9.5",
-        "VA2": "10.0",
-        "Média": "9.75",
-        "MFIN": "9.75"
-      },
-      "teacher": "IGOR MEDEIROS VANDERLEI"
-    },
-    {
-      "nome": "MATM3008 - LÓGICA MATEMÁTICA - CC5",
-      "semestre": "2021.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "7.2",
-        "VA2": "10.0",
-        "Média": "8.6",
-        "MFIN": "8.6"
-      },
-      "teacher": "GERSONILO OLIVEIRA DA SILVA"
-    },
-    {
-      "nome": "MATM3031 - CÁLCULO PARA COMPUTAÇÃO I - CC5",
-      "semestre": "2020.1",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "F",
-        "VA2": "F",
-        "VA3": "F"
-      },
-      "teacher": "GERSONILO OLIVEIRA DA SILVA"
-    },
-    {
-      "nome": "MATM3008 - LÓGICA MATEMÁTICA - CC5",
-      "semestre": "2020.1",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "F",
-        "VA2": "F"
-      },
-      "teacher": "MARCIUS PETRUCIO DE ALMEIDA CAVALCANTE"
-    },
-    {
-      "nome": "MATM3019 - ÁLGEBRA LINEAR I - CC5",
-      "semestre": "2019.2",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "F",
-        "VA2": "F",
-        "VA3": "F"
-      },
-      "teacher": "MURILO CHAVEDAR DE SOUZA ARAUJO"
-    },
-    {
-      "nome": "CCMP3017 - PROGRAMAÇÃO ORIENTADA AO OBJETO - CC5",
-      "semestre": "2019.2",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "4",
-        "VA1": "6.0",
-        "VA2": "7.5",
-        "VA3": "6.5",
-        "Média": "7.0",
-        "MFIN": "7.0"
-      },
-      "teacher": "THAIS ALVES BURITY ROCHA"
-    },
-    {
-      "nome": "CCMP3066 - BANCO DE DADOS I - CC5",
-      "semestre": "2019.2",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "36",
-        "VA1": "F",
-        "VA2": "F",
-        "VA3": "F"
-      },
-      "teacher": "DIMAS CASSIMIRO DO NASCIMENTO FILHO"
-    },
-    {
-      "nome": "CIEN3005 - METODOLOGIA CIENTÍFICA - CC5",
-      "semestre": "2019.2",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "8.0",
-        "VA2": "10.0",
-        "Média": "9.0",
-        "MFIN": "9.0"
-      },
-      "teacher": "MARY HELLEN BATISTA DOS SANTOS SEVERIANO"
-    },
-    {
-      "nome": "CCMP3006 - ALGORITMOS E ESTRUTURA DE DADOS I - CC5",
-      "semestre": "2019.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "2",
-        "VA1": "9.5",
-        "VA2": "8.0",
-        "Média": "8.75",
-        "MFIN": "8.75"
-      },
-      "teacher": "PRISCILLA KELLY MACHADO VIEIRA AZEVEDO"
-    },
-    {
-      "nome": "MATM3021 - GEOMETRIA ANALÍTICA A - CC5",
-      "semestre": "2019.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "7.5",
-        "VA2": "9.0",
-        "VA3": "F",
-        "Média": "8.25",
-        "MFIN": "8.25"
-      },
-      "teacher": "HUDSON CAVALCANTE DA SILVA"
-    },
-    {
-      "nome": "MATM3031 - CÁLCULO PARA COMPUTAÇÃO I - CC5",
-      "semestre": "2019.1",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "F",
-        "VA2": "F",
-        "VA3": "F"
-      },
-      "teacher": "MURILO CHAVEDAR DE SOUZA ARAUJO"
-    },
-    {
-      "nome": "LETR3020 - INGLÊS - CC5",
-      "semestre": "2019.1",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "8.5",
-        "VA2": "10.0",
-        "Média": "9.25",
-        "MFIN": "9.25"
-      },
-      "teacher": "DIANA VASCONCELOS LOPES"
-    },
-    {
-      "nome": "CCMP3017 - PROGRAMAÇÃO ORIENTADA AO OBJETO - CC5",
-      "semestre": "2018.2",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "44",
-        "VA1": "F",
-        "VA2": "F",
-        "VA3": "F"
-      },
-      "teacher": "THAIS ALVES BURITY ROCHA"
-    },
-    {
-      "nome": "CCMP3017 - PROGRAMAÇÃO ORIENTADA AO OBJETO - CC5",
-      "semestre": "2018.1",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "18",
-        "VA1": "6.0",
-        "VA2": "F",
-        "VA3": "F"
-      },
-      "teacher": "THAIS ALVES BURITY ROCHA"
-    },
-    {
-      "nome": "CCMP3006 - ALGORITMOS E ESTRUTURA DE DADOS I - CC5",
-      "semestre": "2018.1",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "44",
-        "VA1": "F",
-        "VA2": "F",
-        "VA3": "F"
-      },
-      "teacher": "RENAN LEANDRO FERNANDES, DIOGO ESPINHARA OLIVEIRA"
-    },
-    {
-      "nome": "CIEN3005 - METODOLOGIA CIENTÍFICA - CC5",
-      "semestre": "2018.1",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "14",
-        "VA1": "F",
-        "VA2": "F"
-      },
-      "teacher": "ADEILSON PINHEIRO SEDRINS"
-    },
-    {
-      "nome": "MATM3021 - GEOMETRIA ANALÍTICA A - CC3",
-      "semestre": "2018.1",
-      "situacao": "REPROVADO",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "8.0",
-        "VA2": "3.0",
-        "VA3": "F",
-        "Média": "5.5",
-        "VAFN": "F"
-      },
-      "teacher": "HUDSON CAVALCANTE DA SILVA"
-    },
-    {
-      "nome": "CCMP3057 - INTRODUÇÃO À PROGRAMAÇÃO - CC5",
-      "semestre": "2017.2",
-      "situacao": "APROVADO POR MÉDIA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "7.8",
-        "VA2": "9.5",
-        "Média": "8.65",
-        "MFIN": "8.65"
-      },
-      "teacher": "LUIS FILIPE ALVES PEREIRA"
-    },
-    {
-      "nome": "MATM3008 - LÓGICA MATEMÁTICA - CC5",
-      "semestre": "2017.2",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "F",
-        "VA2": "F",
-        "VA3": "F"
-      },
-      "teacher": "GERSONILO OLIVEIRA DA SILVA"
-    },
-    {
-      "nome": "MATM3021 - GEOMETRIA ANALÍTICA A - CC5",
-      "semestre": "2017.2",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "F",
-        "VA2": "3.0",
-        "VA3": "F"
-      },
-      "teacher": "MARCIUS PETRUCIO DE ALMEIDA CAVALCANTE"
-    },
-    {
-      "nome": "MATM3031 - CÁLCULO PARA COMPUTAÇÃO I - CC5",
-      "semestre": "2017.2",
-      "situacao": "REPROVADO POR FALTA",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "2.0",
-        "VA2": "F",
-        "VA3": "F"
-      },
-      "teacher": "MURILO CHAVEDAR DE SOUZA ARAUJO"
-    },
-    {
-      "nome": "CCMP3056 - INTRODUÇÃO À COMPUTAÇÃO C - CC5",
-      "semestre": "2017.2",
-      "situacao": "APROVADO",
-      "notas": {
-        "Faltas": "0",
-        "VA1": "4.5",
-        "VA2": "6.8",
-        "VA3": "5.0",
-        "Média": "5.9",
-        "VAFN": "5.0",
-        "MFIN": "5.45"
-      },
-      "teacher": "DALITON DA SILVA"
+      "id": "BCC02",
+      "name": "Grade Antiga (Perfil 2/2011)",
+      "description": "Perfil curricular vigente até 2024.1",
+      "validFromSemester": "2011.1",
+      "totalHours": 3200,
+      "acexHours": 0,
+      "accHours": 90,
+      "optativeHours": 480,
+      "mandatoryHours": 2630,
+      "subjects": [
+        {
+          "id": "old_calc_1",
+          "name": "Cálculo p/ Computação I",
+          "hours": 60,
+          "period": 1,
+          "type": "basico",
+          "prereqs": [],
+          "desc": "Cálculo Diferencial e Integral"
+        },
+        {
+          "id": "old_geo_anal",
+          "name": "Geometria Analítica",
+          "hours": 60,
+          "period": 1,
+          "type": "basico",
+          "prereqs": [],
+          "desc": "Vetores, retas e planos"
+        },
+        {
+          "id": "old_log_mat",
+          "name": "Lógica Matemática",
+          "hours": 60,
+          "period": 1,
+          "type": "basico",
+          "prereqs": [],
+          "desc": "Lógica proposicional"
+        },
+        {
+          "id": "old_intro_prog",
+          "name": "Introdução à Programação",
+          "hours": 90,
+          "period": 1,
+          "type": "computacao",
+          "prereqs": [],
+          "desc": "Lógica de programação e algoritmos"
+        },
+        {
+          "id": "old_intro_comp",
+          "name": "Introdução à Computação",
+          "hours": 30,
+          "period": 1,
+          "type": "computacao",
+          "prereqs": [],
+          "desc": "Fundamentos de computação"
+        },
+        {
+          "id": "old_calc_2",
+          "name": "Cálculo p/ Computação II",
+          "hours": 60,
+          "period": 2,
+          "type": "basico",
+          "prereqs": [
+            "old_calc_1"
+          ],
+          "desc": "Integrais parciais e sequências"
+        },
+        {
+          "id": "old_fisica",
+          "name": "Física p/ Computação",
+          "hours": 60,
+          "period": 2,
+          "type": "basico",
+          "prereqs": [
+            "old_calc_1",
+            "old_geo_anal"
+          ],
+          "desc": "Física aplicada"
+        },
+        {
+          "id": "old_alg_lin",
+          "name": "Álgebra Linear",
+          "hours": 60,
+          "period": 2,
+          "type": "basico",
+          "prereqs": [
+            "old_geo_anal"
+          ],
+          "desc": "Espaços vetoriais e matrizes"
+        },
+        {
+          "id": "old_aed_1",
+          "name": "Algoritmos e Estruturas de Dados I",
+          "hours": 60,
+          "period": 2,
+          "type": "computacao",
+          "prereqs": [
+            "old_intro_prog"
+          ],
+          "desc": "Estruturas de dados básicas"
+        },
+        {
+          "id": "old_poo",
+          "name": "Programação Orientada à Objetos",
+          "hours": 60,
+          "period": 2,
+          "type": "computacao",
+          "prereqs": [
+            "old_intro_prog"
+          ],
+          "desc": "Paradigma orientado a objetos"
+        },
+        {
+          "id": "old_prob_est",
+          "name": "Probabilidade e Estatística",
+          "hours": 60,
+          "period": 3,
+          "type": "basico",
+          "prereqs": [
+            "old_calc_1"
+          ],
+          "desc": "Probabilidade estatística"
+        },
+        {
+          "id": "old_sist_dig",
+          "name": "Sistemas Digitais",
+          "hours": 60,
+          "period": 3,
+          "type": "computacao",
+          "prereqs": [
+            "old_fisica",
+            "old_log_mat"
+          ],
+          "desc": "Circuitos digitais"
+        },
+        {
+          "id": "old_metod_cient",
+          "name": "Metodologia Científica",
+          "hours": 30,
+          "period": 3,
+          "type": "outros",
+          "prereqs": [],
+          "desc": "Metodologia de pesquisa científica"
+        },
+        {
+          "id": "old_mat_disc",
+          "name": "Matemática Discreta",
+          "hours": 60,
+          "period": 3,
+          "type": "basico",
+          "prereqs": [
+            "old_log_mat"
+          ],
+          "desc": "Matemática finita"
+        },
+        {
+          "id": "old_aed_2",
+          "name": "Algoritmos e Estruturas de Dados II",
+          "hours": 60,
+          "period": 3,
+          "type": "computacao",
+          "prereqs": [
+            "old_aed_1"
+          ],
+          "desc": "Árvores e grafos"
+        },
+        {
+          "id": "old_ingles",
+          "name": "Inglês",
+          "hours": 30,
+          "period": 3,
+          "type": "outros",
+          "prereqs": [],
+          "desc": "Inglês instrumental"
+        },
+        {
+          "id": "old_arq_comp",
+          "name": "Arquitetura de Computadores",
+          "hours": 60,
+          "period": 4,
+          "type": "computacao",
+          "prereqs": [
+            "old_sist_dig"
+          ],
+          "desc": "Organização de computadores"
+        },
+        {
+          "id": "old_paa",
+          "name": "Projeto e Análise de Algoritmos",
+          "hours": 60,
+          "period": 4,
+          "type": "computacao",
+          "prereqs": [
+            "old_mat_disc",
+            "old_aed_2"
+          ],
+          "desc": "Complexidade de algoritmos"
+        },
+        {
+          "id": "old_eng_soft",
+          "name": "Engenharia de Software",
+          "hours": 60,
+          "period": 4,
+          "type": "computacao",
+          "prereqs": [
+            "old_poo",
+            "old_aed_2"
+          ],
+          "desc": "Processo de desenvolvimento"
+        },
+        {
+          "id": "old_paradigmas",
+          "name": "Paradigmas de Linguagens de Programação",
+          "hours": 60,
+          "period": 4,
+          "type": "computacao",
+          "prereqs": [
+            "old_aed_2"
+          ],
+          "desc": "Paradigmas convencionais e novos"
+        },
+        {
+          "id": "old_bd",
+          "name": "Bancos de Dados",
+          "hours": 60,
+          "period": 4,
+          "type": "computacao",
+          "prereqs": [
+            "old_aed_2"
+          ],
+          "desc": "Modelagem e SQL"
+        },
+        {
+          "id": "old_sist_info",
+          "name": "Sistemas de Informação e Tecnologias",
+          "hours": 60,
+          "period": 5,
+          "type": "computacao",
+          "prereqs": [
+            "old_bd"
+          ],
+          "desc": "Sistemas corporativos"
+        },
+        {
+          "id": "old_sist_oper",
+          "name": "Sistemas Operacionais",
+          "hours": 60,
+          "period": 5,
+          "type": "computacao",
+          "prereqs": [
+            "old_arq_comp"
+          ],
+          "desc": "Gerenciamento de recursos"
+        },
+        {
+          "id": "old_ia",
+          "name": "Inteligência Artificial",
+          "hours": 60,
+          "period": 5,
+          "type": "computacao",
+          "prereqs": [
+            "old_prob_est",
+            "old_paa"
+          ],
+          "desc": "IA clássica e busca"
+        },
+        {
+          "id": "old_teoria_comp",
+          "name": "Teoria da Computação",
+          "hours": 60,
+          "period": 5,
+          "type": "computacao",
+          "prereqs": [
+            "old_mat_disc"
+          ],
+          "desc": "Autômatos e computabilidade"
+        },
+        {
+          "id": "old_redes",
+          "name": "Redes de Computadores",
+          "hours": 60,
+          "period": 5,
+          "type": "computacao",
+          "prereqs": [
+            "old_arq_comp"
+          ],
+          "desc": "Protocolos e arquitetura de redes"
+        },
+        {
+          "id": "old_comp_graf",
+          "name": "Computação Gráfica",
+          "hours": 60,
+          "period": 6,
+          "type": "computacao",
+          "prereqs": [
+            "old_alg_lin",
+            "old_aed_2"
+          ],
+          "desc": "Rasterização e visualização 3D"
+        },
+        {
+          "id": "old_compiladores",
+          "name": "Compiladores",
+          "hours": 60,
+          "period": 6,
+          "type": "computacao",
+          "prereqs": [
+            "old_teoria_comp"
+          ],
+          "desc": "Design de compiladores"
+        },
+        {
+          "id": "old_rec_padroes",
+          "name": "Reconhecimento de Padrões",
+          "hours": 60,
+          "period": 6,
+          "type": "computacao",
+          "prereqs": [
+            "old_alg_lin",
+            "old_prob_est",
+            "old_ia"
+          ],
+          "desc": "ML e padrões"
+        },
+        {
+          "id": "old_emp_tic",
+          "name": "Empreendimentos em TIC",
+          "hours": 60,
+          "period": 6,
+          "type": "outros",
+          "prereqs": [],
+          "desc": "Empreendedorismo"
+        },
+        {
+          "id": "old_sist_distr",
+          "name": "Sistemas Distribuídos",
+          "hours": 60,
+          "period": 6,
+          "type": "computacao",
+          "prereqs": [
+            "old_redes",
+            "old_sist_oper"
+          ],
+          "desc": "Sistemas tolerantes a falhas"
+        },
+        {
+          "id": "old_proj_desenv",
+          "name": "Projeto de Desenvolvimento",
+          "hours": 90,
+          "period": 7,
+          "type": "computacao",
+          "prereqs": [
+            "old_eng_soft"
+          ],
+          "desc": "Projeto prático de software"
+        },
+        {
+          "id": "old_ihc",
+          "name": "Interação Humano-Computador",
+          "hours": 60,
+          "period": 7,
+          "type": "computacao",
+          "prereqs": [
+            "old_eng_soft"
+          ],
+          "desc": "Design de interfaces"
+        },
+        {
+          "id": "old_comp_soc",
+          "name": "Computadores e Sociedade",
+          "hours": 30,
+          "period": 7,
+          "type": "outros",
+          "prereqs": [],
+          "desc": "Impactos éticos e sociais"
+        },
+        {
+          "id": "old_opt_1",
+          "name": "Optativa 1",
+          "hours": 60,
+          "period": 7,
+          "type": "optativa",
+          "prereqs": [],
+          "desc": "Eletiva"
+        },
+        {
+          "id": "old_opt_2",
+          "name": "Optativa 2",
+          "hours": 60,
+          "period": 7,
+          "type": "optativa",
+          "prereqs": [],
+          "desc": "Eletiva"
+        },
+        {
+          "id": "old_opt_3",
+          "name": "Optativa 3",
+          "hours": 60,
+          "period": 8,
+          "type": "optativa",
+          "prereqs": [],
+          "desc": "Eletiva"
+        },
+        {
+          "id": "old_opt_4",
+          "name": "Optativa 4",
+          "hours": 60,
+          "period": 8,
+          "type": "optativa",
+          "prereqs": [],
+          "desc": "Eletiva"
+        },
+        {
+          "id": "old_opt_5",
+          "name": "Optativa 5",
+          "hours": 60,
+          "period": 8,
+          "type": "optativa",
+          "prereqs": [],
+          "desc": "Eletiva"
+        },
+        {
+          "id": "old_opt_6",
+          "name": "Optativa 6",
+          "hours": 60,
+          "period": 8,
+          "type": "optativa",
+          "prereqs": [],
+          "desc": "Eletiva"
+        },
+        {
+          "id": "old_opt_7",
+          "name": "Optativa 7",
+          "hours": 60,
+          "period": 8,
+          "type": "optativa",
+          "prereqs": [],
+          "desc": "Eletiva"
+        },
+        {
+          "id": "old_estagio",
+          "name": "Estágio",
+          "hours": 300,
+          "period": 9,
+          "type": "estagio",
+          "prereqs": [],
+          "desc": "Estágio supervisionado"
+        },
+        {
+          "id": "old_tcc",
+          "name": "TCC",
+          "hours": 180,
+          "period": 9,
+          "type": "computacao",
+          "prereqs": [],
+          "desc": "Trabalho de conclusão de curso"
+        }
+      ]
     }
-  ],
-  "timetable": [
-    {
-      "code": "CCMP3073",
-      "name": "PROGRAMAÇÃO WEB",
-      "className": "CC5",
-      "room": "SALA 7B",
-      "status": "CONFIRMADA",
-      "timeSlots": [
-        {
-          "day": "DayOfWeek.segunda",
-          "startTime": "20:10",
-          "endTime": "21:00"
-        },
-        {
-          "day": "DayOfWeek.terca",
-          "startTime": "20:10",
-          "endTime": "21:00"
-        },
-        {
-          "day": "DayOfWeek.segunda",
-          "startTime": "21:00",
-          "endTime": "21:50"
-        },
-        {
-          "day": "DayOfWeek.terca",
-          "startTime": "21:00",
-          "endTime": "21:50"
-        }
-      ]
-    },
-    {
-      "code": "CCMP3064",
-      "name": "PROJETO E ANÁLISE DE ALGORITMOS",
-      "className": "CC5",
-      "room": "SALA 4B",
-      "status": "CONFIRMADA",
-      "timeSlots": [
-        {
-          "day": "DayOfWeek.quarta",
-          "startTime": "20:10",
-          "endTime": "21:00"
-        },
-        {
-          "day": "DayOfWeek.sexta",
-          "startTime": "20:10",
-          "endTime": "21:00"
-        },
-        {
-          "day": "DayOfWeek.quarta",
-          "startTime": "21:00",
-          "endTime": "21:50"
-        },
-        {
-          "day": "DayOfWeek.sexta",
-          "startTime": "21:00",
-          "endTime": "21:50"
-        }
-      ]
-    },
-    {
-      "code": "CCMP3043",
-      "name": "RECONHECIMENTO DE PADRÕES",
-      "className": "CC5",
-      "room": "SALA 10B",
-      "status": "CONFIRMADA",
-      "timeSlots": [
-        {
-          "day": "DayOfWeek.terca",
-          "startTime": "18:30",
-          "endTime": "19:20"
-        },
-        {
-          "day": "DayOfWeek.quarta",
-          "startTime": "18:30",
-          "endTime": "19:20"
-        },
-        {
-          "day": "DayOfWeek.terca",
-          "startTime": "19:20",
-          "endTime": "20:10"
-        },
-        {
-          "day": "DayOfWeek.quarta",
-          "startTime": "19:20",
-          "endTime": "20:10"
-        }
-      ]
-    },
-    {
-      "code": "CCMP3021",
-      "name": "SISTEMAS DISTRIBUÍDOS",
-      "className": "CC5",
-      "room": "SALA 10B",
-      "status": "CONFIRMADA",
-      "timeSlots": [
-        {
-          "day": "DayOfWeek.quinta",
-          "startTime": "18:30",
-          "endTime": "19:20"
-        },
-        {
-          "day": "DayOfWeek.sexta",
-          "startTime": "18:30",
-          "endTime": "19:20"
-        },
-        {
-          "day": "DayOfWeek.quinta",
-          "startTime": "19:20",
-          "endTime": "20:10"
-        },
-        {
-          "day": "DayOfWeek.sexta",
-          "startTime": "19:20",
-          "endTime": "20:10"
-        }
-      ]
-    },
-    {
-      "code": "CCMP3088",
-      "name": "TÓPICOS ESPECIAIS EM MÍDIA E INTERAÇÃO",
-      "className": "CC5",
-      "room": "SALA 11B",
-      "status": "CONFIRMADA",
-      "timeSlots": [
-        {
-          "day": "DayOfWeek.segunda",
-          "startTime": "14:00",
-          "endTime": "15:00"
-        },
-        {
-          "day": "DayOfWeek.quinta",
-          "startTime": "14:00",
-          "endTime": "15:00"
-        },
-        {
-          "day": "DayOfWeek.segunda",
-          "startTime": "15:00",
-          "endTime": "16:00"
-        },
-        {
-          "day": "DayOfWeek.quinta",
-          "startTime": "15:00",
-          "endTime": "16:00"
-        }
-      ]
-    }
-  ],
-  "academic_achievement": {
-    "totalPendingHours": 1050,
-    "pendingSubjects": [
-      {
-        "code": "CCMP3043",
-        "name": "RECONHECIMENTO DE PADRÕES",
-        "workload": 60,
-        "period": 6,
-        "credits": 4
-      },
-      {
-        "code": "CCMP3069",
-        "name": "PROJETO DE DESENVOLVIMENTO",
-        "workload": 90,
-        "period": 7,
-        "credits": 6
-      },
-      {
-        "code": "CCMP3068",
-        "name": "TEORIA DA COMPUTAÇÃO",
-        "workload": 60,
-        "period": 5,
-        "credits": 4
-      },
-      {
-        "code": "CCMP3070",
-        "name": "INTERAÇÃO HUMANO-COMPUTADOR",
-        "workload": 60,
-        "period": 7,
-        "credits": 4
-      },
-      {
-        "code": "CCMP3064",
-        "name": "PROJETO E ANÁLISE DE ALGORITMOS",
-        "workload": 60,
-        "period": 4,
-        "credits": 4
-      },
-      {
-        "code": "CCMP3063",
-        "name": "TRABALHO DE CONCLUSÃO DE CURSO - BACH. CIÊNCIA DA COMPUTAÇÃO UAG",
-        "workload": 180,
-        "period": 9,
-        "credits": 12
-      },
-      {
-        "code": "CCMP3061",
-        "name": "ESTÁGIO SUPERVISIONADO OBRIGATÓRIO - BACH COMPUTAÇÃO",
-        "workload": 300,
-        "period": 9,
-        "credits": 20
-      },
-      {
-        "code": "CCMP3009",
-        "name": "SISTEMAS OPERACIONAIS",
-        "workload": 60,
-        "period": 5,
-        "credits": 4
-      },
-      {
-        "code": "CCMP3021",
-        "name": "SISTEMAS DISTRIBUÍDOS",
-        "workload": 60,
-        "period": 6,
-        "credits": 4
-      },
-      {
-        "code": "CCMP3020",
-        "name": "COMPILADORES",
-        "workload": 60,
-        "period": 6,
-        "credits": 4
-      },
-      {
-        "code": "CCMP3014",
-        "name": "INTELIGÊNCIA ARTIFICIAL",
-        "workload": 60,
-        "period": 5,
-        "credits": 4
-      }
-    ],
-    "componentSummary": [
-      {
-        "description": "Obrigatórios Cursados",
-        "hours": 1350,
-        "quantity": 24
-      },
-      {
-        "description": "Obrigatórios Dispensados",
-        "hours": 0,
-        "quantity": 0
-      },
-      {
-        "description": "Obrigatórios com Equivalência",
-        "hours": 60,
-        "quantity": 1
-      },
-      {
-        "description": "Optativos Cursados",
-        "hours": 180,
-        "quantity": 3
-      },
-      {
-        "description": "Optativos Dispensados",
-        "hours": 0,
-        "quantity": 0
-      },
-      {
-        "description": "Atividades Extensionistas",
-        "hours": 0,
-        "quantity": null
-      },
-      {
-        "description": "Atividades Complementares",
-        "hours": 0,
-        "quantity": null
-      },
-      {
-        "description": "Carga Horária Optativa Livre",
-        "hours": 0,
-        "quantity": null
-      },
-      {
-        "description": "Outro Perfil*",
-        "hours": 0,
-        "quantity": 0
-      },
-      {
-        "description": "Outro Curso***",
-        "hours": 0,
-        "quantity": 0
-      },
-      {
-        "description": "Total de componentes aproveitados",
-        "hours": null,
-        "quantity": 28
-      },
-      {
-        "description": "Utilizados como Equivalência**",
-        "hours": null,
-        "quantity": 1
-      }
-    ],
-    "workloadSummary": [
-      {
-        "category": "a1.2",
-        "name": "Total",
-        "integration": 3200,
-        "completedHours": 1590,
-        "completedPercentage": 49.69,
-        "waivedHours": 0,
-        "toCompleteHours": 1610,
-        "children": [
-          {
-            "category": "a1.2.1",
-            "name": "Obrigatória",
-            "integration": 2460,
-            "completedHours": 1410,
-            "completedPercentage": 57.32,
-            "waivedHours": 0,
-            "toCompleteHours": 1050,
-            "children": []
-          },
-          {
-            "category": "a1.2.2",
-            "name": "Optativa",
-            "integration": 740,
-            "completedHours": 180,
-            "completedPercentage": 24.32,
-            "waivedHours": 0,
-            "toCompleteHours": 560,
-            "children": [
-              {
-                "category": "a1.2.2.1",
-                "name": "Do Perfil",
-                "integration": 740,
-                "completedHours": 180,
-                "completedPercentage": 24.32,
-                "waivedHours": 0,
-                "toCompleteHours": 560,
-                "children": [
-                  {
-                    "category": "a1.2.2.1.1",
-                    "name": "Disciplinas",
-                    "integration": 420,
-                    "completedHours": 180,
-                    "completedPercentage": 42.86,
-                    "waivedHours": 0,
-                    "toCompleteHours": 240,
-                    "children": []
-                  },
-                  {
-                    "category": "a1.2.2.1.2",
-                    "name": "Atividades Complementares",
-                    "integration": 320,
-                    "completedHours": 0,
-                    "completedPercentage": 0.0,
-                    "waivedHours": 0,
-                    "toCompleteHours": 320,
-                    "children": []
-                  }
-                ]
-              },
-              {
-                "category": "a1.2.2.2",
-                "name": "Livre",
-                "integration": 0,
-                "completedHours": 0,
-                "completedPercentage": 0.0,
-                "waivedHours": 0,
-                "toCompleteHours": 0,
-                "children": [
-                  {
-                    "category": "a1.2.2.2.1",
-                    "name": "Disciplinas",
-                    "integration": null,
-                    "completedHours": 0,
-                    "completedPercentage": null,
-                    "waivedHours": 0,
-                    "toCompleteHours": null,
-                    "children": []
-                  },
-                  {
-                    "category": "a1.2.2.2.2",
-                    "name": "Atividades Complementares",
-                    "integration": null,
-                    "completedHours": 0,
-                    "completedPercentage": null,
-                    "waivedHours": 0,
-                    "toCompleteHours": null,
-                    "children": []
-                  },
-                  {
-                    "category": "a1.2.2.2.3",
-                    "name": "Carga Horária Optativa Livre",
-                    "integration": null,
-                    "completedHours": null,
-                    "completedPercentage": null,
-                    "waivedHours": 0,
-                    "toCompleteHours": null,
-                    "children": []
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "category": "a1.2.3",
-            "name": "Atividades Extensionistas",
-            "integration": 0,
-            "completedHours": 0,
-            "completedPercentage": 0.0,
-            "waivedHours": 0,
-            "toCompleteHours": 0,
-            "children": [
-              {
-                "category": "a1.2.3.1",
-                "name": "De disciplinas",
-                "integration": null,
-                "completedHours": 0,
-                "completedPercentage": null,
-                "waivedHours": 0,
-                "toCompleteHours": null,
-                "children": []
-              },
-              {
-                "category": "a1.2.3.2",
-                "name": "Atividades",
-                "integration": null,
-                "completedHours": 0,
-                "completedPercentage": null,
-                "waivedHours": 0,
-                "toCompleteHours": null,
-                "children": []
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
+  ]
 }

@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BackupUsuarioSchema",
+  "description": "Schema JSON para validação do arquivo completo de backup do My UFAPE (my_ufape_backup.json)",
+  "type": "object",
+  "properties": {
+    "themePreference": { "type": ["string", "null"] },
+    "selectedCourse": { "type": ["string", "null"] },
+    "view_preference": { "type": ["string", "null"] },
+    "saved_gradeTitle": { "type": ["string", "null"] },
+    "saved_selectedPeriod": { "type": ["string", "null"] },
+    "saved_disciplinesList": { "type": ["string", "null"] },
+    "schedule_bcc": { "type": ["string", "null"] },
+    "schedule_eal": { "type": ["string", "null"] },
+    "schedule_adm": { "type": ["string", "null"] },
+    "completedDisciplines": { "type": ["string", "null"] },
+    "savedGrades": { "type": ["string", "null"] },
+    "bcc_matriz_progress": { "type": ["string", "null"] },
+    "bcc_matriz_progress_antiga": { "type": ["string", "null"] },
+    "bcc_matrix_version": { "type": ["string", "null"] },
+    "bcc_acex_hours": { "type": ["string", "null"] },
+    "bcc_acc_hours": { "type": ["string", "null"] }
+  },
+  "additionalProperties": true
+}

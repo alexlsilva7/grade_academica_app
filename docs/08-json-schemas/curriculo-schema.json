@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CurriculoCatalogoSchema",
+  "description": "Schema JSON para validação dos arquivos de catálogo curricular (ex: curriculo_bcc.json e curriculo_adm.json)",
+  "definitions": {
+    "subjectItem": {
+      "type": "object",
+      "required": ["code", "name", "type", "period", "workload", "ementa"],
+      "properties": {
+        "id": { "type": "string" },
+        "code": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "period": { "type": "string" },
+        "credits": { "type": "integer" },
+        "workload": {
+          "type": "object",
+          "required": ["teorica", "pratica", "extensao", "total"],
+          "properties": {
+            "teorica": { "type": "integer" },
+            "pratica": { "type": "integer" },
+            "extensao": { "type": "integer" },
+            "total": { "type": "integer" }
+          },
+          "additionalProperties": false
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["code", "name"],
+            "properties": {
+              "code": { "type": "string" },
+              "name": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "corequisites": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string" },
+              "name": { "type": "string" }
+            }
+          }
+        },
+        "equivalences": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string" },
+              "name": { "type": "string" }
+            }
+          }
+        },
+        "ementa": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "oneOf": [
+    {
+      "type": "object",
+      "required": ["subjects"],
+      "properties": {
+        "export_date": { "type": "string" },
+        "subjects": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/subjectItem" }
+        }
+      },
+      "additionalProperties": true
+    },
+    {
+      "type": "array",
+      "items": { "$ref": "#/definitions/subjectItem" }
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CustomCoursesSchema",
+  "description": "Schema JSON para persistência dos cursos customizados no backend (custom_cursos.json)",
+  "type": "object",
+  "required": ["courses"],
+  "properties": {
+    "courses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "disciplines", "updated_at"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "disciplines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "name", "professor", "period", "sessions"],
+              "properties": {
+                "id": { "type": "string" },
+                "code": { "type": "string" },
+                "name": { "type": "string" },
+                "professor": { "type": "string" },
+                "period": { "type": "integer" },
+                "sessions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["day", "time"],
+                    "properties": {
+                      "day": { "type": "integer", "minimum": 1, "maximum": 6 },
+                      "time": { "type": "string" }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

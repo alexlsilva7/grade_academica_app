@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HorarioSemestralSchema",
+  "description": "Schema JSON para validação dos arquivos de horário letivo semestral (ex: horario_bcc_2026_1.json)",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "name", "professor", "period", "sessions"],
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identificador único da disciplina na grade do semestre"
+      },
+      "code": {
+        "type": "string",
+        "description": "Código acadêmico formal (opcional)"
+      },
+      "name": {
+        "type": "string",
+        "description": "Nome da disciplina com eventual identificador de turma"
+      },
+      "professor": {
+        "type": "string",
+        "description": "Nome do professor responsável"
+      },
+      "period": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9,
+        "description": "Período acadêmico recomendado (0 se for optativa)"
+      },
+      "sessions": {
+        "type": "array",
+        "description": "Lista de sessões semanais da disciplina",
+        "items": {
+          "type": "object",
+          "required": ["day", "time"],
+          "properties": {
+            "day": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 6,
+              "description": "Dia da semana (1=Segunda, ..., 6=Sábado)"
+            },
+            "time": {
+              "type": "string",
+              "description": "Faixa de horário (ex: '18:30 - 20:10')"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "additionalProperties": true
+  }
+}

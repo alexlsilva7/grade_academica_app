@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { ThemeMode } from '../hooks/useSchedule';
 import { Navbar } from './Navbar';
+import { CurriculumProfile, TreeSubjectNode } from '../types';
 
 // --- ESTRUTURA COMPLETA DA MATRIZ DO CURSO ---
 const INITIAL_SUBJECTS_NEW = [
@@ -150,6 +151,33 @@ const INITIAL_SUBJECTS_OLD = [
   { id: 'old_tcc', name: 'TCC', hours: 180, period: 9, type: 'computacao', prereqs: [], desc: 'Trabalho de conclusão de curso' },
 ];
 
+const DEFAULT_BCC_PROFILES: CurriculumProfile[] = [
+  {
+    id: 'BCC03',
+    name: 'Grade Nova (Perfil 3/2024)',
+    description: 'Perfil vigente a partir de 2024.2',
+    validFromSemester: '2024.2',
+    totalHours: 3200,
+    acexHours: 320,
+    accHours: 90,
+    optativeHours: 480,
+    mandatoryHours: 2310,
+    subjects: INITIAL_SUBJECTS_NEW
+  },
+  {
+    id: 'BCC02',
+    name: 'Grade Antiga (Perfil 2/2011)',
+    description: 'Perfil vigente entre 2011 e 2024.1',
+    validFromSemester: '2011.1',
+    totalHours: 3200,
+    acexHours: 0,
+    accHours: 90,
+    optativeHours: 480,
+    mandatoryHours: 2630,
+    subjects: INITIAL_SUBJECTS_OLD
+  }
+];
+
 interface Subject {
   id: string;
   code?: string;
@@ -170,76 +198,191 @@ interface MatrizViewProps {
   themePreference: ThemeMode;
   cycleTheme: () => void;
   schedule?: import('../types').Discipline[];
+  selectedProfile?: string;
+  setSelectedProfile?: (profile: string) => void;
 }
 
-export function MatrizView({ setView, course, darkMode, themePreference, cycleTheme, schedule }: MatrizViewProps) {
-  // --- ESTADO ---
-  const [matrixVersion, setMatrixVersion] = useState<'nova' | 'antiga'>(() => {
-    return (localStorage.getItem('bcc_matrix_version') as 'nova' | 'antiga') || 'nova';
+export function MatrizView({ 
+  setView, 
+  course, 
+  darkMode, 
+  themePreference, 
+  cycleTheme, 
+  schedule, 
+  selectedProfile, 
+  setSelectedProfile 
+}: MatrizViewProps) {
+  // --- PERFIS CURRICULARES (DINÂMICOS OU PADRÃO) ---
+  const [availableProfiles, setAvailableProfiles] = useState<CurriculumProfile[]>(DEFAULT_BCC_PROFILES);
+
+  const [activeProfileId, setActiveProfileId] = useState<string>(() => {
+    if (selectedProfile && selectedProfile !== 'all') return selectedProfile;
+    const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
+    const legacyKey = course ? `matrix_version_${course}` : 'bcc_matrix_version';
+    const stored = localStorage.getItem(key);
+    if (stored && stored !== 'all') return stored;
+    const legacy = localStorage.getItem(legacyKey);
+    if (legacy === 'antiga') return 'BCC02';
+    return 'BCC03';
   });
 
-  const [subjectsNew, setSubjectsNew] = useState<Subject[]>(() => {
-    const saved = localStorage.getItem('bcc_matriz_progress');
-    if (saved) {
+  // Carregar perfis do curso dinamicamente
+  useEffect(() => {
+    let isCancelled = false;
+    async function loadCourseData() {
       try {
-        return JSON.parse(saved);
+        const res = await fetch(`/api/courses/${course || 'bcc'}`);
+        if (res.ok && !isCancelled) {
+          const data = await res.json();
+          if (data.curriculum?.profiles && Array.isArray(data.curriculum.profiles) && data.curriculum.profiles.length > 0) {
+            setAvailableProfiles(data.curriculum.profiles);
+            const found = data.curriculum.profiles.some((p: CurriculumProfile) => p.id === activeProfileId);
+            if (!found) {
+              const defaultId = data.curriculum.activeProfileId || data.curriculum.profiles[0].id;
+              setActiveProfileId(defaultId);
+            }
+          } else if (data.curriculum?.subjects && Array.isArray(data.curriculum.subjects)) {
+            const mappedSubjects: TreeSubjectNode[] = data.curriculum.subjects.map((s: any, idx: number) => ({
+              id: s.id || `sub_${idx}`,
+              code: s.code,
+              name: s.name,
+              period: typeof s.period === 'number' ? s.period : parseInt(s.period) || 1,
+              hours: s.workload?.total || 60,
+              type: s.type?.toLowerCase().includes('opt') ? 'optativa' : 'computacao',
+              prereqs: s.prerequisites?.map((p: any) => p.code || p.name) || [],
+              desc: s.ementa || ''
+            }));
+            const singleProfile: CurriculumProfile = {
+              id: data.course?.shortName || 'GERAL',
+              name: data.course?.name || 'Matriz Curricular',
+              totalHours: mappedSubjects.reduce((acc, s) => acc + s.hours, 0) || 3200,
+              acexHours: 0,
+              accHours: 0,
+              optativeHours: 0,
+              subjects: mappedSubjects
+            };
+            setAvailableProfiles([singleProfile]);
+            setActiveProfileId(singleProfile.id);
+          } else if (course === 'bcc' || !course) {
+            setAvailableProfiles(DEFAULT_BCC_PROFILES);
+          }
+        }
       } catch (e) {
-        console.error("Erro ao carregar do localStorage", e);
+        console.error("Erro ao carregar currículo para MatrizView:", e);
       }
     }
-    return INITIAL_SUBJECTS_NEW.map(s => ({ ...s, status: 'pendente', grade: '' }));
-  });
 
-  const [subjectsOld, setSubjectsOld] = useState<Subject[]>(() => {
-    const saved = localStorage.getItem('bcc_matriz_progress_antiga');
+    loadCourseData();
+    return () => { isCancelled = true; };
+  }, [course]);
+
+  // Atualizar quando prop selectedProfile mudar externamente
+  useEffect(() => {
+    if (selectedProfile && selectedProfile !== 'all') {
+      setActiveProfileId(selectedProfile);
+    }
+  }, [selectedProfile]);
+
+  const activeProfile = useMemo(() => {
+    return availableProfiles.find(p => p.id === activeProfileId) || availableProfiles[0] || DEFAULT_BCC_PROFILES[0];
+  }, [availableProfiles, activeProfileId]);
+
+  // Carregar disciplinas com estado a partir do perfil ativo e localStorage
+  const [subjects, setSubjects] = useState<Subject[]>(() => {
+    const key = `${course || 'bcc'}_matriz_progress_${activeProfileId}`;
+    const legacyKey = activeProfileId === 'BCC02' ? 'bcc_matriz_progress_antiga' : 'bcc_matriz_progress';
+    const saved = localStorage.getItem(key) || (course === 'bcc' || !course ? localStorage.getItem(legacyKey) : null);
     if (saved) {
       try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error("Erro ao carregar matriz antiga", e);
-      }
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      } catch {}
     }
-    return INITIAL_SUBJECTS_OLD.map(s => ({ ...s, status: 'pendente', grade: '' }));
+    const initialList = activeProfile?.subjects || INITIAL_SUBJECTS_NEW;
+    return initialList.map(s => ({ ...s, status: 'pendente', grade: '' }));
   });
 
-  const subjects = matrixVersion === 'nova' ? subjectsNew : subjectsOld;
-  
-  const setSubjects = (updater: React.SetStateAction<Subject[]>) => {
-    if (matrixVersion === 'nova') {
-      setSubjectsNew(updater);
-    } else {
-      setSubjectsOld(updater);
+  // Recarregar disciplinas e progresso quando perfil ativo mudar
+  useEffect(() => {
+    if (!activeProfile) return;
+    const key = `${course || 'bcc'}_matriz_progress_${activeProfile.id}`;
+    const legacyKey = activeProfile.id === 'BCC02' ? 'bcc_matriz_progress_antiga' : 'bcc_matriz_progress';
+    const saved = localStorage.getItem(key) || ((course === 'bcc' || !course) ? localStorage.getItem(legacyKey) : null);
+    
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const merged = activeProfile.subjects.map(s => {
+            const existing = parsed.find((p: any) => p.id === s.id || (p.code && p.code === s.code));
+            return {
+              ...s,
+              status: existing ? existing.status : 'pendente',
+              grade: existing ? existing.grade : ''
+            };
+          });
+          setSubjects(merged);
+          return;
+        }
+      } catch {}
+    }
+
+    setSubjects(activeProfile.subjects.map(s => ({ ...s, status: 'pendente', grade: '' })));
+  }, [activeProfile.id, course]);
+
+  // Persistir progresso do perfil ativo no localStorage
+  useEffect(() => {
+    if (!activeProfile) return;
+    const key = `${course || 'bcc'}_matriz_progress_${activeProfile.id}`;
+    try {
+      localStorage.setItem(key, JSON.stringify(subjects));
+      
+      if (activeProfile.id === 'BCC03' || activeProfile.id === 'nova') {
+        localStorage.setItem('bcc_matriz_progress', JSON.stringify(subjects));
+        const completedList = subjects
+          .filter(s => s.status === 'concluido')
+          .map(s => s.code || s.id);
+        localStorage.setItem('completedDisciplines', JSON.stringify(completedList));
+      } else if (activeProfile.id === 'BCC02' || activeProfile.id === 'antiga') {
+        localStorage.setItem('bcc_matriz_progress_antiga', JSON.stringify(subjects));
+      }
+    } catch (e) {
+      console.error('Falha ao salvar progresso da matriz', e);
+    }
+  }, [subjects, activeProfile.id, course]);
+
+  const [acexHours, setAcexHours] = useState(() => {
+    return Number(localStorage.getItem(`${course || 'bcc'}_acex_hours_${activeProfileId}`)) || Number(localStorage.getItem('bcc_acex_hours')) || 0;
+  });
+  const [accHours, setAccHours] = useState(() => {
+    return Number(localStorage.getItem(`${course || 'bcc'}_acc_hours_${activeProfileId}`)) || Number(localStorage.getItem('bcc_acc_hours')) || 0;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(`${course || 'bcc'}_acex_hours_${activeProfile.id}`, acexHours.toString());
+    if (activeProfile.id === 'BCC03') localStorage.setItem('bcc_acex_hours', acexHours.toString());
+  }, [acexHours, activeProfile.id, course]);
+
+  useEffect(() => {
+    localStorage.setItem(`${course || 'bcc'}_acc_hours_${activeProfile.id}`, accHours.toString());
+    if (activeProfile.id === 'BCC03') localStorage.setItem('bcc_acc_hours', accHours.toString());
+  }, [accHours, activeProfile.id, course]);
+
+  const handleSelectProfile = (profileId: string) => {
+    setActiveProfileId(profileId);
+    if (setSelectedProfile) {
+      setSelectedProfile(profileId);
+    }
+    const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
+    localStorage.setItem(key, profileId);
+    localStorage.setItem('saved_selectedProfile', profileId);
+    if (course) {
+      localStorage.setItem(`matrix_version_${course}`, profileId === 'BCC02' ? 'antiga' : 'nova');
     }
   };
 
-  useEffect(() => {
-    localStorage.setItem('bcc_matrix_version', matrixVersion);
-  }, [matrixVersion]);
-
-  useEffect(() => {
-    localStorage.setItem('bcc_matriz_progress', JSON.stringify(subjectsNew));
-    
-    // Synchronize completedDisciplines in localStorage with the completed subjects in the new matrix
-    try {
-      const completedList = subjectsNew
-        .filter(s => s.status === 'concluido')
-        .map(s => s.code || s.id);
-      localStorage.setItem('completedDisciplines', JSON.stringify(completedList));
-    } catch (e) {
-      console.error('Failed to sync completed list with localStorage', e);
-    }
-  }, [subjectsNew]);
-
-  useEffect(() => {
-    localStorage.setItem('bcc_matriz_progress_antiga', JSON.stringify(subjectsOld));
-  }, [subjectsOld]);
-
-  const [acexHours, setAcexHours] = useState(() => {
-    return Number(localStorage.getItem('bcc_acex_hours')) || 0;
-  });
-  const [accHours, setAccHours] = useState(() => {
-    return Number(localStorage.getItem('bcc_acc_hours')) || 0;
-  });
 
   const [hoveredSubject, setHoveredSubject] = useState<Subject | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
@@ -444,11 +587,7 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
   };
 
   const resetProgress = () => {
-    if (matrixVersion === 'nova') {
-      setSubjectsNew(INITIAL_SUBJECTS_NEW.map(s => ({ ...s, status: 'pendente', grade: '' })));
-    } else {
-      setSubjectsOld(INITIAL_SUBJECTS_OLD.map(s => ({ ...s, status: 'pendente', grade: '' })));
-    }
+    setSubjects(prev => prev.map(s => ({ ...s, status: 'pendente', grade: '' })));
     setAcexHours(0);
     setAccHours(0);
     setSelectedSubject(null);
@@ -456,10 +595,18 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
   };
 
   const exportData = () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ subjects, acexHours, accHours }));
+    const fileName = `${course || 'bcc'}_${activeProfile.id || 'matriz'}_progresso.json`;
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ 
+      course: course || 'bcc',
+      profileId: activeProfile.id,
+      profileName: activeProfile.name,
+      subjects, 
+      acexHours, 
+      accHours 
+    }));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", "bcc_progresso_matriz.json");
+    downloadAnchor.setAttribute("download", fileName);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -502,19 +649,26 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
     });
 
     const completedAcademicHours = completedRegularHours + completedOptativeHours;
-    const currentAcex = Math.min(320, acexHours);
-    const currentAcc = Math.min(90, accHours);
+    const maxAcex = activeProfile.acexHours ?? 320;
+    const maxAcc = activeProfile.accHours ?? 90;
+    const currentAcex = maxAcex > 0 ? Math.min(maxAcex, acexHours) : 0;
+    const currentAcc = maxAcc > 0 ? Math.min(maxAcc, accHours) : 0;
     const totalCompletedPlusExtracurricular = completedAcademicHours + currentAcex + currentAcc;
-    const progressPercent = Math.min(100, (totalCompletedPlusExtracurricular / 3200) * 100);
+    const totalCourseHours = activeProfile.totalHours || 3200;
+    const progressPercent = totalCourseHours > 0 ? Math.min(100, (totalCompletedPlusExtracurricular / totalCourseHours) * 100) : 0;
 
     return {
       completedAcademicHours,
       totalCompletedPlusExtracurricular,
       progressPercent,
       completedRegularHours,
-      completedOptativeHours
+      completedOptativeHours,
+      maxAcex,
+      maxAcc,
+      totalCourseHours,
+      optativeTarget: activeProfile.optativeHours ?? 480
     };
-  }, [subjects, acexHours, accHours]);
+  }, [subjects, acexHours, accHours, activeProfile]);
 
   // Função para normalizar texto removendo acentos
   const normalizeText = (text: string) => {
@@ -540,10 +694,16 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
     });
   }, [subjects, searchQuery, filterType, filterStatus]);
 
+  const maxPeriod = useMemo(() => {
+    const periodNumbers = subjects.map(s => Number(s.period) || 0).filter(p => p > 0);
+    const max = periodNumbers.length > 0 ? Math.max(...periodNumbers) : 9;
+    return Math.max(max, 1);
+  }, [subjects]);
+
   const periods = useMemo(() => {
-    const list = Array.from({ length: 9 }, (_, i) => i + 1);
+    const list = Array.from({ length: maxPeriod }, (_, i) => i + 1);
     return list.map(pNum => {
-      const periodSubjects = subjects.filter(s => s.period === pNum);
+      const periodSubjects = subjects.filter(s => Number(s.period) === pNum);
       const totalPeriodHours = periodSubjects.reduce((acc, s) => acc + s.hours, 0);
       const completedPeriodHours = periodSubjects
         .filter(s => s.status === 'concluido')
@@ -556,7 +716,7 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
         completedHours: completedPeriodHours
       };
     });
-  }, [subjects]);
+  }, [subjects, maxPeriod]);
 
   // --- MAPAS DE CORES ---
   const typeLabels: Record<string, { name: string, bg: string, border: string, text: string }> = {
@@ -651,29 +811,25 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
               </select>
             </div>
             
-            {/* Seletor de Grade Curricular */}
-            <div className="flex items-center bg-white dark:bg-slate-900 rounded-lg border border-slate-300 dark:border-slate-700 p-1 w-full sm:w-auto h-[34px]">
-              <button
-                onClick={() => setMatrixVersion('nova')}
-                className={`flex-1 sm:flex-none px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
-                  matrixVersion === 'nova' 
-                    ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 shadow-sm' 
-                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-                }`}
-              >
-                Grade Nova
-              </button>
-              <button
-                onClick={() => setMatrixVersion('antiga')}
-                className={`flex-1 sm:flex-none px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
-                  matrixVersion === 'antiga' 
-                    ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 shadow-sm' 
-                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-                }`}
-              >
-                Grade Antiga
-              </button>
-            </div>
+            {/* Seletor Dinâmico de Perfil Curricular */}
+            {availableProfiles.length > 1 && (
+              <div className="flex items-center bg-white dark:bg-slate-900 rounded-lg border border-slate-300 dark:border-slate-700 p-1 w-full sm:w-auto h-[34px]">
+                {availableProfiles.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => handleSelectProfile(p.id)}
+                    className={`flex-1 sm:flex-none px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
+                      activeProfile.id === p.id 
+                        ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 shadow-sm' 
+                        : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                    }`}
+                    title={p.description || p.name}
+                  >
+                    {p.name.includes('(') ? p.name.split('(')[0].trim() : (p.id || p.name)}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Alternar Vista para Mobile */}
             <button
@@ -704,9 +860,14 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
         <div className="w-full min-w-0">
           <div 
             id="matriz-scroll-container"
+            style={!isMobileGrid ? {
+              display: 'grid',
+              gridTemplateColumns: `repeat(${maxPeriod}, minmax(130px, 1fr))`,
+              gap: '0.75rem'
+            } : undefined}
             className={`
               relative
-              ${isMobileGrid ? 'grid grid-cols-1 gap-4' : 'flex lg:grid lg:grid-cols-9 gap-3 overflow-x-auto pb-4 max-w-full lg:max-w-none px-1'}
+              ${isMobileGrid ? 'grid grid-cols-1 gap-4' : 'flex overflow-x-auto pb-4 max-w-full px-1'}
               scroll-smooth md:scroll-auto
             `}
           >
@@ -894,7 +1055,7 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
                   </div>
                   <div className="flex items-baseline gap-1 mt-1">
                     <span className="text-2xl font-bold text-slate-800 dark:text-slate-100">{stats.totalCompletedPlusExtracurricular}h</span>
-                    <span className="text-sm text-slate-500 dark:text-slate-400">/ 3200h</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">/ {stats.totalCourseHours}h</span>
                   </div>
                 </div>
                 <div className="mt-4">
@@ -916,33 +1077,41 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
                 <div>
                   <div className="flex justify-between items-start mb-1">
                     <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Horas ACEX (Extensão)</span>
-                    <span className="text-xs text-indigo-700 dark:text-indigo-300 font-bold bg-indigo-100 dark:bg-indigo-900/50 px-1.5 py-0.5 rounded">Meta: 320h</span>
+                    <span className="text-xs text-indigo-700 dark:text-indigo-300 font-bold bg-indigo-100 dark:bg-indigo-900/50 px-1.5 py-0.5 rounded">
+                      Meta: {stats.maxAcex}h
+                    </span>
                   </div>
-                  <div className="flex items-center gap-2 mt-4">
-                    <input 
-                      type="range" 
-                      min="0" 
-                      max="320" 
-                      step="10"
-                      value={acexHours} 
-                      onChange={(e) => setAcexHours(Number(e.target.value))}
-                      className="w-full accent-indigo-600 dark:accent-indigo-400 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none" 
-                    />
-                    <input
-                      type="number"
-                      min="0"
-                      max="1000"
-                      value={acexHours}
-                      onChange={(e) => setAcexHours(Math.max(0, parseInt(e.target.value) || 0))}
-                      className="w-16 px-1.5 py-1 text-center font-bold text-slate-850 dark:text-slate-100 text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none"
-                    />
-                    <span className="text-xs text-slate-500 dark:text-slate-400">h</span>
+                  {stats.maxAcex > 0 ? (
+                    <div className="flex items-center gap-2 mt-4">
+                      <input 
+                        type="range" 
+                        min="0" 
+                        max={stats.maxAcex} 
+                        step="10"
+                        value={acexHours} 
+                        onChange={(e) => setAcexHours(Number(e.target.value))}
+                        className="w-full accent-indigo-600 dark:accent-indigo-400 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none" 
+                      />
+                      <input
+                        type="number"
+                        min="0"
+                        max="1000"
+                        value={acexHours}
+                        onChange={(e) => setAcexHours(Math.max(0, parseInt(e.target.value) || 0))}
+                        className="w-16 px-1.5 py-1 text-center font-bold text-slate-850 dark:text-slate-100 text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none"
+                      />
+                      <span className="text-xs text-slate-500 dark:text-slate-400">h</span>
+                    </div>
+                  ) : (
+                    <div className="mt-4 text-xs text-slate-400 italic">Não exigido neste perfil curricular.</div>
+                  )}
+                </div>
+                {stats.maxAcex > 0 && (
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-4 border-t border-slate-100 dark:border-slate-800/80 pt-2 flex justify-between">
+                    <span>Restantes:</span>
+                    <span className="font-semibold text-indigo-650 dark:text-indigo-400">{Math.max(0, stats.maxAcex - acexHours)}h</span>
                   </div>
-                </div>
-                <div className="text-xs text-slate-500 dark:text-slate-400 mt-4 border-t border-slate-100 dark:border-slate-800/80 pt-2 flex justify-between">
-                  <span>Restantes:</span>
-                  <span className="font-semibold text-indigo-650 dark:text-indigo-400">{Math.max(0, 320 - acexHours)}h</span>
-                </div>
+                )}
               </div>
 
               {/* Gestão Extracurricular ACC */}
@@ -950,40 +1119,48 @@ export function MatrizView({ setView, course, darkMode, themePreference, cycleTh
                 <div>
                   <div className="flex justify-between items-start mb-1">
                     <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Horas ACC (Comp.)</span>
-                    <span className="text-xs text-indigo-700 dark:text-indigo-300 font-bold bg-indigo-100 dark:bg-indigo-900/50 px-1.5 py-0.5 rounded">Meta: 90h</span>
+                    <span className="text-xs text-indigo-700 dark:text-indigo-300 font-bold bg-indigo-100 dark:bg-indigo-900/50 px-1.5 py-0.5 rounded">
+                      Meta: {stats.maxAcc}h
+                    </span>
                   </div>
-                  <div className="flex items-center gap-2 mt-4">
-                    <input 
-                      type="range" 
-                      min="0" 
-                      max="90" 
-                      step="5"
-                      value={accHours} 
-                      onChange={(e) => setAccHours(Number(e.target.value))}
-                      className="w-full accent-indigo-600 dark:accent-indigo-400 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none" 
-                    />
-                    <input
-                      type="number"
-                      min="0"
-                      max="500"
-                      value={accHours}
-                      onChange={(e) => setAccHours(Math.max(0, parseInt(e.target.value) || 0))}
-                      className="w-16 px-1.5 py-1 text-center font-bold text-slate-800 dark:text-slate-100 text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none"
-                    />
-                    <span className="text-xs text-slate-500 dark:text-slate-400">h</span>
+                  {stats.maxAcc > 0 ? (
+                    <div className="flex items-center gap-2 mt-4">
+                      <input 
+                        type="range" 
+                        min="0" 
+                        max={stats.maxAcc} 
+                        step="5"
+                        value={accHours} 
+                        onChange={(e) => setAccHours(Number(e.target.value))}
+                        className="w-full accent-indigo-600 dark:accent-indigo-400 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none" 
+                      />
+                      <input
+                        type="number"
+                        min="0"
+                        max="500"
+                        value={accHours}
+                        onChange={(e) => setAccHours(Math.max(0, parseInt(e.target.value) || 0))}
+                        className="w-16 px-1.5 py-1 text-center font-bold text-slate-800 dark:text-slate-100 text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none"
+                      />
+                      <span className="text-xs text-slate-500 dark:text-slate-400">h</span>
+                    </div>
+                  ) : (
+                    <div className="mt-4 text-xs text-slate-400 italic">Não exigido neste perfil curricular.</div>
+                  )}
+                </div>
+                {stats.maxAcc > 0 && (
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-4 border-t border-slate-100 dark:border-slate-800/80 pt-2 flex justify-between">
+                    <span>Restantes:</span>
+                    <span className="font-semibold text-indigo-600 dark:text-indigo-400">{Math.max(0, stats.maxAcc - accHours)}h</span>
                   </div>
-                </div>
-                <div className="text-xs text-slate-500 dark:text-slate-400 mt-4 border-t border-slate-100 dark:border-slate-800/80 pt-2 flex justify-between">
-                  <span>Restantes:</span>
-                  <span className="font-semibold text-indigo-600 dark:text-indigo-400">{Math.max(0, 90 - accHours)}h</span>
-                </div>
+                )}
               </div>
             </div>
             
             {/* Bloco discreto de matérias optativas complementares concluídas */}
             <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-900/30 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
               <span className="text-slate-500">Horas Optativas Concluídas:</span>
-              <span className="text-indigo-600 dark:text-indigo-400">{stats.completedOptativeHours}h <span className="text-slate-400">/ 480h</span></span>
+              <span className="text-indigo-600 dark:text-indigo-400">{stats.completedOptativeHours}h <span className="text-slate-400">/ {stats.optativeTarget}h</span></span>
             </div>
           </div>
         </div>

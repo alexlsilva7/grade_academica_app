@@ -22,11 +22,78 @@ export function DisciplinesView({
 }: DisciplinesViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPeriod, setSelectedPeriod] = useState<string>('todos');
+  const [selectedProfile, setSelectedProfile] = useState<string>(() => {
+    try {
+      const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
+      const stored = localStorage.getItem(key) || localStorage.getItem('saved_selectedProfile');
+      if (stored && stored !== 'all' && stored !== 'todos') {
+        return stored;
+      }
+      return 'todos';
+    } catch {
+      return 'todos';
+    }
+  });
   const [selectedType, setSelectedType] = useState<string>('todos');
   const [selectedDiscipline, setSelectedDiscipline] = useState<any | null>(null);
 
-  const activeData: any = course === 'eal' ? ealData : course === 'adm' ? admData : bccData;
+  const [dynamicData, setDynamicData] = useState<any | null>(null);
+
+  React.useEffect(() => {
+    if (course) {
+      try {
+        const key = `selected_profile_${course}`;
+        const stored = localStorage.getItem(key) || localStorage.getItem('saved_selectedProfile');
+        if (stored && stored !== 'all' && stored !== 'todos') {
+          setSelectedProfile(stored);
+        } else {
+          setSelectedProfile('todos');
+        }
+      } catch {
+        setSelectedProfile('todos');
+      }
+
+      fetch(`/api/courses/${course}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.curriculum) {
+            setDynamicData(data.curriculum);
+          } else if (data.schedule) {
+            setDynamicData(data.schedule);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [course]);
+
+  const activeData: any = dynamicData || (course === 'eal' ? ealData : course === 'adm' ? admData : bccData);
   const subjects: any[] = Array.isArray(activeData) ? activeData : (activeData.subjects || []);
+
+  const profiles = useMemo(() => {
+    const p = new Set<string>();
+    subjects.forEach((s: any) => {
+      if (s.profile && s.profile.trim()) p.add(s.profile.trim());
+    });
+    return Array.from(p).sort();
+  }, [subjects]);
+
+  React.useEffect(() => {
+    if (profiles.length > 0 && selectedProfile !== 'todos' && !profiles.includes(selectedProfile)) {
+      setSelectedProfile('todos');
+    }
+  }, [profiles]);
+
+  const handleProfileChange = (val: string) => {
+    setSelectedProfile(val);
+    try {
+      const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
+      const toSave = val === 'todos' ? 'all' : val;
+      localStorage.setItem(key, toSave);
+      localStorage.setItem('saved_selectedProfile', toSave);
+    } catch (e) {
+      console.error('Failed to save selectedProfile in DisciplinesView', e);
+    }
+  };
 
   const periods = useMemo(() => {
     const p = new Set<string>();
@@ -44,14 +111,16 @@ export function DisciplinesView({
   const filteredSubjects = useMemo(() => {
     return subjects.filter((s: any) => {
       const matchQuery = s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         (s.code && s.code.toLowerCase().includes(searchQuery.toLowerCase()));
+                         (s.code && s.code.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                         (s.profile && s.profile.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchPeriod = selectedPeriod === 'todos' || s.period?.toString() === selectedPeriod;
+      const matchProfile = selectedProfile === 'todos' || profiles.length <= 1 || s.profile === selectedProfile || (!s.profile && selectedProfile === 'Sem Perfil');
       const matchType = selectedType === 'todos' || 
                         (selectedType === 'obrigatoria' && s.type?.toLowerCase().includes('obrigat')) ||
                         (selectedType === 'optativa' && !s.type?.toLowerCase().includes('obrigat'));
-      return matchQuery && matchPeriod && matchType;
+      return matchQuery && matchPeriod && matchProfile && matchType;
     });
-  }, [subjects, searchQuery, selectedPeriod, selectedType]);
+  }, [subjects, searchQuery, selectedPeriod, selectedProfile, selectedType, profiles]);
 
   return (
     <div className="min-h-[100dvh] bg-slate-50 dark:bg-slate-950 font-sans flex flex-col items-center">
@@ -80,7 +149,20 @@ export function DisciplinesView({
                 />
               </div>
               
-              <div className="flex gap-2 w-full md:w-auto">
+              <div className="flex gap-2 w-full md:w-auto flex-wrap">
+                {profiles.length > 0 && (
+                  <select
+                    value={selectedProfile}
+                    onChange={(e) => handleProfileChange(e.target.value)}
+                    className="flex-1 md:flex-none bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 pl-3 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-indigo-600 dark:text-indigo-400 font-semibold cursor-pointer"
+                  >
+                    <option value="todos">Todos Perfis ({profiles.length})</option>
+                    {profiles.map(p => (
+                      <option key={p} value={p}>Perfil: {p}</option>
+                    ))}
+                  </select>
+                )}
+
                 <select
                   value={selectedPeriod}
                   onChange={(e) => setSelectedPeriod(e.target.value)}
@@ -112,9 +194,16 @@ export function DisciplinesView({
                 >
                   <div>
                     <div className="flex justify-between items-start mb-2">
-                      <span className="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-2 py-1 rounded">
-                        {subject.code || 'S/ CÓDIGO'}
-                      </span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-2 py-1 rounded">
+                          {subject.code || 'S/ CÓDIGO'}
+                        </span>
+                        {subject.profile && (
+                          <span className="text-xs font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 px-2 py-0.5 rounded">
+                            {subject.profile}
+                          </span>
+                        )}
+                      </div>
                       {subject.period && (
                         <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
                           {subject.period}º Período
