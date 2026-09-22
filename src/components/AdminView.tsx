@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
-  ArrowLeft, BrainCircuit, Sparkles, Loader2, Save, Trash2, 
+  ArrowLeft, BrainCircuit, Sparkles, Save, Trash2, Loader2,
   Plus, Edit3, Check, X, FileJson, ArrowRightLeft, BookOpen, AlertCircle,
-  Copy, Download, Calendar, UploadCloud, FileText, CheckCircle,
-  Code, Search, RefreshCw, Network, GitFork, Image as ImageIcon, Layers, Tag
+  Copy, Download, Calendar, UploadCloud, FileText, CheckCircle, AlertTriangle,
+  Code, Search, RefreshCw, Network, GitFork, Image as ImageIcon, Layers, Tag,
+  Clipboard, ChevronDown, ChevronUp, CheckCheck
 } from 'lucide-react';
 import { Discipline, Session, DayOfWeek, CurriculumSubject, CourseMeta, CurriculumProfile, TreeSubjectNode } from '../types';
+import { normalizeAcademicType, treeToCurriculum, validateExtraction, type ExtractionReport, type ExtractionIssue } from '../utils/extraction';
 import { DAYS, TIMESLOTS } from '../constants';
+import { EXTRACTION_PROMPTS, type ExtractionModeType } from '../utils/promptsData';
 
 interface AdminViewProps {
   setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines' | 'admin') => void;
@@ -15,35 +18,14 @@ interface AdminViewProps {
 }
 
 type Mode = 'curriculum' | 'schedule';
-type InputMode = 'pdf' | 'text';
 type ReviewTab = 'table' | 'visual' | 'tree' | 'json';
 
-function formatAiErrorMessage(rawError: string, currentModel: string): string {
-  if (!rawError) return "Erro desconhecido ao processar com IA.";
-  let msg = rawError;
-  try {
-    if (typeof msg === 'string' && msg.trim().startsWith('{')) {
-      const parsed = JSON.parse(msg);
-      if (parsed.error) {
-        msg = typeof parsed.error === 'object' ? (parsed.error.message || JSON.stringify(parsed.error)) : parsed.error;
-      }
-    }
-  } catch {}
-
-  const lower = msg.toLowerCase();
-  if (lower.includes('503') || lower.includes('high demand') || lower.includes('unavailable')) {
-    return `O modelo ${currentModel} está enfrentando alta demanda temporária nos servidores do Google (Erro 503 - High Demand). Recomendamos usar o Gemini 3.6 Flash, que está disponível e responde com rapidez.`;
-  }
-  if (lower.includes('429') || lower.includes('quota') || lower.includes('resource_exhausted')) {
-    return `Limite de cota atingido na sua chave do Gemini para o modelo ${currentModel} (Erro 429). Experimente o Gemini 3.6 Flash ou aguarde um momento.`;
-  }
-  if (lower.includes('404') || lower.includes('not found')) {
-    return `O modelo ${currentModel} não está disponível ou foi descontinuado pelo Google. Selecione o Gemini 3.6 Flash.`;
-  }
-  return msg;
-}
-
 export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminViewProps) {
+  const resultRef = useRef<HTMLDivElement>(null);
+  const contentAreaRef = useRef<HTMLDivElement>(null);
+  const jsonFileInputRef = useRef<HTMLInputElement>(null);
+  const [extractionReport, setExtractionReport] = useState<ExtractionReport | null>(null);
+
   // Course Selector State
   const [courses, setCourses] = useState<CourseMeta[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState<string>('bcc');
@@ -55,26 +37,22 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
 
   // Mode: Curricular structure or Semester schedule
   const [activeMode, setActiveMode] = useState<Mode>('schedule');
+  const [curriculumExtractType, setCurriculumExtractType] = useState<'tree' | 'linear'>('tree');
   const [reviewTab, setReviewTab] = useState<ReviewTab>('table');
   const [selectedPreviewPeriod, setSelectedPreviewPeriod] = useState<number | 'all'>('all');
 
-  // AI Extraction Configuration
-  const [selectedModel, setSelectedModel] = useState<string>('gemini-3.8-flash');
-  const [inputMode, setInputMode] = useState<InputMode>('pdf');
-  const [rawTextInput, setRawTextInput] = useState('');
-  const [isExtracting, setIsExtracting] = useState(false);
-  const [extractingStep, setExtractingStep] = useState<string>('');
-  const [extractingSeconds, setExtractingSeconds] = useState<number>(0);
-  const abortControllerRef = useRef<AbortController | null>(null);
-  const [dragActive, setDragActive] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const contentAreaRef = useRef<HTMLDivElement>(null);
-  const [aiErrorModal, setAiErrorModal] = useState<{ title: string; message: string; canRetryWith36: boolean } | null>(null);
-  const lastExtractionPayloadRef = useRef<{ file?: File; files?: File[]; text?: string } | null>(null);
+  // Prompt & Paste JSON Import State
+  const [pastedJsonText, setPastedJsonText] = useState('');
+  const [copyFeedback, setCopyFeedback] = useState(false);
+  const [isPromptExpanded, setIsPromptExpanded] = useState(false);
+  const [validationResult, setValidationResult] = useState<{
+    isValid: boolean;
+    summary: string;
+    issues: ExtractionIssue[];
+    stats?: { count: number; sessionsCount?: number };
+  } | null>(null);
 
   // Tree & Profile states
-  const [curriculumExtractType, setCurriculumExtractType] = useState<'tree' | 'linear'>('tree');
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [courseProfiles, setCourseProfiles] = useState<CurriculumProfile[]>([]);
   const [extractedProfile, setExtractedProfile] = useState<CurriculumProfile | null>(null);
   const [extractedTreeSubjects, setExtractedTreeSubjects] = useState<TreeSubjectNode[]>([]);
@@ -88,6 +66,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
 
   // Data State: Schedule
   const [scheduleTitle, setScheduleTitle] = useState('');
+  const [scheduleSemester, setScheduleSemester] = useState('');
   const [disciplines, setDisciplines] = useState<Discipline[]>([]);
 
   // Data State: Curriculum (PPC)
@@ -98,7 +77,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
   const [editSchedCode, setEditSchedCode] = useState('');
   const [editSchedName, setEditSchedName] = useState('');
   const [editSchedProfessor, setEditSchedProfessor] = useState('');
-  const [editSchedPeriod, setEditSchedPeriod] = useState(1);
+  const [editSchedPeriod, setEditSchedPeriod] = useState<number | ''>('');
   const [editSchedProfile, setEditSchedProfile] = useState<string>('');
   const [editSchedSessions, setEditSchedSessions] = useState<Session[]>([]);
   const [newSessionDay, setNewSessionDay] = useState<DayOfWeek>(1);
@@ -113,10 +92,11 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
   const [editCurrType, setEditCurrType] = useState('Obrigatório');
   const [editCurrPeriod, setEditCurrPeriod] = useState('1');
   const [editCurrProfile, setEditCurrProfile] = useState<string>('');
-  const [editCurrCredits, setEditCurrCredits] = useState(4);
-  const [editCurrTeorica, setEditCurrTeorica] = useState(60);
-  const [editCurrPratica, setEditCurrPratica] = useState(0);
-  const [editCurrExtensao, setEditCurrExtensao] = useState(0);
+  const [editCurrCredits, setEditCurrCredits] = useState<number | ''>('');
+  const [editCurrTeorica, setEditCurrTeorica] = useState<number | ''>('');
+  const [editCurrPratica, setEditCurrPratica] = useState<number | ''>('');
+  const [editCurrExtensao, setEditCurrExtensao] = useState<number | ''>('');
+  const [editCurrTotal, setEditCurrTotal] = useState<number | ''>('');
   const [editCurrEmenta, setEditCurrEmenta] = useState('');
   const [editCurrPrereqs, setEditCurrPrereqs] = useState<{ code: string; name: string }[]>([]);
   const [newPrereqCode, setNewPrereqCode] = useState('');
@@ -149,6 +129,8 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
   // Status feedback
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const courseLoadVersion = useRef(0);
+  const skipNextCourseLoad = useRef(false);
 
   // 1. Fetch courses list
   const fetchCoursesList = async () => {
@@ -169,7 +151,9 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
 
   // 2. Load course data on change
   const loadCourseData = async (courseId: string) => {
+    const version = ++courseLoadVersion.current;
     setIsLoadingCourse(true);
+    setExtractionReport(null);
     setErrorMsg(null);
     setSuccessMsg(null);
     setEditingSchedIndex(null);
@@ -179,21 +163,23 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
       const res = await fetch(`/api/courses/${courseId}`);
       if (res.ok) {
         const data = await res.json();
+        if (version !== courseLoadVersion.current) return;
         const meta = data.course;
         setCourseName(meta.name || courseId.toUpperCase());
         setCourseShortName(meta.shortName || courseId.toUpperCase());
         
         // Curriculum
         if (data.curriculum) {
+          setExtractionReport(data.curriculum.extraction || null);
           if (Array.isArray(data.curriculum.profiles) && data.curriculum.profiles.length > 0) {
             setCourseProfiles(data.curriculum.profiles);
             const defaultProf = data.curriculum.profiles.find((p: any) => p.id === data.curriculum.activeProfileId) || data.curriculum.profiles[0];
-            setExtractedProfile(defaultProf);
-            setExtractedTreeSubjects(defaultProf.subjects || []);
+            setExtractedProfile(data.curriculum.treeSubjects?.length ? null : defaultProf);
+            setExtractedTreeSubjects(data.curriculum.treeSubjects?.length ? data.curriculum.treeSubjects : defaultProf.subjects || []);
           } else {
             setCourseProfiles([]);
             setExtractedProfile(null);
-            setExtractedTreeSubjects([]);
+            setExtractedTreeSubjects(data.curriculum.treeSubjects || []);
           }
 
           if (data.curriculum.subjects && Array.isArray(data.curriculum.subjects)) {
@@ -213,6 +199,8 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
         // Schedule
         if (Array.isArray(data.schedule)) {
           setDisciplines(data.schedule);
+          setScheduleSemester(data.schedule.find((d: Discipline) => d.semester)?.semester || meta.semesters?.[0] || '');
+          if (activeMode === 'schedule') setExtractionReport(data.scheduleExtraction || null);
           setScheduleTitle(`${meta.name} - Horário 2026.1`);
         } else {
           setDisciplines([]);
@@ -221,9 +209,9 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
       }
     } catch (err: any) {
       console.error('Error loading course details', err);
-      setErrorMsg(`Não foi possível carregar os dados do curso ${courseId}.`);
+      if (version === courseLoadVersion.current) setErrorMsg(`Não foi possível carregar os dados do curso ${courseId}.`);
     } finally {
-      setIsLoadingCourse(false);
+      if (version === courseLoadVersion.current) setIsLoadingCourse(false);
     }
   };
 
@@ -282,77 +270,39 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
   };
 
   useEffect(() => {
+    if (skipNextCourseLoad.current) { skipNextCourseLoad.current = false; return; }
     if (selectedCourseId && !isCreatingNewCourse) {
       loadCourseData(selectedCourseId);
     }
   }, [selectedCourseId, isCreatingNewCourse]);
 
-  // Keep JSON view synced with active data
+  // The editor, clipboard and download expose the same result, including the graph.
+  const jsonData = useMemo(() => ({
+    courseName, courseShortName,
+    ...(activeMode === 'curriculum' ? {
+      subjects: curriculumSubjects,
+      ...(extractedTreeSubjects.length ? { treeSubjects: extractedTreeSubjects, profiles: courseProfiles } : {})
+    } : { disciplines }),
+    ...(extractionReport ? { _extraction: extractionReport } : {})
+  }), [activeMode, courseName, courseShortName, curriculumSubjects, extractedTreeSubjects, courseProfiles, disciplines, extractionReport]);
   useEffect(() => {
     if (reviewTab === 'json') {
-      if (activeMode === 'curriculum') {
-        setJsonText(JSON.stringify({
-          export_date: new Date().toISOString(),
-          subjects: curriculumSubjects
-        }, null, 2));
-      } else {
-        setJsonText(JSON.stringify(disciplines, null, 2));
-      }
+      setJsonText(JSON.stringify(jsonData, null, 2));
       setJsonError(null);
     }
-  }, [activeMode, reviewTab, curriculumSubjects, disciplines]);
+  }, [reviewTab, jsonData]);
 
   // Close modal on Escape key press
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (isExtracting) handleCancelExtraction();
-        if (aiErrorModal) setAiErrorModal(null);
         if (editingSchedIndex !== null) setEditingSchedIndex(null);
         if (editingCurrIndex !== null) setEditingCurrIndex(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [editingSchedIndex, editingCurrIndex, isExtracting, aiErrorModal]);
-
-  // Stopwatch timer & progressive feedback for active AI extraction
-  useEffect(() => {
-    let interval: any = null;
-    if (isExtracting) {
-      interval = setInterval(() => {
-        setExtractingSeconds(sec => {
-          const next = sec + 1;
-          if (next === 4) {
-            setExtractingStep(`O modelo ${selectedModel} está analisando o documento...`);
-          } else if (next === 10) {
-            setExtractingStep('Identificando disciplinas, turmas e horários...');
-          } else if (next === 20) {
-            setExtractingStep('Aguardando resposta do Gemini e estruturando dados...');
-          } else if (next === 35) {
-            setExtractingStep('Processamento aprofundado em andamento (documento longo)...');
-          }
-          return next;
-        });
-      }, 1000);
-    } else {
-      setExtractingSeconds(0);
-      setExtractingStep('');
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isExtracting, selectedModel]);
-
-  const handleCancelExtraction = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      abortControllerRef.current = null;
-    }
-    setIsExtracting(false);
-    setExtractingStep('');
-    setErrorMsg("Extração cancelada pelo usuário.");
-  };
+  }, [editingSchedIndex, editingCurrIndex]);
 
   // Apply JSON edits back to state
   const handleApplyJsonEdit = () => {
@@ -361,6 +311,9 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
       if (activeMode === 'curriculum') {
         const subjects = Array.isArray(parsed) ? parsed : (parsed.subjects || []);
         setCurriculumSubjects(subjects);
+        setExtractedTreeSubjects(Array.isArray(parsed.treeSubjects) ? parsed.treeSubjects : []);
+        setCourseProfiles(Array.isArray(parsed.profiles) ? parsed.profiles : []);
+        setExtractedProfile(null);
         setSuccessMsg(`JSON Curricular validado e aplicado! (${subjects.length} disciplinas)`);
       } else {
         const list = Array.isArray(parsed) ? parsed : (parsed.disciplines || []);
@@ -406,79 +359,46 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
     };
   }, [activeMode, curriculumSubjects, disciplines]);
 
-  // --- AI EXTRACTION HANDLERS ---
+  // --- PROMPT & JSON IMPORT HANDLERS ---
 
-  const addFiles = (incomingFiles: FileList | File[]) => {
-    const list = Array.from(incomingFiles);
-    if (list.length === 0) return;
-    setSelectedFiles(prev => {
-      const updated = [...prev];
-      for (const file of list) {
-        if (!updated.some(f => f.name === file.name && f.size === file.size)) {
-          updated.push(file);
-        }
-      }
-      return updated;
-    });
-  };
+  // Current extraction mode & prompt definition
+  const currentExtractMode: ExtractionModeType = activeMode === 'schedule' ? 'schedule' : curriculumExtractType;
+  const currentPrompt = EXTRACTION_PROMPTS[currentExtractMode];
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
-    else if (e.type === "dragleave") setDragActive(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      addFiles(e.dataTransfer.files);
+  const handleCopyPrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(currentPrompt.promptText);
+      setCopyFeedback(true);
+      setTimeout(() => setCopyFeedback(false), 2500);
+    } catch (e) {
+      console.error('Falha ao copiar prompt', e);
     }
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      addFiles(e.target.files);
-    }
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
-
-  const handleRemoveSelectedFile = (idx: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== idx));
-  };
-
-  const handleClearSelectedFiles = () => {
-    setSelectedFiles([]);
-  };
-
-  // Safe file reader converting to clean base64 string
-  const readFileAsBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      if (file.size === 0) {
-        return reject(new Error("O arquivo selecionado está vazio (0 bytes). Selecione um PDF válido."));
+  const handlePasteFromClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        setPastedJsonText(text);
+        handleValidateAndApplyJson(text);
       }
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = reader.result;
-        if (typeof result === 'string') {
-          const commaIndex = result.indexOf(',');
-          const base64 = commaIndex !== -1 ? result.slice(commaIndex + 1) : result;
-          if (base64 && base64.trim().length > 0) {
-            resolve(base64.trim());
-          } else {
-            reject(new Error("O conteúdo do PDF lido está vazio."));
-          }
-        } else {
-          reject(new Error("Falha ao ler o formato binário do arquivo."));
-        }
-      };
-      reader.onerror = () => reject(new Error("Erro ao acessar o arquivo localmente."));
-      reader.onabort = () => reject(new Error("A leitura do arquivo foi cancelada."));
-      reader.readAsDataURL(file);
-    });
+    } catch (e) {
+      console.error('Falha ao ler da área de transferência', e);
+    }
+  };
+
+  const handleUploadJsonFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setPastedJsonText(reader.result);
+        handleValidateAndApplyJson(reader.result);
+      }
+    };
+    reader.readAsText(file);
+    if (jsonFileInputRef.current) jsonFileInputRef.current.value = '';
   };
 
   // Helper to clean course title from strings like "Medicina Veterinária 2026.1 - Horário Letivo"
@@ -516,266 +436,277 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
     return name.slice(0, 4).toUpperCase();
   };
 
-  const executeAiExtraction = async ({ 
-    file, 
-    files, 
-    text, 
-    overrideModel 
-  }: { 
-    file?: File; 
-    files?: File[]; 
-    text?: string; 
-    overrideModel?: string 
-  }) => {
-    const modelToUse = overrideModel || selectedModel;
-    setIsExtracting(true);
-    setExtractingSeconds(0);
-    setExtractingStep('Iniciando pipeline de extração...');
+  const handleValidateAndApplyJson = (rawInput?: string) => {
+    const textToParse = (rawInput !== undefined ? rawInput : pastedJsonText).trim();
     setErrorMsg(null);
     setSuccessMsg(null);
-    setAiErrorModal(null);
 
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-
-    const filesToUse = files && files.length > 0 
-      ? files 
-      : (selectedFiles.length > 0 ? selectedFiles : (file ? [file] : []));
-
-    lastExtractionPayloadRef.current = { file: filesToUse[0], files: filesToUse, text };
-
-    const effectiveText = (text !== undefined ? text : (inputMode === 'text' ? rawTextInput : '')).trim();
-
-    if (filesToUse.length === 0 && !effectiveText) {
-      setIsExtracting(false);
-      setExtractingStep('');
-      abortControllerRef.current = null;
-      setErrorMsg(
-        inputMode === 'pdf'
-          ? "Nenhum arquivo selecionado. Por favor, anexe ou arraste os arquivos (PDF e/ou Imagem)."
-          : "O campo de texto está vazio. Cole os dados antes de solicitar a extração."
-      );
+    if (!textToParse) {
+      setValidationResult({
+        isValid: false,
+        summary: 'O campo de texto do JSON está vazio. Cole o JSON antes de validar.',
+        issues: []
+      });
       return;
     }
 
+    let parsed: any;
     try {
-      let processedFiles: Array<{ base64Data: string; mimeType: string; fileName: string }> = [];
+      const cleaned = textToParse
+        .replace(/^```json\s*/i, '')
+        .replace(/^```\s*/i, '')
+        .replace(/```\s*$/i, '')
+        .trim();
+      parsed = JSON.parse(cleaned);
+    } catch (e: any) {
+      setValidationResult({
+        isValid: false,
+        summary: `Erro de sintaxe no JSON: ${e.message}`,
+        issues: [{ severity: 'error', record: 'JSON', field: 'syntax', message: e.message }]
+      });
+      return;
+    }
 
-      if (filesToUse.length > 0) {
-        setExtractingStep(`Lendo ${filesToUse.length > 1 ? `${filesToUse.length} arquivos` : 'arquivo'} para processamento seguro...`);
-        processedFiles = await Promise.all(
-          filesToUse.map(async f => ({
-            base64Data: await readFileAsBase64(f),
-            mimeType: f.type || (f.name.endsWith('.pdf') ? 'application/pdf' : 'image/png'),
-            fileName: f.name
-          }))
-        );
+    if (currentExtractMode === 'schedule') {
+      const rawList = Array.isArray(parsed) ? parsed : (parsed.disciplines || parsed.records || []);
+      if (!Array.isArray(rawList) || rawList.length === 0) {
+        setValidationResult({
+          isValid: false,
+          summary: 'Nenhuma turma/disciplina encontrada no JSON de horários. Esperado array ou objeto com a chave "disciplines".',
+          issues: [{ severity: 'error', record: 'Raiz', field: 'disciplines', message: 'Lista vazia ou ausente.' }]
+        });
+        return;
       }
 
-      setExtractingStep(`Enviando dados multimodais para o modelo Gemini (${modelToUse})...`);
+      const sanitized = rawList.map((item: any, idx: number) => ({
+        id: String(item.id || `turma_${idx + 1}`),
+        code: item.code ? String(item.code).trim() : null,
+        name: String(item.name || `Turma ${idx + 1}`).trim(),
+        professor: item.professor ? String(item.professor).trim() : '-',
+        period: item.period !== null && item.period !== undefined && item.period !== '' ? Number(item.period) : null,
+        profile: item.profile ? String(item.profile).trim() : undefined,
+        semester: item.semester ? String(item.semester).trim() : undefined,
+        courseName: item.courseName ? String(item.courseName).trim() : undefined,
+        classGroup: item.classGroup ? String(item.classGroup).trim() : undefined,
+        sessions: Array.isArray(item.sessions) ? item.sessions.map((s: any) => ({
+          day: Number(s.day),
+          time: String(s.time || '').trim()
+        })) : []
+      }));
 
-      if (activeMode === 'curriculum') {
-        const isTreeExtraction = curriculumExtractType === 'tree' || filesToUse.some(f => f.type.startsWith('image/'));
+      const issues = validateExtraction(sanitized, 'schedule');
+      const errors = issues.filter(i => i.severity === 'error');
 
-        if (isTreeExtraction) {
-          setExtractingStep(`Correlacionando documentos e extraindo matriz em árvore com Gemini (${modelToUse})...`);
-          const response = await fetch('/api/extract-curriculum-tree', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              files: processedFiles,
-              textContent: effectiveText || undefined,
-              model: modelToUse
-            }),
-            signal: controller.signal
-          });
-
-          if (!response.ok) {
-            let errorDetail = "Erro ao processar matriz em árvore com IA.";
-            try {
-              const errJson = await response.json();
-              errorDetail = errJson.error || errJson.details || errorDetail;
-            } catch {
-              const errText = await response.text();
-              if (errText) errorDetail = errText.slice(0, 300);
-            }
-            throw new Error(errorDetail);
-          }
-
-          setExtractingStep('Construindo nós de disciplinas e grafo de pré-requisitos...');
-          const data = await response.json();
-          const extractedCourseName = data.courseName || '';
-          const extractedShortName = data.courseShortName || (extractedCourseName ? generateShortName(extractedCourseName) : '');
-
-          if (isCreatingNewCourse || courseName === 'Novo Curso Acadêmico') {
-            if (extractedCourseName) setCourseName(extractedCourseName);
-            if (extractedShortName) setCourseShortName(extractedShortName);
-          } else if (extractedCourseName && extractedCourseName.toLowerCase() !== courseName.toLowerCase()) {
-            setDetectedDifferentCourse({ name: extractedCourseName, shortName: extractedShortName });
-          }
-
-          if (data.profile) {
-            setExtractedProfile(data.profile);
-          }
-          if (data.subjects && Array.isArray(data.subjects)) {
-            setExtractedTreeSubjects(data.subjects);
-
-            // Mapeamento compatível para a tabela tradicional
-            const flatMapped: CurriculumSubject[] = data.subjects.map((s: TreeSubjectNode) => ({
-              id: s.id,
-              code: s.code || s.id.toUpperCase(),
-              name: s.name,
-              type: s.type === 'optativa' ? 'Optativa' : 'Obrigatório',
-              period: s.period > 0 ? String(s.period) : 'Optativa',
-              profile: data.profile?.id || '',
-              credits: Math.round(s.hours / 15),
-              workload: {
-                teorica: s.hours,
-                pratica: 0,
-                extensao: 0,
-                total: s.hours
-              },
-              prerequisites: (s.prereqs || []).map(p => ({ code: p, name: p })),
-              ementa: s.desc || ''
-            }));
-            setCurriculumSubjects(flatMapped);
-            setReviewTab('tree');
-          }
-
-          const fallbackNote = data._modelUsed && data._modelUsed !== modelToUse ? ` (via fallback para ${data._modelUsed})` : '';
-          const profileNote = data.profile ? ` [Perfil: ${data.profile.id} - ${data.profile.name}]` : '';
-          setSuccessMsg(`Extração da Matriz em Árvore concluída com sucesso${fallbackNote}! ${data.subjects?.length || 0} disciplinas com pré-requisitos mapeadas.${profileNote}`);
-          return;
-        }
-
-        // Extração linear tradicional
-        const response = await fetch('/api/extract-curriculum', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            base64Data: processedFiles[0]?.base64Data,
-            textContent: effectiveText || undefined,
-            mimeType: processedFiles[0]?.mimeType,
-            model: modelToUse
-          }),
-          signal: controller.signal
+      if (errors.length > 0) {
+        setValidationResult({
+          isValid: false,
+          summary: `Encontrado(s) ${errors.length} erro(s) crítico(s) de validação nos horários.`,
+          issues
         });
+        return;
+      }
 
-        if (!response.ok) {
-          let errorDetail = "Erro ao processar currículo com IA.";
-          try {
-            const errJson = await response.json();
-            errorDetail = errJson.error || errJson.details || errorDetail;
-          } catch {
-            const errText = await response.text();
-            if (errText) errorDetail = errText.slice(0, 300);
-          }
-          throw new Error(errorDetail);
-        }
+      setDisciplines(sanitized);
 
-        setExtractingStep('Estruturando disciplinas e matriz curricular...');
-        const data = await response.json();
-        const extractedCourseName = data.courseName || (data.title ? cleanCourseTitle(data.title) : '');
-        const extractedShortName = data.courseShortName || (extractedCourseName ? generateShortName(extractedCourseName) : '');
-        const extractedTitle = data.title || (extractedCourseName ? `${extractedCourseName} - Catálogo Curricular` : '');
+      let extractedCourseName = parsed.courseName || (parsed.title ? cleanCourseTitle(parsed.title) : '');
+      let extractedShortName = parsed.courseShortName || (extractedCourseName ? generateShortName(extractedCourseName) : '');
 
-        if (isCreatingNewCourse || courseName === 'Novo Curso Acadêmico') {
-          if (extractedCourseName) setCourseName(extractedCourseName);
-          if (extractedShortName) setCourseShortName(extractedShortName);
-        } else if (extractedCourseName && extractedCourseName.toLowerCase() !== courseName.toLowerCase()) {
-          setDetectedDifferentCourse({ name: extractedCourseName, shortName: extractedShortName });
-        }
-
-        if (extractedTitle) setScheduleTitle(extractedTitle);
-
-        if (data.subjects && Array.isArray(data.subjects)) {
-          setCurriculumSubjects(data.subjects);
-          const fallbackNote = data._modelUsed && data._modelUsed !== modelToUse ? ` (via fallback para ${data._modelUsed})` : '';
-          const nameNote = (isCreatingNewCourse && extractedCourseName) ? ` Curso identificado: "${extractedCourseName} (${extractedShortName})".` : '';
-          setSuccessMsg(`Extração Curricular concluída${fallbackNote}! ${data.subjects.length} disciplinas mapeadas.${nameNote}`);
-        }
-      } else {
-        const response = await fetch('/api/extract-schedule', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            base64Data: processedFiles[0]?.base64Data,
-            textContent: effectiveText || undefined,
-            mimeType: processedFiles[0]?.mimeType,
-            model: modelToUse
-          }),
-          signal: controller.signal
-        });
-
-        if (!response.ok) {
-          let errorDetail = "Erro ao processar horário com IA.";
-          try {
-            const errJson = await response.json();
-            errorDetail = errJson.error || errJson.details || errorDetail;
-          } catch {
-            const errText = await response.text();
-            if (errText) errorDetail = errText.slice(0, 300);
-          }
-          throw new Error(errorDetail);
-        }
-
-        setExtractingStep('Estruturando turmas e horários de aula...');
-        const data = await response.json();
-        const extractedCourseName = data.courseName || (data.title ? cleanCourseTitle(data.title) : '');
-        const extractedShortName = data.courseShortName || (extractedCourseName ? generateShortName(extractedCourseName) : '');
-        const extractedTitle = data.title || (extractedCourseName ? `${extractedCourseName} - Horário 2026.1` : '');
-
-        if (extractedTitle) setScheduleTitle(extractedTitle);
-
-        if (isCreatingNewCourse || courseName === 'Novo Curso Acadêmico') {
-          if (extractedCourseName) setCourseName(extractedCourseName);
-          if (extractedShortName) setCourseShortName(extractedShortName);
-        } else if (extractedCourseName && extractedCourseName.toLowerCase() !== courseName.toLowerCase()) {
-          setDetectedDifferentCourse({ name: extractedCourseName, shortName: extractedShortName });
-        }
-
-        if (data.disciplines && Array.isArray(data.disciplines)) {
-          const sanitizedDisciplines = data.disciplines.map((d: any) => {
-            let cleanName = (d.name || "").trim();
-            let profile = (d.profile || "").trim();
-            const profileRegex = /\s*\((?:(?:matriz|grade)\s+(?:nova|antiga)\s*[-–:]*\s*|perfil\s*[-–:]*\s*)?([A-Za-z0-9_-]+)\)/i;
-            const match = cleanName.match(profileRegex);
-            if (match) {
-              if (!profile && match[1]) profile = match[1].trim();
-              cleanName = cleanName.replace(match[0], "").trim();
-            }
-            cleanName = cleanName.replace(/\s*\((?:matriz|grade)\s+(?:nova|antiga)\)/gi, "").trim();
-            if (profile.toLowerCase() === 'optativa' || profile.toLowerCase() === 'sem perfil' || d.period === 0) {
-              profile = '';
-            }
-            return { ...d, name: cleanName, profile };
-          });
-          setDisciplines(sanitizedDisciplines);
-          const fallbackNote = data._modelUsed && data._modelUsed !== modelToUse ? ` (via fallback para ${data._modelUsed})` : '';
-          const nameNote = (isCreatingNewCourse && extractedCourseName) ? ` Curso identificado: "${extractedCourseName} (${extractedShortName})".` : '';
-          setSuccessMsg(`Extração de Horários concluída${fallbackNote}! ${sanitizedDisciplines.length} turmas estruturadas.${nameNote}`);
+      if (!extractedCourseName) {
+        const codes = sanitized.map((d: any) => d.code).filter(Boolean);
+        const prefixes = codes.map((c: string) => c.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 4)).filter(Boolean);
+        const counts: Record<string, number> = {};
+        prefixes.forEach((p: string) => counts[p] = (counts[p] || 0) + 1);
+        const topPrefix = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0];
+        if (topPrefix === 'EAL') {
+          extractedCourseName = 'Engenharia de Alimentos';
+          extractedShortName = 'EAL';
+        } else if (topPrefix === 'BCC' || topPrefix === 'CCMP') {
+          extractedCourseName = 'Ciência da Computação';
+          extractedShortName = 'BCC';
+        } else if (topPrefix === 'ADM') {
+          extractedCourseName = 'Administração';
+          extractedShortName = 'ADM';
+        } else if (topPrefix === 'MVET') {
+          extractedCourseName = 'Medicina Veterinária';
+          extractedShortName = 'MVET';
+        } else if (topPrefix) {
+          extractedShortName = topPrefix;
+          extractedCourseName = `Curso ${topPrefix}`;
         }
       }
-    } catch (err: any) {
-      if (err.name === 'AbortError') {
-        setErrorMsg("Requisição cancelada.");
-      } else {
-        console.error(err);
-        const formatted = formatAiErrorMessage(err.message || "Erro na extração com IA.", modelToUse);
-        setErrorMsg(formatted);
-        const isDemandOrQuota = formatted.includes('503') || formatted.includes('alta demanda') || formatted.includes('429') || formatted.includes('cota');
-        setAiErrorModal({
-          title: isDemandOrQuota ? "Alta Demanda no Modelo Google Gemini" : "Erro na Extração com IA",
-          message: formatted,
-          canRetryWith36: modelToUse !== 'gemini-3.6-flash'
-        });
+
+      if (isCreatingNewCourse || courseName === 'Novo Curso Acadêmico') {
+        if (extractedCourseName) setCourseName(extractedCourseName);
+        if (extractedShortName) setCourseShortName(extractedShortName);
+      } else if (extractedShortName && selectedCourseId && selectedCourseId !== extractedShortName.toLowerCase()) {
+        setDetectedDifferentCourse({ name: extractedCourseName, shortName: extractedShortName });
       }
-      contentAreaRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-    } finally {
-      setIsExtracting(false);
-      setExtractingStep('');
-      abortControllerRef.current = null;
-      if (fileInputRef.current) fileInputRef.current.value = '';
+
+      if (parsed.title) setScheduleTitle(parsed.title);
+      else if (extractedCourseName) setScheduleTitle(`${extractedCourseName} - Horário 2026.1`);
+
+      const semesterFound = sanitized.find((d: any) => d.semester)?.semester || parsed.semester;
+      if (semesterFound && /^\d{4}\.[12]$/.test(semesterFound)) {
+        setScheduleSemester(semesterFound);
+      } else if (!scheduleSemester || !/^\d{4}\.[12]$/.test(scheduleSemester)) {
+        setScheduleSemester('2026.1');
+      }
+
+      const totalSessions = sanitized.reduce((acc: number, d: any) => acc + (d.sessions?.length || 0), 0);
+      setValidationResult({
+        isValid: true,
+        summary: `Sucesso! ${sanitized.length} turma(s) e ${totalSessions} sessão(ões) de aula validadas e carregadas.`,
+        issues,
+        stats: { count: sanitized.length, sessionsCount: totalSessions }
+      });
+      setSuccessMsg(`Horário carregado com sucesso! ${sanitized.length} turmas estruturadas.`);
+      setReviewTab('table');
+      return;
+    }
+
+    if (currentExtractMode === 'linear') {
+      const rawList = Array.isArray(parsed) ? parsed : (parsed.subjects || parsed.disciplines || parsed.records || []);
+      if (!Array.isArray(rawList) || rawList.length === 0) {
+        setValidationResult({
+          isValid: false,
+          summary: 'Nenhuma disciplina encontrada no JSON do catálogo curricular. Esperado array ou objeto com a chave "subjects".',
+          issues: [{ severity: 'error', record: 'Raiz', field: 'subjects', message: 'Lista vazia ou ausente.' }]
+        });
+        return;
+      }
+
+      const sanitized: CurriculumSubject[] = rawList.map((item: any, idx: number) => {
+        const rawType = item.type ? String(item.type).trim() : (item.academicType || null);
+        const normType = normalizeAcademicType(rawType);
+        return {
+          id: String(item.id || `disciplina_${idx + 1}`),
+          code: item.code ? String(item.code).trim() : null,
+          name: String(item.name || `Disciplina ${idx + 1}`).trim(),
+          type: normType || rawType,
+          period: item.period !== null && item.period !== undefined ? String(item.period) : null,
+          credits: item.credits !== null && item.credits !== undefined && item.credits !== '' ? Number(item.credits) : null,
+          profile: item.profile ? String(item.profile).trim() : undefined,
+          workload: {
+            teorica: item.workload?.teorica !== null && item.workload?.teorica !== undefined && item.workload?.teorica !== '' ? Number(item.workload.teorica) : null,
+            pratica: item.workload?.pratica !== null && item.workload?.pratica !== undefined && item.workload?.pratica !== '' ? Number(item.workload.pratica) : null,
+            extensao: item.workload?.extensao !== null && item.workload?.extensao !== undefined && item.workload?.extensao !== '' ? Number(item.workload.extensao) : null,
+            total: item.workload?.total !== null && item.workload?.total !== undefined && item.workload?.total !== '' ? Number(item.workload.total) : (item.hours ? Number(item.hours) : null)
+          },
+          prerequisites: Array.isArray(item.prerequisites) ? item.prerequisites : [],
+          corequisites: Array.isArray(item.corequisites) ? item.corequisites : [],
+          equivalences: Array.isArray(item.equivalences) ? item.equivalences : [],
+          ementa: item.ementa ? String(item.ementa).trim() : (item.desc ? String(item.desc).trim() : null)
+        };
+      });
+
+      const issues = validateExtraction(sanitized, 'linear');
+      const errors = issues.filter(i => i.severity === 'error');
+
+      if (errors.length > 0) {
+        setValidationResult({
+          isValid: false,
+          summary: `Encontrado(s) ${errors.length} erro(s) crítico(s) no catálogo curricular.`,
+          issues
+        });
+        return;
+      }
+
+      setCurriculumSubjects(sanitized);
+      setExtractedTreeSubjects([]);
+      setExtractedProfile(null);
+      setCourseProfiles([]);
+
+      const extractedCourseName = parsed.courseName || (parsed.title ? cleanCourseTitle(parsed.title) : '');
+      const extractedShortName = parsed.courseShortName || (extractedCourseName ? generateShortName(extractedCourseName) : '');
+      if (isCreatingNewCourse || courseName === 'Novo Curso Acadêmico') {
+        if (extractedCourseName) setCourseName(extractedCourseName);
+        if (extractedShortName) setCourseShortName(extractedShortName);
+      }
+
+      setValidationResult({
+        isValid: true,
+        summary: `Sucesso! ${sanitized.length} disciplina(s) do catálogo curricular carregadas.`,
+        issues,
+        stats: { count: sanitized.length }
+      });
+      setSuccessMsg(`Catálogo Curricular carregado com sucesso! ${sanitized.length} disciplinas mapeadas.`);
+      setReviewTab('table');
+      return;
+    }
+
+    if (currentExtractMode === 'tree') {
+      const rawList = Array.isArray(parsed) ? parsed : (parsed.subjects || parsed.nodes || parsed.records || []);
+      if (!Array.isArray(rawList) || rawList.length === 0) {
+        setValidationResult({
+          isValid: false,
+          summary: 'Nenhum nó/disciplina encontrado para a matriz em árvore. Esperado array ou objeto com a chave "subjects".',
+          issues: [{ severity: 'error', record: 'Raiz', field: 'subjects', message: 'Lista vazia ou ausente.' }]
+        });
+        return;
+      }
+
+      const sanitizedNodes: TreeSubjectNode[] = rawList.map((item: any, idx: number) => {
+        const normAcadType = normalizeAcademicType(item.academicType);
+        return {
+          id: String(item.id || `no_${idx + 1}`),
+          code: item.code ? String(item.code).trim() : null,
+          name: String(item.name || `Disciplina ${idx + 1}`).trim(),
+          period: item.period !== null && item.period !== undefined && item.period !== '' ? Number(item.period) : 1,
+          hours: item.hours ? Number(item.hours) : (item.workload?.total ? Number(item.workload.total) : 60),
+          credits: item.credits !== null && item.credits !== undefined && item.credits !== '' ? Number(item.credits) : undefined,
+          type: (['computacao', 'basico', 'optativa', 'estagio', 'outros'].includes(item.type) ? item.type : 'outros'),
+          academicType: normAcadType || (item.type === 'optativa' ? 'Optativa' : 'Obrigatória'),
+          profile: item.profile ? String(item.profile).trim() : undefined,
+          prereqs: Array.isArray(item.prereqs)
+            ? item.prereqs.map(String)
+            : (Array.isArray(item.prerequisites)
+              ? item.prerequisites.map((p: any) => typeof p === 'string' ? p : (p.id || p.code || ''))
+              : []),
+          desc: item.desc ? String(item.desc).trim() : (item.ementa ? String(item.ementa).trim() : '')
+        };
+      });
+
+      const issues = validateExtraction(sanitizedNodes, 'tree');
+      const errors = issues.filter(i => i.severity === 'error');
+
+      if (errors.length > 0) {
+        setValidationResult({
+          isValid: false,
+          summary: `Encontrado(s) ${errors.length} erro(s) crítico(s) no grafo (ex: ciclos ou nós de pré-requisitos inexistentes).`,
+          issues
+        });
+        return;
+      }
+
+      const rawProfiles = Array.isArray(parsed.profiles) ? parsed.profiles : [];
+      const sanitizedProfiles = rawProfiles.map((p: any) => ({
+        ...p,
+        subjects: sanitizedNodes.filter(s => s.profile === p.id)
+      }));
+
+      setCourseProfiles(sanitizedProfiles);
+      setExtractedProfile(sanitizedProfiles.length > 0 ? sanitizedProfiles[0] : null);
+      setExtractedTreeSubjects(sanitizedNodes);
+
+      const flatMapped = treeToCurriculum(sanitizedNodes, sanitizedProfiles[0]?.id ?? null);
+      setCurriculumSubjects(flatMapped);
+
+      const extractedCourseName = parsed.courseName || '';
+      const extractedShortName = parsed.courseShortName || (extractedCourseName ? generateShortName(extractedCourseName) : '');
+      if (isCreatingNewCourse || courseName === 'Novo Curso Acadêmico') {
+        if (extractedCourseName) setCourseName(extractedCourseName);
+        if (extractedShortName) setCourseShortName(extractedShortName);
+      }
+
+      setValidationResult({
+        isValid: true,
+        summary: `Sucesso! ${sanitizedNodes.length} disciplina(s) em árvore mapeadas com suas dependências.`,
+        issues,
+        stats: { count: sanitizedNodes.length }
+      });
+      setSuccessMsg(`Matriz em Árvore carregada com sucesso! ${sanitizedNodes.length} disciplinas mapeadas.`);
+      setReviewTab('tree');
+      return;
     }
   };
 
@@ -783,6 +714,14 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
   const handleSaveToProject = async () => {
     setErrorMsg(null);
     setSuccessMsg(null);
+
+    const shouldSaveCurriculum = activeMode === 'curriculum';
+    const shouldSaveSchedule = activeMode === 'schedule';
+
+    if (shouldSaveSchedule && disciplines.length && !/^\d{4}\.[12]$/.test(scheduleSemester)) {
+      setErrorMsg('Informe o semestre da grade no formato AAAA.1 ou AAAA.2 antes de salvar.');
+      return;
+    }
 
     const targetId = isCreatingNewCourse 
       ? courseName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
@@ -798,11 +737,14 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
         id: targetId,
         name: courseName,
         shortName: courseShortName || targetId.toUpperCase(),
-        semester: "2026.1"
+        semester: shouldSaveSchedule ? (scheduleSemester || undefined) : undefined
       };
 
-      if (activeMode === 'curriculum' || curriculumSubjects.length > 0 || extractedTreeSubjects.length > 0) {
-        let profilesToSave: CurriculumProfile[] = [...courseProfiles];
+      if (shouldSaveCurriculum) {
+        let profilesToSave: CurriculumProfile[] = courseProfiles.map(profile => ({
+          ...profile,
+          subjects: extractedProfile ? profile.subjects : extractedTreeSubjects.filter(node => node.profile === profile.id)
+        }));
         
         if (extractedProfile && extractedTreeSubjects.length > 0) {
           const profileToSave: CurriculumProfile = {
@@ -817,18 +759,53 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
           }
         }
 
+        // Deduplicate treeSubjects so no ID is ever repeated
+        const allTreeNodes = extractedProfile
+          ? [...profilesToSave.flatMap(p => p.subjects || []), ...extractedTreeSubjects.filter(n => !n.profile)]
+          : extractedTreeSubjects;
+
+        const seenTreeIds = new Set<string>();
+        const uniqueTreeSubjects = allTreeNodes.filter(node => {
+          if (!node.id || seenTreeIds.has(node.id)) return false;
+          seenTreeIds.add(node.id);
+          return true;
+        });
+
         payload.curriculum = {
           export_date: new Date().toISOString(),
           courseName: courseName,
           courseShortName: courseShortName,
           activeProfileId: extractedProfile?.id || (profilesToSave.length > 0 ? profilesToSave[0].id : undefined),
           profiles: profilesToSave.length > 0 ? profilesToSave : undefined,
-          subjects: curriculumSubjects
+          subjects: curriculumSubjects,
+          treeSubjects: uniqueTreeSubjects.length > 0 ? uniqueTreeSubjects : undefined,
+          extraction: extractionReport
         };
       }
 
-      if (activeMode === 'schedule' || disciplines.length > 0) {
+      if (shouldSaveSchedule) {
         payload.schedule = disciplines;
+        if (activeMode === 'schedule') payload.scheduleExtraction = extractionReport;
+      }
+
+      // Pre-save validation of the exact payload being sent
+      const preValidation: ExtractionIssue[] = [];
+      if (payload.schedule) {
+        preValidation.push(...validateExtraction(payload.schedule, 'schedule'));
+      }
+      if (payload.curriculum) {
+        if (payload.curriculum.subjects?.length) {
+          preValidation.push(...validateExtraction(payload.curriculum.subjects, 'linear'));
+        }
+        if (payload.curriculum.treeSubjects?.length) {
+          preValidation.push(...validateExtraction(payload.curriculum.treeSubjects, 'tree'));
+        }
+      }
+      const preErrors = preValidation.filter(issue => issue.severity === 'error');
+      if (preErrors.length > 0) {
+        const msg = preErrors.map(issue => `${issue.record ? `[${issue.record}] ` : ''}${issue.field}: ${issue.message}`).join(' | ');
+        setErrorMsg(`Dados inválidos antes de salvar: ${msg}`);
+        return;
       }
 
       const res = await fetch('/api/courses', {
@@ -838,8 +815,15 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Falha ao salvar curso.");
+        const err = await res.json().catch(() => ({}));
+        let errMsg = err.error || "Falha ao salvar curso.";
+        if (err.issues && Array.isArray(err.issues) && err.issues.length > 0) {
+          const details = err.issues
+            .map((issue: any) => `${issue.record ? `[${issue.record}] ` : ''}${issue.field}: ${issue.message}`)
+            .join(' | ');
+          errMsg = `${errMsg} Detalhes: ${details}`;
+        }
+        throw new Error(errMsg);
       }
 
       setSuccessMsg(`Curso "${courseName}" salvo com sucesso no projeto (em src/data/${targetId}/)!`);
@@ -856,9 +840,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
 
   const handleExportJsonFile = () => {
     const isCurr = activeMode === 'curriculum';
-    const content = isCurr
-      ? JSON.stringify({ export_date: new Date().toISOString(), subjects: curriculumSubjects }, null, 2)
-      : JSON.stringify(disciplines, null, 2);
+    const content = JSON.stringify(jsonData, null, 2);
 
     const filename = isCurr 
       ? `curriculo_${selectedCourseId || 'curso'}.json`
@@ -877,9 +859,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
 
   const handleCopyJson = () => {
     const isCurr = activeMode === 'curriculum';
-    const content = isCurr
-      ? JSON.stringify({ export_date: new Date().toISOString(), subjects: curriculumSubjects }, null, 2)
-      : JSON.stringify(disciplines, null, 2);
+    const content = JSON.stringify(jsonData, null, 2);
 
     navigator.clipboard.writeText(content);
     setCopied(true);
@@ -891,6 +871,8 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
       setErrorMsg("Nenhum horário de disciplina disponível para carregar.");
       return;
     }
+    const errors = validateExtraction(disciplines, 'schedule').filter(issue => issue.severity === 'error');
+    if (errors.length) { setErrorMsg(errors.map(issue => issue.message).join(' ')); return; }
     setDisciplinesList(disciplines);
     setGradeTitle(scheduleTitle || `${courseName} - Horário`);
     localStorage.setItem('saved_disciplinesList', JSON.stringify(disciplines));
@@ -947,8 +929,8 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
     setEditingSchedIndex(index);
     setEditSchedName(disc.name);
     setEditSchedCode(disc.code || '');
-    setEditSchedProfessor(disc.professor || '-');
-    setEditSchedPeriod(disc.period === undefined ? 1 : Number(disc.period));
+    setEditSchedProfessor(disc.professor || '');
+    setEditSchedPeriod(disc.period ?? '');
     setEditSchedProfile(disc.profile || '');
     setEditSchedSessions(disc.sessions ? [...disc.sessions] : []);
     setIsCustomTimeInput(false);
@@ -966,8 +948,8 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
         ...updated[editingSchedIndex],
         code: editSchedCode,
         name: editSchedName,
-        professor: editSchedProfessor,
-        period: Number(editSchedPeriod),
+        professor: editSchedProfessor || null,
+        period: editSchedPeriod === '' ? null : Number(editSchedPeriod),
         profile: editSchedProfile.trim() || undefined,
         sessions: editSchedSessions
       };
@@ -1015,15 +997,16 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
   // Curriculum editing
   const handleStartEditCurriculum = (index: number, sub: CurriculumSubject) => {
     setEditingCurrIndex(index);
-    setEditCurrCode(sub.code);
+    setEditCurrCode(sub.code || '');
     setEditCurrName(sub.name);
-    setEditCurrType(sub.type || 'Obrigatório');
-    setEditCurrPeriod(sub.period ? sub.period.toString() : '1');
+    setEditCurrType(sub.type || '');
+    setEditCurrPeriod(sub.period != null ? String(sub.period) : '');
     setEditCurrProfile(sub.profile || '');
-    setEditCurrCredits(sub.credits || 4);
-    setEditCurrTeorica(sub.workload?.teorica || 60);
-    setEditCurrPratica(sub.workload?.pratica || 0);
-    setEditCurrExtensao(sub.workload?.extensao || 0);
+    setEditCurrCredits(sub.credits ?? '');
+    setEditCurrTeorica(sub.workload?.teorica ?? '');
+    setEditCurrPratica(sub.workload?.pratica ?? '');
+    setEditCurrExtensao(sub.workload?.extensao ?? '');
+    setEditCurrTotal(sub.workload?.total ?? '');
     setEditCurrEmenta(sub.ementa || '');
     setEditCurrPrereqs(sub.prerequisites ? [...sub.prerequisites] : []);
   };
@@ -1032,23 +1015,23 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
     if (editingCurrIndex === null) return;
     setCurriculumSubjects(prev => {
       const updated = [...prev];
-      const total = Number(editCurrTeorica) + Number(editCurrPratica) + Number(editCurrExtensao);
+      const total = editCurrTotal === '' ? null : Number(editCurrTotal);
       updated[editingCurrIndex] = {
         ...updated[editingCurrIndex],
-        code: editCurrCode,
+        code: editCurrCode.trim() || null,
         name: editCurrName,
-        type: editCurrType,
-        period: editCurrPeriod,
+        type: editCurrType || null,
+        period: editCurrPeriod || null,
         profile: editCurrProfile.trim() || undefined,
-        credits: Number(editCurrCredits),
+        credits: editCurrCredits === '' ? null : Number(editCurrCredits),
         workload: {
-          teorica: Number(editCurrTeorica),
-          pratica: Number(editCurrPratica),
-          extensao: Number(editCurrExtensao),
+          teorica: editCurrTeorica === '' ? null : Number(editCurrTeorica),
+          pratica: editCurrPratica === '' ? null : Number(editCurrPratica),
+          extensao: editCurrExtensao === '' ? null : Number(editCurrExtensao),
           total
         },
-        prerequisites: editCurrPrereqs,
-        ementa: editCurrEmenta
+        prerequisites: editCurrPrereqs.length ? editCurrPrereqs : updated[editingCurrIndex].prerequisites == null ? null : [],
+        ementa: editCurrEmenta || null
       };
       return updated;
     });
@@ -1078,7 +1061,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
       period: '1',
       profile: filterProfile !== 'all' ? filterProfile : undefined,
       credits: 4,
-      workload: { teorica: 60, pratica: 0, extensao: 0, total: 60 },
+      workload: { teorica: 60, pratica: 0, extensao: 0, semipresencialEad: 0, total: 60 },
       prerequisites: [],
       ementa: 'Descrição dos conteúdos programáticos.'
     };
@@ -1089,7 +1072,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
   // Tree Subject Node Editing
   const handleStartEditTreeNode = (index: number, node: TreeSubjectNode) => {
     setEditingTreeNodeIndex(index);
-    setEditTreeNode({ ...node, prereqs: [...(node.prereqs || [])] });
+    setEditTreeNode({ ...node, prereqs: node.prereqs == null ? null : [...node.prereqs] });
     setNewPrereqSelect('');
   };
 
@@ -1103,25 +1086,14 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
 
     // Also sync with flat curriculum subjects
     setCurriculumSubjects(prev => {
-      const idx = prev.findIndex(s => s.code === editTreeNode.code || s.name === editTreeNode.name || s.id === editTreeNode.id);
+      const idx = prev.findIndex(s => s.id === editTreeNode.id || (!s.id && s.profile === editTreeNode.profile && s.code && s.code === editTreeNode.code));
       if (idx > -1) {
         const updated = [...prev];
         updated[idx] = {
           ...updated[idx],
           id: editTreeNode.id,
-          code: editTreeNode.code || editTreeNode.id.toUpperCase(),
-          name: editTreeNode.name,
-          period: editTreeNode.period > 0 ? String(editTreeNode.period) : 'Optativa',
-          type: editTreeNode.type === 'optativa' ? 'Optativa' : 'Obrigatório',
-          credits: Math.round(editTreeNode.hours / 15),
-          workload: {
-            teorica: editTreeNode.hours,
-            pratica: 0,
-            extensao: 0,
-            total: editTreeNode.hours
-          },
-          prerequisites: editTreeNode.prereqs.map(p => ({ code: p, name: p })),
-          ementa: editTreeNode.desc || ''
+          ...treeToCurriculum(extractedTreeSubjects.map(n => n.id === editTreeNode.id ? editTreeNode : n), editTreeNode.profile ?? extractedProfile?.id ?? null)
+            .find(n => n.id === editTreeNode.id)
         };
         return updated;
       }
@@ -1136,7 +1108,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
     const nodeToDelete = extractedTreeSubjects[index];
     setExtractedTreeSubjects(prev => prev.filter((_, i) => i !== index));
     if (nodeToDelete) {
-      setCurriculumSubjects(prev => prev.filter(s => s.code !== nodeToDelete.code && s.name !== nodeToDelete.name && s.id !== nodeToDelete.id));
+      setCurriculumSubjects(prev => prev.filter(s => s.id !== nodeToDelete.id));
     }
   };
 
@@ -1157,10 +1129,10 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
   };
 
   const handleAddPrereqToTreeNode = (targetCodeOrId: string) => {
-    if (!editTreeNode || !targetCodeOrId || editTreeNode.prereqs.includes(targetCodeOrId)) return;
+    if (!editTreeNode || !targetCodeOrId || (editTreeNode.prereqs || []).includes(targetCodeOrId)) return;
     setEditTreeNode({
       ...editTreeNode,
-      prereqs: [...editTreeNode.prereqs, targetCodeOrId]
+      prereqs: [...(editTreeNode.prereqs || []), targetCodeOrId]
     });
     setNewPrereqSelect('');
   };
@@ -1169,7 +1141,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
     if (!editTreeNode) return;
     setEditTreeNode({
       ...editTreeNode,
-      prereqs: editTreeNode.prereqs.filter(p => p !== targetCodeOrId)
+      prereqs: (editTreeNode.prereqs || []).filter(p => p !== targetCodeOrId)
     });
   };
 
@@ -1269,8 +1241,8 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
       const matchPeriod = filterPeriod === 'all' || sub.period?.toString() === filterPeriod;
       const matchProfile = filterProfile === 'all' || sub.profile === filterProfile || (!sub.profile && filterProfile === 'Sem Perfil');
       const matchSearch = !searchFilter || 
-        sub.name.toLowerCase().includes(searchFilter.toLowerCase()) || 
-        sub.code.toLowerCase().includes(searchFilter.toLowerCase()) ||
+        (sub.name || '').toLowerCase().includes(searchFilter.toLowerCase()) ||
+        (sub.code || '').toLowerCase().includes(searchFilter.toLowerCase()) ||
         (sub.profile && sub.profile.toLowerCase().includes(searchFilter.toLowerCase()));
       return matchPeriod && matchProfile && matchSearch;
     });
@@ -1281,9 +1253,9 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
       const matchPeriod = filterPeriod === 'all' || disc.period?.toString() === filterPeriod;
       const matchProfile = filterProfile === 'all' || disc.profile === filterProfile || (!disc.profile && filterProfile === 'Sem Perfil');
       const matchSearch = !searchFilter || 
-        disc.name.toLowerCase().includes(searchFilter.toLowerCase()) || 
+        (disc.name || '').toLowerCase().includes(searchFilter.toLowerCase()) ||
         (disc.code && disc.code.toLowerCase().includes(searchFilter.toLowerCase())) ||
-        disc.professor.toLowerCase().includes(searchFilter.toLowerCase()) ||
+        (disc.professor || '').toLowerCase().includes(searchFilter.toLowerCase()) ||
         (disc.profile && disc.profile.toLowerCase().includes(searchFilter.toLowerCase()));
       return matchPeriod && matchProfile && matchSearch;
     });
@@ -1291,143 +1263,15 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
 
   return (
     <div className="h-[100dvh] bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col overflow-hidden font-sans">
-      
-      {/* Hidden file input strictly outside clickable containers */}
+      {/* Input de arquivo JSON para importação direta */}
       <input 
-        ref={fileInputRef}
+        ref={jsonFileInputRef}
         type="file" 
-        multiple
-        accept={activeMode === 'curriculum' ? ".pdf,image/png,image/jpeg,image/webp,application/pdf" : ".pdf,application/pdf"}
-        onChange={handleFileSelect}
+        accept=".json,application/json"
+        onChange={handleUploadJsonFile}
         onClick={(e) => e.stopPropagation()}
         className="hidden" 
       />
-
-      {/* MODAL 0: ACTIVE AI EXTRACTION PROGRESS OVERLAY */}
-      {isExtracting && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-8 flex flex-col items-center text-center space-y-5 animate-in zoom-in-95 duration-150">
-            {/* Pulsing Icon */}
-            <div className="relative flex items-center justify-center">
-              <div className="w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-950/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                <BrainCircuit className="w-8 h-8 animate-pulse" />
-              </div>
-              <span className="absolute -bottom-1 -right-1 flex h-5 w-5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-5 w-5 bg-indigo-600 items-center justify-center text-[10px] text-white font-bold">
-                  ⚡
-                </span>
-              </span>
-            </div>
-
-            {/* Title & Status */}
-            <div className="space-y-2">
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
-                Processando Documento com IA
-              </h3>
-              <p className="text-xs sm:text-sm text-indigo-600 dark:text-indigo-400 font-medium min-h-[20px] animate-pulse">
-                {extractingStep || `Conectando ao modelo ${selectedModel}...`}
-              </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
-                {activeMode === 'curriculum' 
-                  ? 'Mapeando catálogo de matérias, ementas e cargas horárias.'
-                  : 'Analisando turmas, professores, salas e alocações de horários.'}
-              </p>
-            </div>
-
-            {/* Stopwatch & Info */}
-            <div className="w-full bg-slate-50 dark:bg-slate-800/60 rounded-xl p-3 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 dark:text-slate-300">
-              <div className="flex items-center gap-1.5 font-mono">
-                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                <span>⏱️ {extractingSeconds}s decorridos</span>
-              </div>
-              <span className="font-mono text-[11px] bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-700 dark:text-slate-200">
-                {selectedModel}
-              </span>
-            </div>
-
-            {/* Cancel Button */}
-            <button
-              type="button"
-              onClick={handleCancelExtraction}
-              className="w-full py-2.5 px-4 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 dark:bg-slate-800 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 dark:hover:border-rose-800/50 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2"
-            >
-              <X className="w-4 h-4" />
-              <span>Cancelar Requisição</span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL: AI EXTRACTION ERROR DIALOG */}
-      {aiErrorModal && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-150"
-          onClick={() => setAiErrorModal(null)}
-        >
-          <div 
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 sm:p-7 flex flex-col space-y-5 animate-in zoom-in-95 duration-150"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="flex items-start gap-3.5">
-              <div className="p-2.5 bg-rose-100 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 rounded-xl shrink-0">
-                <AlertCircle className="w-6 h-6" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
-                  {aiErrorModal.title}
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Modelo solicitado: <span className="font-mono font-semibold text-slate-700 dark:text-slate-300">{selectedModel}</span>
-                </p>
-              </div>
-            </div>
-
-            {/* Error Body */}
-            <div className="bg-rose-50/70 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 rounded-xl p-4 text-xs text-rose-900 dark:text-rose-200 leading-relaxed space-y-2">
-              <p>{aiErrorModal.message}</p>
-              {aiErrorModal.canRetryWith36 && (
-                <div className="pt-2 border-t border-rose-200/60 dark:border-rose-900/40 text-[11px] text-rose-700 dark:text-rose-300 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                  <span>Dica: O <strong>Gemini 3.6 Flash</strong> está 100% operacional sem fila de espera.</span>
-                </div>
-              )}
-            </div>
-
-            {/* Actions */}
-            <div className="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-2">
-              <button
-                type="button"
-                onClick={() => setAiErrorModal(null)}
-                className="w-full sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold transition-all cursor-pointer"
-              >
-                Fechar
-              </button>
-
-              {aiErrorModal.canRetryWith36 && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedModel('gemini-3.6-flash');
-                    setAiErrorModal(null);
-                    if (lastExtractionPayloadRef.current) {
-                      executeAiExtraction({
-                        ...lastExtractionPayloadRef.current,
-                        overrideModel: 'gemini-3.6-flash'
-                      });
-                    }
-                  }}
-                  className="w-full sm:w-auto px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>Trocar para Gemini 3.6 Flash e Tentar Novamente</span>
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* MODAL 1: EDIT CURRICULUM SUBJECT */}
       {editingCurrIndex !== null && (
@@ -1495,6 +1339,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                     onChange={(e) => setEditCurrPeriod(e.target.value)}
                     className="w-full p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 focus:outline-none focus:border-indigo-500 cursor-pointer"
                   >
+                    <option value="">Não informado</option>
                     {Array.from({ length: 11 }, (_, i) => (
                       <option key={i + 1} value={(i + 1).toString()}>{i + 1}º Período</option>
                     ))}
@@ -1522,6 +1367,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                     onChange={(e) => setEditCurrType(e.target.value)}
                     className="w-full p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 focus:outline-none cursor-pointer"
                   >
+                    <option value="">Não informado</option>
                     <option value="Obrigatório">Obrigatório</option>
                     <option value="Optativa">Optativa</option>
                   </select>
@@ -1532,7 +1378,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                     type="number"
                     min={1}
                     value={editCurrCredits}
-                    onChange={(e) => setEditCurrCredits(Number(e.target.value))}
+                    onChange={(e) => setEditCurrCredits(e.target.value === '' ? '' : Number(e.target.value))}
                     className="w-full p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 focus:outline-none"
                   />
                 </div>
@@ -1542,7 +1388,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                     type="number"
                     min={0}
                     value={editCurrTeorica}
-                    onChange={(e) => setEditCurrTeorica(Number(e.target.value))}
+                    onChange={(e) => setEditCurrTeorica(e.target.value === '' ? '' : Number(e.target.value))}
                     className="w-full p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 focus:outline-none"
                   />
                 </div>
@@ -1552,7 +1398,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                     type="number"
                     min={0}
                     value={editCurrPratica}
-                    onChange={(e) => setEditCurrPratica(Number(e.target.value))}
+                    onChange={(e) => setEditCurrPratica(e.target.value === '' ? '' : Number(e.target.value))}
                     className="w-full p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 focus:outline-none"
                   />
                 </div>
@@ -1562,7 +1408,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                     type="number"
                     min={0}
                     value={editCurrExtensao}
-                    onChange={(e) => setEditCurrExtensao(Number(e.target.value))}
+                    onChange={(e) => setEditCurrExtensao(e.target.value === '' ? '' : Number(e.target.value))}
                     className="w-full p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 focus:outline-none"
                   />
                 </div>
@@ -1570,9 +1416,11 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
 
               {/* Total C.H. Badge */}
               <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 text-xs">
-                <span className="text-slate-500 font-medium">Carga Horária Total Calculada:</span>
+                <span className="text-slate-500 font-medium">Carga Horária Total Informada:</span>
                 <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">
-                  {Number(editCurrTeorica) + Number(editCurrPratica) + Number(editCurrExtensao)} horas
+                  <input aria-label="Carga horária total informada" type="number" min={0} value={editCurrTotal}
+                    onChange={e => setEditCurrTotal(e.target.value === '' ? '' : Number(e.target.value))}
+                    className="w-24 p-1 rounded border dark:bg-slate-800" /> horas
                 </span>
               </div>
 
@@ -1727,9 +1575,10 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                   <label className="block text-[11px] font-bold text-slate-500 uppercase mb-1">Período</label>
                   <select
                     value={editSchedPeriod}
-                    onChange={(e) => setEditSchedPeriod(Number(e.target.value))}
+                    onChange={(e) => setEditSchedPeriod(e.target.value === '' ? '' : Number(e.target.value))}
                     className="w-full p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 focus:outline-none focus:border-indigo-500 cursor-pointer"
                   >
+                    <option value="">Não informado</option>
                     {Array.from({ length: 11 }, (_, i) => (
                       <option key={i} value={i}>{i === 0 ? "Optativa" : `${i}º Período`}</option>
                     ))}
@@ -1949,10 +1798,11 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                 <div>
                   <label className="block text-[11px] font-bold text-slate-500 uppercase mb-1">Período</label>
                   <select
-                    value={editTreeNode.period}
-                    onChange={(e) => setEditTreeNode({ ...editTreeNode, period: Number(e.target.value) })}
+                    value={editTreeNode.period ?? ''}
+                    onChange={(e) => setEditTreeNode({ ...editTreeNode, period: e.target.value === '' ? null : Number(e.target.value) })}
                     className="w-full p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 focus:outline-none cursor-pointer"
                   >
+                    <option value="">Não informado</option>
                     {Array.from({ length: 10 }, (_, i) => (
                       <option key={i + 1} value={i + 1}>{i + 1}º Período</option>
                     ))}
@@ -1966,8 +1816,8 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                     type="number"
                     min={15}
                     step={15}
-                    value={editTreeNode.hours}
-                    onChange={(e) => setEditTreeNode({ ...editTreeNode, hours: Number(e.target.value) })}
+                    value={editTreeNode.hours ?? ''}
+                    onChange={(e) => setEditTreeNode({ ...editTreeNode, hours: e.target.value === '' ? null : Number(e.target.value) })}
                     className="w-full p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 font-mono focus:outline-none"
                   />
                 </div>
@@ -1991,16 +1841,16 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
               {/* Prerequisites Manager */}
               <div className="space-y-2 pt-1">
                 <label className="block text-[11px] font-bold text-slate-500 uppercase">
-                  Pré-requisitos Necessários ({editTreeNode.prereqs.length})
+                  Pré-requisitos Necessários ({(editTreeNode.prereqs || []).length})
                 </label>
                 
                 <div className="flex flex-wrap gap-1.5 p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl min-h-[44px] items-center">
-                  {editTreeNode.prereqs.length === 0 ? (
+                  {(editTreeNode.prereqs || []).length === 0 ? (
                     <span className="text-[11px] text-slate-400 italic">
                       Nenhum pré-requisito (Disciplina de fluxo de entrada).
                     </span>
                   ) : (
-                    editTreeNode.prereqs.map((prereqId, pidx) => {
+                    (editTreeNode.prereqs || []).map((prereqId, pidx) => {
                       const matchedNode = extractedTreeSubjects.find(s => s.id === prereqId || s.code === prereqId);
                       const displayTitle = matchedNode ? `${matchedNode.code || matchedNode.id} - ${matchedNode.name}` : prereqId;
                       return (
@@ -2037,10 +1887,10 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                   >
                     <option value="">+ Selecionar disciplina existente como pré-requisito...</option>
                     {extractedTreeSubjects
-                      .filter(s => s.id !== editTreeNode.id && s.code !== editTreeNode.code && !editTreeNode.prereqs.includes(s.code || s.id))
+                      .filter(s => s.id !== editTreeNode.id && s.profile === editTreeNode.profile && !(editTreeNode.prereqs || []).includes(s.id))
                       .sort((a, b) => (a.period || 0) - (b.period || 0))
                       .map(s => (
-                        <option key={s.id} value={s.code || s.id}>
+                        <option key={s.id} value={s.id}>
                           {s.period ? `${s.period}ºP: ` : 'Opt: '}{s.code || s.id} - {s.name}
                         </option>
                       ))}
@@ -2159,8 +2009,8 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                   <input
                     type="number"
                     min={0}
-                    value={editProfileMeta.totalHours}
-                    onChange={(e) => setEditProfileMeta({ ...editProfileMeta, totalHours: Number(e.target.value) })}
+                    value={editProfileMeta.totalHours ?? ''}
+                    onChange={(e) => setEditProfileMeta({ ...editProfileMeta, totalHours: e.target.value === '' ? null : Number(e.target.value) })}
                     className="w-full p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 font-mono font-bold focus:outline-none"
                   />
                 </div>
@@ -2169,8 +2019,8 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                   <input
                     type="number"
                     min={0}
-                    value={editProfileMeta.acexHours}
-                    onChange={(e) => setEditProfileMeta({ ...editProfileMeta, acexHours: Number(e.target.value) })}
+                    value={editProfileMeta.acexHours ?? ''}
+                    onChange={(e) => setEditProfileMeta({ ...editProfileMeta, acexHours: e.target.value === '' ? null : Number(e.target.value) })}
                     className="w-full p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 font-mono focus:outline-none"
                   />
                 </div>
@@ -2179,8 +2029,8 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                   <input
                     type="number"
                     min={0}
-                    value={editProfileMeta.accHours}
-                    onChange={(e) => setEditProfileMeta({ ...editProfileMeta, accHours: Number(e.target.value) })}
+                    value={editProfileMeta.accHours ?? ''}
+                    onChange={(e) => setEditProfileMeta({ ...editProfileMeta, accHours: e.target.value === '' ? null : Number(e.target.value) })}
                     className="w-full p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 font-mono focus:outline-none"
                   />
                 </div>
@@ -2189,8 +2039,8 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                   <input
                     type="number"
                     min={0}
-                    value={editProfileMeta.optativeHours}
-                    onChange={(e) => setEditProfileMeta({ ...editProfileMeta, optativeHours: Number(e.target.value) })}
+                    value={editProfileMeta.optativeHours ?? ''}
+                    onChange={(e) => setEditProfileMeta({ ...editProfileMeta, optativeHours: e.target.value === '' ? null : Number(e.target.value) })}
                     className="w-full p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 font-mono focus:outline-none"
                   />
                 </div>
@@ -2339,6 +2189,46 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
       {/* Main Content Area */}
       <div ref={contentAreaRef} className="flex-1 overflow-y-auto p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-6 pb-24">
 
+        {extractionReport && (
+          <section className="rounded-xl border border-amber-300 bg-amber-50 dark:bg-slate-900 p-4 space-y-3 text-sm">
+            <h3 className="font-bold">Conferência da extração</h3>
+            <p>{extractionReport.sources.length} fontes · {extractionReport.issues.length} pendências. Campos não informados permanecem vazios.</p>
+            {!!extractionReport.calls?.length && <details className="mt-2">
+              <summary className="cursor-pointer">Modelos utilizados · {extractionReport.calls.length} chamadas</summary>
+              <ul className="text-xs space-y-1 mt-2">{extractionReport.calls.map((call, index) => <li key={index}>
+                {call.stage} · {call.model} · tentativa {call.attempt} · {(call.durationMs / 1000).toFixed(1)}s · {call.status}
+              </li>)}</ul>
+            </details>}
+            <details>
+              <summary className="cursor-pointer font-semibold">Pendências e divergências</summary>
+              <ul className="list-disc pl-5 max-h-72 overflow-auto space-y-2 mt-2">
+                {extractionReport.issues.map((issue, i) => <li key={i}><strong>{issue.record} / {issue.field}:</strong> {issue.message}</li>)}
+              </ul>
+            </details>
+            <details>
+              <summary className="cursor-pointer font-semibold">Evidências por disciplina</summary>
+              <div className="max-h-96 overflow-auto space-y-3 mt-2">
+                {(activeMode === 'schedule' ? disciplines : curriculumSubjects).map(record => (
+                  <div key={record.id || record.code || record.name}>
+                    <strong>{record.name || 'Nome não informado'}</strong>
+                    {(record.evidence || []).map((e, i) => <p key={i} className="text-xs mt-1"><strong>{e.field}</strong> — {e.file}{e.page != null ? ', página ' + e.page : ''}: “{e.excerpt}”</p>)}
+                  </div>
+                ))}
+                {(extractionReport.metadataEvidence || []).map((e, i) => <p key={'metadata-' + i} className="text-xs"><strong>Perfil / {e.field}</strong> — {e.file}{e.page != null ? ', página ' + e.page : ''}: “{e.excerpt}”</p>)}
+              </div>
+            </details>
+            <p className="text-xs">As referências foram indicadas pela IA e devem ser conferidas no documento original.</p>
+          </section>
+        )}
+
+        {activeMode === 'schedule' && disciplines.length > 0 && (
+          <label className="flex items-center gap-3 text-sm">
+            Semestre da grade
+            <input aria-label="Semestre da grade" value={scheduleSemester} placeholder="AAAA.1 ou AAAA.2"
+              onChange={e => setScheduleSemester(e.target.value)} className="rounded border p-2 dark:bg-slate-800" />
+          </label>
+        )}
+
         {/* Notifications */}
         {errorMsg && (
           <div className="bg-rose-50 dark:bg-rose-950/20 border-l-4 border-rose-500 p-3.5 rounded-r-lg flex items-start gap-3 shadow-xs">
@@ -2346,12 +2236,12 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
             <div className="space-y-1">
               <h4 className="font-bold text-rose-900 dark:text-rose-200 text-xs sm:text-sm">Configuração ou Execução</h4>
               <p className="text-xs text-rose-800 dark:text-rose-300">{errorMsg}</p>
-              {errorMsg.includes('GEMINI_API_KEY') && (
+              {(errorMsg.includes('NVIDIA_API_KEY') || errorMsg.includes('MOONSHOT_API_KEY') || errorMsg.includes('OPENROUTER_API_KEY') || errorMsg.includes('GEMINI_API_KEY')) && (
                 <div className="mt-2 text-xs text-slate-700 dark:text-slate-300 bg-white/70 dark:bg-slate-900/60 p-2.5 rounded border border-rose-200 dark:border-rose-900/50 space-y-1">
                   <div className="font-semibold text-rose-700 dark:text-rose-400">Como resolver:</div>
-                  <div>1. Obtenha sua chave gratuita em: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-indigo-600 dark:text-indigo-400 underline font-semibold">Google AI Studio</a></div>
+                  <div>1. Obtenha sua chave em: <a href="https://openrouter.ai/settings/keys" target="_blank" rel="noreferrer" className="text-indigo-600 dark:text-indigo-400 underline font-semibold">OpenRouter</a></div>
                   <div>2. Abra o arquivo <code className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded font-mono text-[11px]">.env</code> na raiz do projeto e configure:</div>
-                  <pre className="p-1.5 bg-slate-900 text-emerald-400 rounded font-mono text-[11px]">GEMINI_API_KEY=sua_chave_aqui</pre>
+                  <pre className="p-1.5 bg-slate-900 text-emerald-400 rounded font-mono text-[11px]">OPENROUTER_API_KEY=sua_chave_aqui</pre>
                   <div>3. Reinicie o servidor com <code className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded font-mono text-[11px]">npm run dev</code>.</div>
                 </div>
               )}
@@ -2390,6 +2280,10 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                   setIsCreatingNewCourse(true);
                   setCourseName(detectedDifferentCourse.name);
                   setCourseShortName(detectedDifferentCourse.shortName);
+                  setCurriculumSubjects([]);
+                  setExtractedTreeSubjects([]);
+                  setCourseProfiles([]);
+                  setExtractedProfile(null);
                   setDetectedDifferentCourse(null);
                 }}
                 className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-xs cursor-pointer shadow-xs transition-colors"
@@ -2407,6 +2301,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
           </div>
         )}
 
+        <div className="space-y-6 min-w-0">
         {/* SECTION 1: Course Selection & Workspace Definition */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-xs">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -2426,7 +2321,12 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                         setCourseName('Novo Curso Acadêmico');
                         setCourseShortName('NOVO');
                         setCurriculumSubjects([]);
+                        setExtractedTreeSubjects([]);
+                        setCourseProfiles([]);
+                        setExtractedProfile(null);
                         setDisciplines([]);
+                        setValidationResult(null);
+                        setPastedJsonText('');
                       } else {
                         setSelectedCourseId(e.target.value);
                       }
@@ -2438,7 +2338,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                         {c.name} ({c.shortName})
                       </option>
                     ))}
-                    <option value="__new__">+ Cadastrar Novo Curso com IA...</option>
+                    <option value="__new__">+ Cadastrar Novo Curso...</option>
                   </select>
 
                   {isLoadingCourse && <Loader2 className="w-4 h-4 text-indigo-500 animate-spin" />}
@@ -2534,49 +2434,42 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
           </div>
         </div>
 
-        {/* SECTION 2: AI Extraction Ingestion Pipeline */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs space-y-4">
+        {/* Importação com IA via Prompt & JSON */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <div className="p-2 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-lg">
                 <BrainCircuit className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-slate-50">
-                  Importador com Inteligência Artificial (Google Gemini)
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-slate-50">
+                    Importação com IA via Prompt & JSON
+                  </h3>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
+                    {currentPrompt.badge}
+                  </span>
+                </div>
                 <p className="text-xs text-slate-400">
-                  {activeMode === 'curriculum' 
-                    ? 'Extração do Projeto Pedagógico do Curso (PPC), matriz de disciplinas e ementas'
-                    : 'Extração de qualquer PDF de horário com turmas, dias da semana e fatias de aula'}
+                  {currentPrompt.shortDescription}
                 </p>
               </div>
             </div>
 
-            {/* Gemini Model Selector with verified stable options */}
-            <div className="flex items-center gap-2 text-xs">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-              <select
-                value={selectedModel}
-                onChange={(e) => setSelectedModel(e.target.value)}
-                className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md py-1 px-2 text-xs text-slate-700 dark:text-slate-300 font-medium cursor-pointer"
-              >
-                <option value="gemini-3.8-flash">Gemini 3.8 Flash (Padrão)</option>
-                <option value="gemini-3.7-flash">Gemini 3.7 Flash</option>
-                <option value="gemini-3.6-flash">Gemini 3.6 Flash (Mais Rápido & Estável)</option>
-                <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro Preview</option>
-                <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite</option>
-                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-              </select>
+            <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+              <span>Modelos recomendados: <strong className="text-slate-700 dark:text-slate-200">{currentPrompt.recommendedModels}</strong></span>
             </div>
           </div>
 
-          {/* Curriculum Extraction Type Selector (Tree vs Linear) */}
+          {/* Submodo para Catálogo Curricular (Árvore vs Linear) */}
           {activeMode === 'curriculum' && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              <div 
+              <button
+                type="button"
+                aria-pressed={curriculumExtractType === 'tree'}
                 onClick={() => setCurriculumExtractType('tree')}
-                className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 ${
+                className={`text-left p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 ${
                   curriculumExtractType === 'tree'
                     ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-500/80 shadow-xs'
                     : 'bg-slate-50/60 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 hover:border-slate-300'
@@ -2595,18 +2488,20 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                       🌳 Matriz em Árvore & Pré-Requisitos
                     </span>
                     <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300">
-                      Multimodal
+                      Grafo
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
-                    Grafo 1º-9º período, setas de dependência, ACEx, ACC, optativas e suporte a perfis curriculares (PDF + Imagem).
+                    Extração do fluxograma em formato de grafo com dependências e perfis curriculares.
                   </p>
                 </div>
-              </div>
+              </button>
 
-              <div 
+              <button
+                type="button"
+                aria-pressed={curriculumExtractType === 'linear'}
                 onClick={() => setCurriculumExtractType('linear')}
-                className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 ${
+                className={`text-left p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 ${
                   curriculumExtractType === 'linear'
                     ? 'bg-indigo-50/70 dark:bg-indigo-950/30 border-indigo-500/80 shadow-xs'
                     : 'bg-slate-50/60 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 hover:border-slate-300'
@@ -2626,257 +2521,232 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
-                    Extração direta tabular de disciplinas com ementas completas e cargas horárias sem montagem de árvore.
+                    Catálogo completo de disciplinas com ementas literais, cargas horárias e créditos.
                   </p>
                 </div>
-              </div>
+              </button>
             </div>
           )}
 
-          {/* Toggle between Upload Files and Raw Text Input */}
-          <div className="flex items-center gap-4 text-xs font-semibold pt-1">
-            <button
-              type="button"
-              onClick={() => setInputMode('pdf')}
-              className={`pb-1 border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
-                inputMode === 'pdf' 
-                  ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400 font-bold'
-                  : 'border-transparent text-slate-400 hover:text-slate-600'
-              }`}
-            >
-              <UploadCloud className="w-4 h-4" />
-              <span>
-                Upload de Arquivos (PDF / Imagens)
-                {selectedFiles.length > 0 && (
-                  <span className="ml-1.5 px-1.5 py-0.2 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold">
-                    {selectedFiles.length}
-                  </span>
-                )}
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setInputMode('text')}
-              className={`pb-1 border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
-                inputMode === 'text' 
-                  ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400 font-bold'
-                  : 'border-transparent text-slate-400 hover:text-slate-600'
-              }`}
-            >
-              <FileText className="w-4 h-4" />
-              <span>Colar Texto / Ementas / Tabelas</span>
-            </button>
-          </div>
-
-          {/* Multi-file Upload / Drag & Drop Area */}
-          {inputMode === 'pdf' ? (
-            <div className="space-y-3">
-              {selectedFiles.length > 0 ? (
-                <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 bg-slate-50/50 dark:bg-slate-900/30 space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
-                    <div className="flex items-center gap-2">
-                      <div className="p-1.5 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-lg">
-                        <Layers className="w-4 h-4" />
-                      </div>
-                      <span className="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-200">
-                        Arquivos Anexados para Análise ({selectedFiles.length})
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={isExtracting}
-                        className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 rounded-lg transition-colors cursor-pointer"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                        <span>Adicionar Mais</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleClearSelectedFiles}
-                        disabled={isExtracting}
-                        className="px-2.5 py-1 text-xs font-medium text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
-                      >
-                        Limpar
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Files Grid Chips */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
-                    {selectedFiles.map((file, idx) => {
-                      const isPdf = file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf';
-                      const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-                      const sizeKb = Math.round(file.size / 1024);
-                      const displaySize = file.size > 1024 * 1024 ? `${sizeMb} MB` : `${sizeKb} KB`;
-
-                      return (
-                        <div 
-                          key={idx}
-                          className="flex items-center justify-between gap-2 p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xs group"
-                        >
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <div className={`p-2 rounded-lg shrink-0 ${
-                              isPdf 
-                                ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400' 
-                                : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400'
-                            }`}>
-                              {isPdf ? <FileText className="w-4 h-4" /> : <ImageIcon className="w-4 h-4" />}
-                            </div>
-                            <div className="min-w-0">
-                              <p className="font-semibold text-xs text-slate-800 dark:text-slate-200 truncate" title={file.name}>
-                                {file.name}
-                              </p>
-                              <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
-                                <span>{displaySize}</span>
-                                <span>•</span>
-                                <span className={`font-semibold uppercase ${isPdf ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
-                                  {isPdf ? 'PDF PPC' : 'Imagem Fluxo'}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveSelectedFile(idx)}
-                            disabled={isExtracting}
-                            className="p-1 text-slate-400 hover:text-rose-500 rounded-md transition-colors cursor-pointer shrink-0"
-                            title="Remover este arquivo"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Multimodal Hint */}
-                  {activeMode === 'curriculum' && curriculumExtractType === 'tree' && (
-                    <div className="bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/60 rounded-xl p-3 text-xs text-indigo-900 dark:text-indigo-300 flex items-start gap-2.5">
-                      <Sparkles className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
-                      <div className="space-y-0.5">
-                        <span className="font-bold">Ingestão Multimodal Inteligente:</span>
-                        <p className="text-[11px] text-indigo-800 dark:text-indigo-400 leading-relaxed">
-                          Ao anexar o PDF do Projeto Pedagógico (PPC) com a tabela de códigos e a Imagem do Fluxograma (com as setas visuais), o modelo Google Gemini correlacionará ambos os arquivos para mapear o fluxo 1º ao 9º período e todas as dependências com máxima precisão.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Extraction Trigger Button */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-                    <span className="text-xs text-slate-400">
-                      Modelo ativo: <strong className="text-slate-600 dark:text-slate-300">{selectedModel}</strong>
-                    </span>
-
-                    <button
-                      type="button"
-                      disabled={isExtracting}
-                      onClick={() => executeAiExtraction({ files: selectedFiles })}
-                      className="flex items-center justify-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer"
-                    >
-                      {isExtracting ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          <span>Processando Documentos...</span>
-                        </>
-                      ) : (
-                        <>
-                          <BrainCircuit className="w-4 h-4" />
-                          <span>
-                            {activeMode === 'curriculum' 
-                              ? (curriculumExtractType === 'tree'
-                                  ? `Extrair Matriz em Árvore com IA (${selectedFiles.length} ${selectedFiles.length === 1 ? 'arquivo' : 'arquivos'})`
-                                  : `Extrair Catálogo Linear com IA (${selectedFiles.length} ${selectedFiles.length === 1 ? 'arquivo' : 'arquivos'})`)
-                              : `Extrair Horários com IA (${selectedFiles.length} ${selectedFiles.length === 1 ? 'arquivo' : 'arquivos'})`}
-                          </span>
-                        </>
-                      )}
-                    </button>
-                  </div>
+          {/* PASSO 1: COPIAR O PROMPT */}
+          <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-4 bg-slate-50/70 dark:bg-slate-950/40 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
+                  1
                 </div>
-              ) : (
-                <div
-                  onDragEnter={handleDrag}
-                  onDragOver={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDrop={handleDrop}
-                  onClick={() => {
-                    if (!isExtracting) fileInputRef.current?.click();
-                  }}
-                  className={`border-2 border-dashed rounded-xl p-8 text-center flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${
-                    dragActive 
-                      ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20' 
-                      : 'border-slate-200 dark:border-slate-800 bg-slate-50 hover:bg-slate-100/50 dark:bg-slate-950 dark:hover:bg-slate-900/60'
-                  }`}
-                >
-                  <div className="flex items-center gap-2 p-3 bg-indigo-100 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-full">
-                    <UploadCloud className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-slate-700 dark:text-slate-300 text-sm">
-                      {activeMode === 'curriculum'
-                        ? (curriculumExtractType === 'tree'
-                            ? 'Solte aqui os arquivos da Matriz (PDF do PPC e/ou Imagem do Fluxograma)'
-                            : 'Solte o PDF do PPC / Catálogo de Disciplinas aqui')
-                        : 'Solte o PDF de Horário Letivo Semestral aqui'}
-                    </p>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      ou clique aqui para selecionar arquivos do computador (permite anexar múltiplos)
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        fileInputRef.current?.click();
-                      }}
-                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-all shadow-xs cursor-pointer"
-                    >
-                      Selecionar Arquivos (PDF / Imagens)
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-3 text-[11px] text-slate-400 pt-1">
-                    <span>Formatos suportados: <strong>PDF, PNG, JPG, WEBP</strong></span>
-                    <span>•</span>
-                    <span>Multi-arquivo habilitado</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <textarea
-                rows={5}
-                placeholder={
-                  activeMode === 'curriculum'
-                    ? "Cole aqui as ementas, nomes de disciplinas, cargas horárias e pré-requisitos copiados do documento..."
-                    : "Cole aqui as linhas ou tabelas de horários, turmas, professores e salas..."
-                }
-                value={rawTextInput}
-                onChange={(e) => setRawTextInput(e.target.value)}
-                className="w-full text-xs font-mono p-3 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500"
-              />
-              <div className="flex justify-end">
+                <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100">
+                  Copiar Prompt Especializado de Extração
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  disabled={isExtracting || !rawTextInput.trim()}
-                  onClick={() => executeAiExtraction({ text: rawTextInput })}
-                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
+                  onClick={() => setIsPromptExpanded(!isPromptExpanded)}
+                  className="px-2.5 py-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 flex items-center gap-1 transition-colors cursor-pointer"
                 >
-                  {isExtracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                  <span>Extrair com Inteligência Artificial</span>
+                  {isPromptExpanded ? (
+                    <>
+                      <span>Ocultar Texto</span>
+                      <ChevronUp className="w-3.5 h-3.5" />
+                    </>
+                  ) : (
+                    <>
+                      <span>Ver Prompt</span>
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleCopyPrompt}
+                  className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold transition-all shadow-xs cursor-pointer ${
+                    copyFeedback
+                      ? 'bg-emerald-600 text-white shadow-emerald-500/20'
+                      : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/20'
+                  }`}
+                >
+                  {copyFeedback ? (
+                    <>
+                      <CheckCheck className="w-4 h-4" />
+                      <span>Prompt Copiado!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      <span>Copiar Prompt ({currentPrompt.badge})</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
-          )}
+
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+              💡 <strong>Como usar:</strong> Copie este prompt, cole no seu chat de IA (Google AI Studio, ChatGPT, Claude ou Gemini) e anexe o arquivo PDF/imagem ou o texto da tabela. Em seguida, copie o JSON gerado e cole no <strong>Passo 2</strong> abaixo.
+            </p>
+
+            {isPromptExpanded && (
+              <div className="relative mt-2">
+                <pre className="text-[11px] font-mono p-3.5 bg-slate-900 text-slate-100 dark:bg-black rounded-lg max-h-56 overflow-y-auto whitespace-pre-wrap leading-relaxed border border-slate-700">
+                  {currentPrompt.promptText}
+                </pre>
+              </div>
+            )}
+          </div>
+
+          {/* PASSO 2: COLAR O JSON */}
+          <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-4 bg-slate-50/70 dark:bg-slate-950/40 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
+                  2
+                </div>
+                <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100">
+                  Colar o JSON Gerado pela IA
+                </span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePasteFromClipboard}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold transition-all cursor-pointer shadow-2xs"
+                  title="Colar direto da área de transferência"
+                >
+                  <Clipboard className="w-3.5 h-3.5 text-indigo-500" />
+                  <span>Colar da Área de Transferência</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => jsonFileInputRef.current?.click()}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold transition-all cursor-pointer shadow-2xs"
+                  title="Carregar arquivo .json do computador"
+                >
+                  <FileJson className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>Carregar Arquivo .json</span>
+                </button>
+
+                {pastedJsonText.trim() && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPastedJsonText('');
+                      setValidationResult(null);
+                    }}
+                    className="px-2.5 py-1.5 text-xs font-medium text-slate-400 hover:text-rose-500 transition-colors cursor-pointer"
+                  >
+                    Limpar
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <textarea
+              rows={6}
+              value={pastedJsonText}
+              onChange={(e) => {
+                setPastedJsonText(e.target.value);
+                if (validationResult) setValidationResult(null);
+              }}
+              placeholder={
+                activeMode === 'schedule'
+                  ? '[\n  {\n    "id": "turma_001",\n    "code": "CCMP3057",\n    "name": "Introdução à Programação (Turma 1)",\n    "professor": "Nome do Docente",\n    "period": 1,\n    "sessions": [\n      { "day": 1, "time": "18:30 - 20:10" }\n    ]\n  }\n]'
+                  : '{\n  "courseName": "Nome do Curso",\n  "subjects": [\n    {\n      "id": "disciplina_001",\n      "code": "CCMP3057",\n      "name": "Algoritmos e Estrutura de Dados",\n      ...\n    }\n  ]\n}'
+              }
+              className="w-full text-xs font-mono p-3 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500 leading-relaxed shadow-2xs"
+            />
+          </div>
+
+          {/* PASSO 3: VALIDAR E APLICAR */}
+          <div className="space-y-3 pt-1">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
+                  3
+                </div>
+                <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100">
+                  Validação e Carregamento dos Dados
+                </span>
+              </div>
+
+              <button
+                type="button"
+                disabled={!pastedJsonText.trim()}
+                onClick={() => handleValidateAndApplyJson()}
+                className="flex items-center justify-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer"
+              >
+                <CheckCircle className="w-4 h-4" />
+                <span>Validar e Aplicar JSON</span>
+              </button>
+            </div>
+
+            {/* Painel de Feedback da Validação */}
+            {validationResult && (
+              <div className={`p-4 rounded-xl border text-xs space-y-2.5 animate-in fade-in duration-150 ${
+                validationResult.isValid
+                  ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200'
+                  : 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-200'
+              }`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-start gap-2">
+                    {validationResult.isValid ? (
+                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                    )}
+                    <div>
+                      <span className="font-bold">{validationResult.summary}</span>
+                      {validationResult.stats && (
+                        <p className="text-[11px] opacity-90 mt-0.5">
+                          Total de registros: <strong>{validationResult.stats.count}</strong>
+                          {validationResult.stats.sessionsCount !== undefined && (
+                            <> • Sessões de aula: <strong>{validationResult.stats.sessionsCount}</strong></>
+                          )}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {validationResult.isValid && (
+                    <button
+                      type="button"
+                      onClick={handleSaveToProject}
+                      className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-all shadow-xs cursor-pointer"
+                      title="Salvar imediatamente no projeto"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Salvar no Projeto</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Avisos não-bloqueantes ou Erros detalhados */}
+                {validationResult.issues.length > 0 && (
+                  <div className="mt-2 pt-2 border-t border-emerald-200 dark:border-emerald-800/60 space-y-1 max-h-40 overflow-y-auto">
+                    <span className="font-semibold text-[11px] uppercase tracking-wider block">
+                      {validationResult.isValid ? 'Avisos da validação (dados ausentes/opcionais):' : 'Erros encontrados:'}
+                    </span>
+                    <ul className="list-disc pl-4 space-y-1 text-[11px]">
+                      {validationResult.issues.map((issue, idx) => (
+                        <li key={idx} className={issue.severity === 'error' ? 'text-rose-700 dark:text-rose-300 font-medium' : 'text-amber-800 dark:text-amber-300'}>
+                          <strong>{issue.record} ({issue.field}):</strong> {issue.message}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
         </div>
 
         {/* SECTION 3: Review & Manipulation (Table, Visual Grid, JSON) */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs">
+        <div ref={resultRef} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs">
           
           <div className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/40 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-2">
@@ -3085,7 +2955,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                               </td>
                               <td className="py-3 px-3">
                                 <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded font-medium text-[10px]">
-                                  {sub.period ? `${sub.period}º Período` : 'Optativa'}
+                                  {sub.period == null ? 'Não informado' : sub.period === 'Optativa' || sub.period === 0 ? 'Optativa' : `${sub.period}º Período`}
                                 </span>
                               </td>
                               <td className="py-3 px-3">
@@ -3098,7 +2968,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                                 </span>
                               </td>
                               <td className="py-3 px-3 text-slate-600 dark:text-slate-300">
-                                {sub.workload?.total || 60}h ({sub.credits || 4} cr)
+                                {sub.workload?.total ?? '—'}h ({sub.credits ?? '—'} cr)
                               </td>
                               <td className="py-3 px-3 text-slate-500">
                                 {sub.prerequisites && sub.prerequisites.length > 0 ? (
@@ -3175,7 +3045,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                               </td>
                               <td className="py-3 px-3">
                                 <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded font-medium text-[10px]">
-                                  {disc.period === 0 ? 'Optativa' : `${disc.period}º Período`}
+                                  {disc.period == null ? 'Não informado' : disc.period === 0 ? 'Optativa' : `${disc.period}º Período`}
                                 </span>
                               </td>
                               <td className="py-3 px-3 text-slate-600 dark:text-slate-300">
@@ -3297,7 +3167,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                     <div className="p-2.5 bg-white dark:bg-slate-800/80 rounded-lg border border-slate-200/80 dark:border-slate-700/80">
                       <div className="text-[10px] uppercase font-bold text-slate-400">Total do Curso</div>
                       <div className="text-sm font-bold text-slate-900 dark:text-slate-100 font-mono mt-0.5">
-                        {extractedProfile.totalHours}h
+                        {extractedProfile.totalHours ?? '—'}h
                       </div>
                       <div className="text-[10px] text-slate-400">Vigência: {extractedProfile.validFromSemester || '2026.1'}</div>
                     </div>
@@ -3305,7 +3175,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                     <div className="p-2.5 bg-white dark:bg-slate-800/80 rounded-lg border border-slate-200/80 dark:border-slate-700/80">
                       <div className="text-[10px] uppercase font-bold text-indigo-500">Obrigatórias</div>
                       <div className="text-sm font-bold text-indigo-600 dark:text-indigo-400 font-mono mt-0.5">
-                        {extractedProfile.mandatoryHours || (extractedProfile.totalHours - (extractedProfile.acexHours + extractedProfile.accHours + extractedProfile.optativeHours))}h
+                        {extractedProfile.mandatoryHours ?? '—'}h
                       </div>
                       <div className="text-[10px] text-slate-400">Módulos compulsórios</div>
                     </div>
@@ -3313,7 +3183,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                     <div className="p-2.5 bg-white dark:bg-slate-800/80 rounded-lg border border-slate-200/80 dark:border-slate-700/80">
                       <div className="text-[10px] uppercase font-bold text-amber-500">Extensão (ACEx)</div>
                       <div className="text-sm font-bold text-amber-600 dark:text-amber-400 font-mono mt-0.5">
-                        {extractedProfile.acexHours}h
+                        {extractedProfile.acexHours ?? '—'}h
                       </div>
                       <div className="text-[10px] text-slate-400">Extensão universitária</div>
                     </div>
@@ -3321,7 +3191,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                     <div className="p-2.5 bg-white dark:bg-slate-800/80 rounded-lg border border-slate-200/80 dark:border-slate-700/80">
                       <div className="text-[10px] uppercase font-bold text-sky-500">Compl. (ACC)</div>
                       <div className="text-sm font-bold text-sky-600 dark:text-sky-400 font-mono mt-0.5">
-                        {extractedProfile.accHours}h
+                        {extractedProfile.accHours ?? '—'}h
                       </div>
                       <div className="text-[10px] text-slate-400">Atividades acadêmicas</div>
                     </div>
@@ -3329,7 +3199,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                     <div className="p-2.5 bg-white dark:bg-slate-800/80 rounded-lg border border-slate-200/80 dark:border-slate-700/80">
                       <div className="text-[10px] uppercase font-bold text-emerald-500">Optativas</div>
                       <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">
-                        {extractedProfile.optativeHours}h
+                        {extractedProfile.optativeHours ?? '—'}h
                       </div>
                       <div className="text-[10px] text-slate-400">Carga optativa mín.</div>
                     </div>
@@ -3443,13 +3313,13 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {Array.from({ length: 10 }, (_, i) => i)
+                  {[...new Set<number | null>(extractedTreeSubjects.map(s => s.period ?? null))].sort((a, b) => (a ?? 999) - (b ?? 999))
                     .filter(periodNum => selectedTreePeriod === 'all' || selectedTreePeriod === periodNum)
                     .map(periodNum => {
                       const subjectsInPeriod = extractedTreeSubjects.filter(s => {
-                        const matchesPeriod = s.period === periodNum;
+                        const matchesPeriod = (s.period ?? null) === periodNum;
                         const matchesSearch = !treeSearch || 
-                          s.name.toLowerCase().includes(treeSearch.toLowerCase()) || 
+                          (s.name || '').toLowerCase().includes(treeSearch.toLowerCase()) ||
                           (s.code && s.code.toLowerCase().includes(treeSearch.toLowerCase())) ||
                           s.id.toLowerCase().includes(treeSearch.toLowerCase());
                         return matchesPeriod && matchesSearch;
@@ -3468,7 +3338,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                             <div className="flex items-center gap-2">
                               <span className="font-black text-xs sm:text-sm text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                                 <span className={`w-2.5 h-2.5 rounded-full ${periodNum === 0 ? 'bg-amber-500' : 'bg-emerald-500'}`} />
-                                {periodNum === 0 ? 'Disciplinas Optativas' : `${periodNum}º Período`}
+                                {periodNum == null ? 'Período não informado' : periodNum === 0 ? 'Disciplinas Optativas' : `${periodNum}º Período`}
                               </span>
                               <span className="text-[11px] text-slate-400 font-medium">
                                 ({subjectsInPeriod.length} {subjectsInPeriod.length === 1 ? 'matéria' : 'matérias'} • {periodHours} horas)
@@ -3510,7 +3380,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                                           {node.code || node.id}
                                         </span>
                                         <span className="px-1.5 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300">
-                                          {node.hours}h
+                                          {node.hours ?? '—'}h
                                         </span>
                                       </div>
 
@@ -3527,19 +3397,19 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
                                     {/* Prerequisites List Chips */}
                                     <div className="space-y-1 pt-1">
                                       <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-                                        <span>Pré-requisitos ({node.prereqs.length})</span>
-                                        {node.prereqs.length === 0 && (
+                                        <span>Pré-requisitos ({(node.prereqs || []).length})</span>
+                                        {node.prereqs != null && node.prereqs.length === 0 && (
                                           <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-normal">Entrada</span>
                                         )}
                                       </div>
 
-                                      {node.prereqs.length === 0 ? (
+                                      {(node.prereqs || []).length === 0 ? (
                                         <div className="text-[11px] text-slate-400 italic">
-                                          Sem pré-requisitos
+                                          {node.prereqs == null ? 'Pré-requisitos não informados' : 'Sem pré-requisitos'}
                                         </div>
                                       ) : (
                                         <div className="flex flex-wrap gap-1">
-                                          {node.prereqs.map((prereqCode, pidx) => {
+                                          {(node.prereqs || []).map((prereqCode, pidx) => {
                                             const targetNode = extractedTreeSubjects.find(s => s.id === prereqCode || s.code === prereqCode);
                                             return (
                                               <span

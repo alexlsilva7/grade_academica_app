@@ -9,7 +9,7 @@ export function hasDisciplineDetails(discipline: Discipline): boolean {
   // Find subject details in JSON by code or name
   const subjectDetails = discipline.code 
     ? bccData.subjects.find(s => s.code === discipline.code) 
-    : bccData.subjects.find(s => s.name.toLowerCase() === discipline.name.toLowerCase());
+    : bccData.subjects.find(s => (s.name || '').toLowerCase() === (discipline.name || '').toLowerCase());
 
   const possibleCodes = [
     discipline.code,
@@ -22,7 +22,7 @@ export function hasDisciplineDetails(discipline: Discipline): boolean {
   const finalConteudoDetails = conteudosData.disciplinas.find(d => 
     normalizedPossibleCodes.includes(normalizeCode(d.codigo))
   ) || conteudosData.disciplinas.find(d => 
-    d.nome.toLowerCase() === discipline.name.toLowerCase()
+    d.nome.toLowerCase() === (discipline.name || '').toLowerCase()
   );
 
   return !!(subjectDetails || finalConteudoDetails);

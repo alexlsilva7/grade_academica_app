@@ -9,7 +9,7 @@ import { MobileNav } from './components/MobileNav';
 import { DisciplineDetailsModal } from './components/DisciplineDetailsModal';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { Navbar } from './components/Navbar';
-import { isProduction } from './utils/domain';
+import { canAccessAdmin } from './utils/domain';
 
 export default function App() {
   const scheduleProps = useSchedule();
@@ -39,7 +39,7 @@ export default function App() {
           selectedProfile={scheduleProps.selectedProfile}
           setSelectedProfile={scheduleProps.setSelectedProfile}
         />
-      ) : (scheduleProps.view === 'admin' && !isProduction()) ? (
+      ) : (scheduleProps.view === 'admin' && canAccessAdmin()) ? (
         <AdminView
           setView={scheduleProps.setView}
           setDisciplinesList={scheduleProps.setDisciplinesList}

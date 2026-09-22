@@ -1,0 +1,344 @@
+=== PAGINA 1 ===
+Quadro 1 - Componentes curriculares do curso de Medicina Veterinária da UFAPE – Novo Perfil MVET03
+MATRIZ CURRICULAR
+Período: 1º
+CARGA HORÁRIA
+CÓDIGO NOME TEÓRICA PRÁTICA TOTAL PRÉ-REQUISITO EQUIVALÊNCIA
+PCC EAD
+(h) (h) (h)
+MVET0001 Anatomia Descritiva dos Animais 45 60 --- --- 105 --- MORF3003
+Domésticos
+MVET0002 Genética 45 15 --- --- 60 --- GENT3001;
+GENT3002;
+ZTCO0041
+MVET0003 Bioquímica e Biofísica Veterinária 60 15 --- --- 75 --- BIOQ3002;
+BIOF3001
+MVET0004 Química Veterinária 30 15 --- --- 45 --- QUIM3002;
+QUIM3003
+MVET0005 Introdução à Medicina Veterinária 30 0 --- --- 30 --- ---
+MVET0006 Sociologia Rural 30 0 --- --- 30 --- SOCL3001
+ZTC00036
+SOCL3002
+MVET0007 Economia 30 0 --- --- 30 --- ECON3001
+RURL3002
+Atividades Complementares --- --- ---
+Carga horária total 375
+1
+
+=== PAGINA 2 ===
+Período: 2º
+CARGA HORÁRIA
+CÓDIGO NOME TEÓRICA PRÁTICA TOTAL PRÉ-REQUISITO EQUIVALÊNCIA
+PCC EAD
+(h) (h) (h)
+MVET0008 Anatomia Topográfica dos Animais 45 60 --- --- 105 Anatomia Descritiva dos MORF3004
+Domésticos Animais Domésticos
+MVET0009 Microbiologia Básica 45 15 --- --- 60 Bioquímica e Biofísica MICR3001;
+Veterinária ZTC00044;
+EAL00040
+MVET0010 Ética e Deontologia Veterinária 30 0 --- --- 30 --- ---
+MVET0011 Fundamentos de Ecologia 60 0 --- --- 60 Bioquímica e Biofísica ECOL3001
+Veterinária
+MVET0012 Bioestatística Computacional e 15 30 --- --- 45 --- PRBE3001
+Bioinformática
+MVET0013 Extensão Rural 30 15 45 --- AGRO3001;
+ZTCO0032;
+AGRO3024
+Optativa I 30 0 30 --- ---
+Atividades Complementares --- --- ---
+Carga horária total 375
+2
+
+=== PAGINA 3 ===
+Período: 3º
+CARGA HORÁRIA
+CÓDIGO NOME TEÓRICA PRÁTICA TOTAL PRÉ-REQUISITO EQUIVALÊNCIA
+PCC EAD
+(h) (h) (h)
+MVET0014 Fisiologia Veterinária Básica 60 0 --- --- 60 Anatomia Topográfica dos FISL3003
+Animais Domésticos
+MVET0015 Parasitologia Veterinária 45 15 --- --- 60 --- PARS3001
+MVET0016 Imunologia Veterinária 45 0 --- --- 45 Microbiologia Básica IMUN3001
+MVET0017 Histologia e Embriologia Veterinária 45 30 --- --- 75 Anatomia Topográfica dos MORF3005 +
+Animais Domésticos MORF3006
+MVET0018 Bioestatística Experimental 45 0 --- --- 45 Bioestatística PRBE3002;
+Computacional e ZTC00047
+Bioinformática
+MVET0019 Forragicultura 30 15 --- --- 45 Microbiologia Básica ZOOT3007
+ZTC00048
+MVET0020 Administração Rural 45 0 --- --- 45 Economia RURL3001
+Atividades Complementares --- --- ---
+Carga horária total 375
+3
+
+=== PAGINA 4 ===
+Período: 4º
+CARGA HORÁRIA
+CÓDIGO NOME TEÓRICA PRÁTICA TOTAL PRÉ-REQUISITO EQUIVALÊNCIA
+PCC EAD
+(h) (h) (h)
+MVET0021 Fisiologia Veterinária Especial 60 0 --- --- 60 Fisiologia Veterinária FISL3004
+Básica
+MVET0022 Farmacologia Veterinária 45 15 --- --- 60 Bioquímica e Biofísica FAMC3001
+Veterinária; Fisiologia
+Veterinária Básica
+MVET0023 Patologia Clínica Veterinária 60 15 --- --- 75 Fisiologia Veterinária VETR3007
+Básica; Parasitologia
+Veterinária
+Imunologia Veterinária
+MVET0024 Diagnóstico por Imagem em 45 15 --- --- 60 Fisiologia Veterinária ---
+Medicina Veterinária Básica
+MVET0025 Nutrição Animal 60 0 --- --- 60 Forragicultura ZOOT3006
+MVET0026 Microbiologia dos Alimentos de 45 15 --- --- 60 Microbiologia Básica ALIM3003
+Origem Animal
+Atividades Complementares --- --- ---
+Carga horária total 375
+4
+
+=== PAGINA 5 ===
+Período: 5º
+CARGA HORÁRIA
+CÓDIGO NOME TEÓRICA PRÁTICA TOTAL PRÉ-REQUISITO EQUIVALÊNCIA
+PCC EAD
+(h) (h) (h)
+MVET0027 Patologia Geral e Técnica de 45 30 --- --- 75 Fisiologia Veterinária VETR3022
+Necrópsia dos Animais Domésticos Especial
+MVET0028 Epidemiologia Veterinária 45 0 --- --- 45 Bioestatística VETR3015
+Experimental
+MVET0029 Semiologia Veterinária de Pequenos 30 15 --- --- 45 Fisiologia Veterinária VETR3001
+Animais Especial
+MVET0030 Semiologia Veterinária de 30 15 --- --- 45 Fisiologia Veterinária ---
+Ruminantes e Equídeos Especial
+MVET0031 Bovinocultura 30 15 --- --- 45 Forragicultura; Fisiologia ZOOT3005
+Veterinária Especial;
+Nutrição Animal
+MVET0032 Tecnologia dos Alimentos de Origem 60 15 --- --- 75 Microbiologia dos ALIM3001 +
+Animal Alimentos de Origem ALIM3002
+Animal
+MVET0045 Melhoramento Genético Animal 45 0 --- --- 45 Genética; Bioestatística ZOOT3002
+Experimental ZOOT3008
+Atividades Complementares --- --- ---
+Carga horária total 375
+5
+
+=== PAGINA 6 ===
+Período: 6º
+CARGA HORÁRIA
+CÓDIGO NOME TEÓRICA PRÁTICA TOTAL PRÉ-REQUISITO EQUIVALÊNCIA
+PCC EAD
+(h) (h) (h)
+MVET0033 Patologia Especial dos 75 15 --- --- 90 Patologia Geral e Técnica de Necrópsia dos VETR3021
+Animais Domésticos Animais Domésticos
+MVET0034 Higiene Veterinária e Saúde 45 0 --- --- 45 Epidemiologia Veterinária VETR3012
+Pública
+MVET0035 Anestesiologia Veterinária 45 15 --- --- 60 Fisiologia Veterinária Especial; Farmacologia ---
+Veterinária
+MVET0036 Terapêutica Veterinária 60 0 --- --- 60 Farmacologia Veterinária; Patologia Clínica VETR3010
+Veterinária; Semiologia Veterinária de
+Pequenos Animais; Semiologia Veterinária de
+Ruminantes e Equídeos
+MVET0037 Avicultura 45 15 --- --- 60 Fisiologia Veterinária Especial; Nutrição ZOOT3003 +
+Animal ZOOT3004
+MVET0038 Técnica Cirúrgica Veterinária 15 45 --- --- 60 Patologia Geral e Técnica de Necrópsia dos VETR3009
+Animais Domésticos; Semiologia Veterinária
+de Pequenos Animais; Semiologia veterinária
+de Ruminantes e Equídeos
+Atividades Complementares --- --- ---
+Carga horária total 375
+6
+
+=== PAGINA 7 ===
+Período: 7º
+CARGA HORÁRIA PRÉ-REQUISITO EQUIVALÊNCIA
+CÓDIGO NOME TEÓRICA PRÁTICA TOTAL
+PCC EAD
+(h) (h) (h)
+MVET0039 Doenças Infecciosas dos 90 0 --- --- 90 Patologia Especial dos Animais Domésticos; VETR3018 +
+Mamíferos Domésticos Higiene Veterinária e Saúde Pública VETR3013
+MVET0040 Doenças Parasitárias dos 45 0 --- --- 45 Parasitologia Veterinária; Patologia Especial VETR3014
+Animais Domésticos dos Animais Domésticos
+MVET0041 Clínica Médica de Caninos e 45 15 --- --- 60 Diagnóstico por Imagem em Medicina VETR3004
+Felinos Veterinária; Semiologia Veterinária de
+Pequenos Animais; Patologia Especial dos
+Animais Domésticos; Terapêutica Veterinária
+MVET0042 Clínica Médica dos 45 30 --- --- 75 Diagnóstico por Imagem em Medicina VETR3006
+Ruminantes Veterinária; Semiologia Veterinária de
+Ruminantes e Equídeos; Patologia Especial dos
+Animais Domésticos; Terapêutica Veterinária
+MVET0043 Clínica Médica de Equídeos 30 15 --- --- 45 Diagnóstico por Imagem em Medicina VETR3005
+Veterinária; Semiologia Veterinária de
+Ruminantes e Equídeos; Patologia Especial dos
+Animais Domésticos; Terapêutica Veterinária
+MVET0044 Andrologia e Biotecnologia 45 15 --- --- 60 Patologia Especial dos Animais Domésticos VETR3024
+da Reprodução
+Atividades Complementares --- --- ---
+Carga horária total 375
+7
+
+=== PAGINA 8 ===
+Período: 8º
+CARGA HORÁRIA PRÉ-REQUISITO EQUIVALÊNCIA
+CÓDIGO NOME
+TEÓRICA (h) PRÁTICA (h) PCC EAD TOTAL (h)
+MVET0046 Ginecologia e Obstetrícia 45 15 --- --- 60 Doenças Infecciosas dos Mamíferos VETR3025 +
+Veterinária Domésticos; Doenças Parasitárias dos VETR3023
+Mamíferos Domésticos; Clínica Médica de
+Caninos e Felinos; Clínica Médica dos
+Ruminantes; Clínica Médica de Equídeos
+MVET0047 Doenças Carenciais e 30 15 --- --- 45 Clínica Médica dos Ruminantes VETR3011
+Metabólica dos Ruminantes
+MVET0048 Clínica Cirúrgica Veterinária 30 30 --- --- 60 Anestesiologia Veterinária; Técnica VETR3003
+de Pequenos Animais Cirúrgica Veterinária; Clínica Médica de
+Caninos e Felinos
+MVET0049 Clínica Cirúrgica Veterinária 15 15 --- --- 30 Anestesiologia Veterinária; Técnica ---
+de Ruminantes e Equídeos Cirúrgica Veterinária; Clínica Médica dos
+Ruminantes; Clínica Médica dos Equídeos
+MVET0050 Sanidade Avícola 30 15 --- --- 45 Epidemiologia Veterinária; Patologia VETR3020
+Especial dos Animais Domésticos;
+Avicultura
+MVET0051 Inspeção dos Alimentos de 75 15 --- --- 90 Microbiologia dos Alimentos de Origem VETR3016 +
+Origem Animal Animal; Tecnologia dos Alimentos de VETR3017
+Origem Animal; Doenças Infecciosas dos
+Mamíferos Domésticos; Doenças
+Parasitárias dos Mamíferos Domésticos
+Optativa II 30 15 --- --- 45 --- ---
+Atividades Complementares --- --- ---
+Carga horária total 375
+8
+
+=== PAGINA 9 ===
+Período: 9º
+CARGA HORÁRIA
+CÓDIGO NOME TEÓRICA PRÁTICA TOTAL PRÉ-REQUISITO EQUIVALÊNCIA
+PCC EAD
+(h) (h) (h)
+MVET0052 Estágio Supervisionado 0 300 --- --- 300 Ter pago todas as unidades
+Obrigatório I – ESO I curriculares obrigatórias e
+optativas do 1° ao 8° período do
+curso, Atividades Curriculares
+Complementares – ACC e
+Atividades Curriculares de
+Extensão - ACEX.
+MVET0053 Trabalho de Conclusão de 30 0 --- --- 30 Ter pago todas as unidades ---
+Curso - TCC curriculares obrigatórias e
+optativas do 1° ao 8° período do
+curso, Atividades Curriculares
+Complementares – ACC e
+Atividades Curriculares de
+Extensão - ACEX.
+Atividades Complementares --- --- ---
+Carga horária total 330
+9
+
+=== PAGINA 10 ===
+Período: 10º
+CARGA HORÁRIA
+CÓDIGO NOME TEÓRICA PRÁTICA TOTAL PRÉ-REQUISITO EQUIVALÊNCIA
+PCC EAD
+(h) (h) (h)
+MVET0054 Estágio Supervisionado 0 330 --- --- 330 Estágio Supervisionado ---
+Obrigatório II – ESO II Obrigatório I – ESO I e Educação
+Física A
+Atividades Complementares --- --- ---
+Carga horária total 330
+COMPLEMENTOS:
+1. Atividades Curriculares Complementares (ACC) - Componente curricular que deve ser realizado entre o primeiro ao sétimo período
+do curso;
+2. Atividades Curriculares de Extensão (ACEX) - Componente curricular que deve ser realizado entre o primeiro ao oitavo período do
+curso;
+3. Educação Física A - Componente curricular que pode ser cursado entre o primeiro ao oitavo período do curso;
+4. Exame Nacional de Desempenho de Estudantes (ENADE) – É um requisito indispensável para a integralização do curso.
+10
+
+=== PAGINA 11 ===
+Quadro 8 - Componentes curriculares optativos da UFAPE – Novo Perfil MVET03.
+COMPONENTES CURRICULARES OPTATIVOS
+ÁREA/EIXO:
+CARGA HORÁRIA
+CÓDIGO NOME TEÓRICA PRÁTICA SEMI- TOTAL PRÉ-REQUISITO EQUIVALÊNCIA
+PCC
+(h) (h) PRESENCIAL/EAD (h)
+MVET0055 Biologia Molecular Aplicada à Medicina 30 15 --- --- 45 Microbiologia dos UAG00077
+Veterinária Alimentos de
+Origem Animal
+Epidemiologia
+Veterinária
+MVET0056 Biossegurança e Gestão de Resíduos 30 0 --- --- 30 Fisiologia UAG00219
+Veterinária
+Especial
+MVET0057 Bioterismo 30 15 --- --- 45 Anestesiologia ---
+Veterinária
+Patologia Especial
+dos Animais
+Domésticos
+MVET0058 Caprinocultura e Ovinocultura 45 --- --- --- 45 Fisiologia
+Veterinária
+Especial ---
+Forragicultura
+Nutrição Animal
+11
+
+=== PAGINA 12 ===
+MVET0059 Clínica Médica de Animais Silvestres e 30 15 --- --- 45 Doenças UAG00081
+Exóticos Infecciosas dos
+Mamíferos
+Domésticos
+MVET0060 Comportamento e Bem-Estar Animal 30 15 --- --- 45 Fisiologia --
+Veterinária Básica
+MVET0061 Dor e Analgesia em Medicina Veterinária 30 15 --- --- 45 Farmacologia ---
+Veterinária
+Anestesiologia
+Veterinária
+UAG0O232 Educação das Relações Étnico-Raciais I 30 30 --- --- 60 --- LET00039
+EAL00064 Empreendedorismo 30 15 --- --- 45 --- ADM00020
+BCC00003
+ZTC00001
+MVET0062 Equideocultura 45 --- --- --- 45 Fisiologia
+Veterinária
+Especial ---
+Forragicultura
+Nutrição Animal
+FISL3001 Filosofia da Ciência e Ética 45 0 --- --- 45 --- ---
+ECON3002 Fundamentos de Economia Rural 45 0 --- --- 45 --- ---
+MVET0063 Gestão Ambiental Aplicada à Medicina 30 0 --- --- 30 Tecnologia dos VETR3027
+Veterinária Alimentos de
+Origem Animal
+12
+
+=== PAGINA 13 ===
+MVET0064 Gestão de Qualidade em Alimentos 45 0 --- --- 45 Tecnologia dos ---
+Alimentos de
+Origem Animal
+MVET0065 Introdução à Extensão Universitária 30 0 --- --- 30 --- ---
+MVET0066 Introdução à Inteligência Artificial Aplicada 15 30 --- --- 45 Bioestatística ---
+à Medicina Veterinária Computacional e
+Bioinformática
+Bioestatística
+Experimental
+LET00018 LIBRAS 45 15 --- --- 60 Não Existe UAG00254
+MVET0067 Medicina Veterinária Legal 30 0 --- --- 30 Patologia Especial VETR3019
+dos Animais
+Domésticos
+MVET0068 Metodologia Científica 30 0 --- --- 30 --- ---
+ZOOT3034 Ornitologia 45 15 --- ---
+MVET0069 Plantas Tóxicas para Ruminantes 30 15 --- --- 45 Semiologia ---
+Veterinária de
+Ruminantes e
+Equídeos
+MVET0070 Suinocultura 30 15 --- --- 45 Fisiologia ---
+Veterinária
+Especial
+Nutrição Animal
+13
+
+=== PAGINA 14 ===
+MVET0071 Toxicologia Veterinária 30 15 --- --- 45 Patologia Especial ---
+dos Animais
+Domésticos
+Terapêutica
+Veterinária
+MVET0072 Zoologia Aplicada à Medicina Veterinária 30 15 --- --- 45 --- ---
+14
+
+=== PAGINA 15 ===
+Figura 2 - Representação Gráfica da Matriz Curricular do Curso de Bacharelado em Medicina Veterinária da UFAPE – Perfil MVET03 (2026.1).

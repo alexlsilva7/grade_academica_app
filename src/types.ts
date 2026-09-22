@@ -11,65 +11,79 @@ export interface Session {
   time: TimeSlot;
 }
 
-export interface Discipline {
+export interface SourceMetadata {
+  evidence?: import('./utils/extraction').Evidence[];
+  courseName?: string | null;
+  semester?: string | null;
+  classGroup?: string | null;
+}
+
+export interface Discipline extends SourceMetadata {
   id: string;
-  code?: string;
+  code?: string | null;
   name: string;
-  professor: string;
-  period: number;
-  profile?: string;
+  professor: string | null;
+  period: number | null;
+  profile?: string | null;
   sessions: Session[];
 }
 
 export interface Workload {
-  teorica: number;
-  pratica: number;
-  extensao: number;
-  total: number;
+  teorica: number | null;
+  pratica: number | null;
+  extensao: number | null;
+  semipresencialEad: number | null;
+  total: number | null;
 }
 
 export interface Prerequisite {
-  code: string;
-  name: string;
-}
-
-export interface CurriculumSubject {
+  code: string | null;
+  name: string | null;
   id?: string;
-  code: string;
-  name: string;
-  type: string;
-  period: string | number;
-  profile?: string;
-  credits?: number;
-  workload: Workload;
-  prerequisites?: Prerequisite[];
-  corequisites?: Prerequisite[];
-  equivalences?: Prerequisite[];
-  ementa: string;
 }
 
-export interface TreeSubjectNode {
-  id: string;
-  code?: string;
+export interface CurriculumSubject extends SourceMetadata {
+  id?: string;
+  code: string | null;
   name: string;
-  period: number;
-  hours: number;
+  type: string | null;
+  period: string | number | null;
+  profile?: string | null;
+  credits?: number | null;
+  workload: Workload;
+  prerequisites?: Prerequisite[] | null;
+  corequisites?: Prerequisite[] | null;
+  equivalences?: Prerequisite[] | null;
+  ementa: string | null;
+}
+
+export interface TreeSubjectNode extends SourceMetadata {
+  id: string;
+  code?: string | null;
+  name: string;
+  period: number | null;
+  hours: number | null;
+  profile?: string | null;
+  academicType?: string | null;
+  credits?: number | null;
+  workload?: Workload;
   type: 'basico' | 'computacao' | 'optativa' | 'estagio' | 'outros' | string;
-  prereqs: string[];
-  desc?: string;
+  prereqs: string[] | null;
+  corequisites?: Prerequisite[] | null;
+  desc?: string | null;
   equivalences?: Array<{ code: string; name: string; targetProfile?: string }>;
 }
 
 export interface CurriculumProfile {
   id: string;
-  name: string;
+  name: string | null;
   description?: string;
   validFromSemester?: string;
-  totalHours: number;
-  acexHours: number;
-  accHours: number;
-  optativeHours: number;
-  mandatoryHours?: number;
+  totalHours: number | null;
+  acexHours: number | null;
+  accHours: number | null;
+  optativeHours: number | null;
+  mandatoryHours?: number | null;
   subjects: TreeSubjectNode[];
 }
 
@@ -79,6 +93,8 @@ export interface CurriculumData {
   courseShortName?: string;
   activeProfileId?: string;
   profiles?: CurriculumProfile[];
+  treeSubjects?: TreeSubjectNode[];
+  extraction?: import('./utils/extraction').ExtractionReport;
   subjects: CurriculumSubject[];
 }
 

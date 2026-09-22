@@ -24,20 +24,10 @@
     ]
   },
   {
-    "id": "eal",
-    "name": "Engenharia de Alimentos",
-    "shortName": "EAL",
-    "hasCurriculum": false,
-    "hasSchedule": true,
-    "semesters": [
-      "2026.1"
-    ]
-  },
-  {
     "id": "medicina-veterinaria",
     "name": "Medicina Veterinária",
     "shortName": "MVET",
-    "hasCurriculum": false,
+    "hasCurriculum": true,
     "hasSchedule": true,
     "semesters": [
       "2026.1"
@@ -45,6 +35,19 @@
     "profiles": [
       "MVET03",
       "MVET02"
+    ]
+  },
+  {
+    "id": "engenharia-de-alimentos",
+    "name": "Engenharia de Alimentos",
+    "shortName": "EAL",
+    "hasCurriculum": true,
+    "hasSchedule": true,
+    "semesters": [
+      "2026.1"
+    ],
+    "profiles": [
+      "EAL03"
     ]
   }
 ]

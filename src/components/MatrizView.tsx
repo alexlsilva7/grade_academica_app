@@ -182,7 +182,7 @@ interface Subject {
   id: string;
   code?: string;
   name: string;
-  hours: number;
+  hours: number | null;
   period: number;
   type: string;
   prereqs: string[];
@@ -242,23 +242,26 @@ export function MatrizView({
               setActiveProfileId(defaultId);
             }
           } else if (data.curriculum?.subjects && Array.isArray(data.curriculum.subjects)) {
-            const mappedSubjects: TreeSubjectNode[] = data.curriculum.subjects.map((s: any, idx: number) => ({
+            const mappedSubjects: TreeSubjectNode[] = data.curriculum.treeSubjects?.length ? data.curriculum.treeSubjects : data.curriculum.subjects.map((s: any, idx: number) => ({
               id: s.id || `sub_${idx}`,
               code: s.code,
               name: s.name,
-              period: typeof s.period === 'number' ? s.period : parseInt(s.period) || 1,
-              hours: s.workload?.total || 60,
+              period: s.period == null ? null : s.period === 'Optativa' ? 0 : Number(s.period),
+              hours: s.workload?.total ?? null,
               type: s.type?.toLowerCase().includes('opt') ? 'optativa' : 'computacao',
-              prereqs: s.prerequisites?.map((p: any) => p.code || p.name) || [],
+              prereqs: s.prerequisites == null ? null : s.prerequisites.map((p: any) => {
+                const index = data.curriculum.subjects.findIndex((n: any) => n.profile === s.profile && ((p.code && n.code === p.code) || (p.name && n.name === p.name)));
+                return index < 0 ? p.code || p.name : data.curriculum.subjects[index].id || 'sub_' + index;
+              }),
               desc: s.ementa || ''
             }));
             const singleProfile: CurriculumProfile = {
               id: data.course?.shortName || 'GERAL',
               name: data.course?.name || 'Matriz Curricular',
-              totalHours: mappedSubjects.reduce((acc, s) => acc + s.hours, 0) || 3200,
-              acexHours: 0,
-              accHours: 0,
-              optativeHours: 0,
+              totalHours: null,
+              acexHours: null,
+              accHours: null,
+              optativeHours: null,
               subjects: mappedSubjects
             };
             setAvailableProfiles([singleProfile]);
@@ -406,7 +409,7 @@ export function MatrizView({
   const dependentsMap = useMemo(() => {
     const map: Record<string, string[]> = {};
     subjects.forEach(s => {
-      s.prereqs.forEach(pre => {
+      (s.prereqs || []).forEach(pre => {
         if (!map[pre]) map[pre] = [];
         map[pre].push(s.id);
       });
@@ -416,7 +419,9 @@ export function MatrizView({
 
   const isUnlocked = (subjectId: string) => {
     const subject = subjects.find(s => s.id === subjectId);
-    if (!subject || subject.prereqs.length === 0) return true;
+    if (!subject) return false;
+    if (subject.prereqs == null) return false;
+    if (subject.prereqs.length === 0) return true;
     return subject.prereqs.every(preId => {
       const pre = subjects.find(s => s.id === preId);
       return pre && pre.status === 'concluido';
@@ -511,7 +516,7 @@ export function MatrizView({
 
     const newArrows: typeof arrows = [];
 
-    active.prereqs.forEach(preId => {
+    (active.prereqs || []).forEach(preId => {
       const points = getConnectorPoints(preId, active.id, container);
       if (points) {
         const path = getCurvePath(points.startX, points.startY, points.endX, points.endY);
@@ -641,20 +646,20 @@ export function MatrizView({
     subjects.forEach(s => {
       if (s.status === 'concluido') {
         if (s.type === 'optativa') {
-          completedOptativeHours += s.hours;
+          completedOptativeHours += s.hours ?? 0;
         } else {
-          completedRegularHours += s.hours;
+          completedRegularHours += s.hours ?? 0;
         }
       }
     });
 
     const completedAcademicHours = completedRegularHours + completedOptativeHours;
-    const maxAcex = activeProfile.acexHours ?? 320;
-    const maxAcc = activeProfile.accHours ?? 90;
+    const maxAcex = activeProfile.acexHours;
+    const maxAcc = activeProfile.accHours;
     const currentAcex = maxAcex > 0 ? Math.min(maxAcex, acexHours) : 0;
     const currentAcc = maxAcc > 0 ? Math.min(maxAcc, accHours) : 0;
     const totalCompletedPlusExtracurricular = completedAcademicHours + currentAcex + currentAcc;
-    const totalCourseHours = activeProfile.totalHours || 3200;
+    const totalCourseHours = activeProfile.totalHours;
     const progressPercent = totalCourseHours > 0 ? Math.min(100, (totalCompletedPlusExtracurricular / totalCourseHours) * 100) : 0;
 
     return {
@@ -666,13 +671,13 @@ export function MatrizView({
       maxAcex,
       maxAcc,
       totalCourseHours,
-      optativeTarget: activeProfile.optativeHours ?? 480
+      optativeTarget: activeProfile.optativeHours
     };
   }, [subjects, acexHours, accHours, activeProfile]);
 
   // Função para normalizar texto removendo acentos
   const normalizeText = (text: string) => {
-    return text
+    return (text || '')
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase();
@@ -704,10 +709,10 @@ export function MatrizView({
     const list = Array.from({ length: maxPeriod }, (_, i) => i + 1);
     return list.map(pNum => {
       const periodSubjects = subjects.filter(s => Number(s.period) === pNum);
-      const totalPeriodHours = periodSubjects.reduce((acc, s) => acc + s.hours, 0);
+      const totalPeriodHours = periodSubjects.reduce((acc, s) => acc + (s.hours ?? 0), 0);
       const completedPeriodHours = periodSubjects
         .filter(s => s.status === 'concluido')
-        .reduce((acc, s) => acc + s.hours, 0);
+        .reduce((acc, s) => acc + (s.hours ?? 0), 0);
 
       return {
         number: pNum,
@@ -722,6 +727,8 @@ export function MatrizView({
   const typeLabels: Record<string, { name: string, bg: string, border: string, text: string }> = {
     basico: { name: 'Núcleo Básico', bg: 'bg-orange-100 dark:bg-orange-950/40', border: 'border-orange-400 dark:border-orange-800', text: 'text-orange-900 dark:text-orange-200' },
     computacao: { name: 'Núcleo de Computação', bg: 'bg-slate-100 dark:bg-slate-800/40', border: 'border-slate-400 dark:border-slate-700', text: 'text-slate-800 dark:text-slate-200' },
+    profissionalizante: { name: 'Profissionalizante', bg: 'bg-lime-100 dark:bg-lime-950/40', border: 'border-lime-500 dark:border-lime-800', text: 'text-lime-950 dark:text-lime-200' },
+    especifica: { name: 'Específica', bg: 'bg-yellow-100 dark:bg-yellow-950/40', border: 'border-yellow-500 dark:border-yellow-800', text: 'text-yellow-950 dark:text-yellow-200' },
     optativa: { name: 'Optativa', bg: 'bg-blue-100 dark:bg-blue-950/40', border: 'border-blue-400 dark:border-blue-800', text: 'text-blue-900 dark:text-blue-200' },
     estagio: { name: 'Estágio', bg: 'bg-amber-100 dark:bg-amber-950/40', border: 'border-amber-400 dark:border-amber-800', text: 'text-amber-900 dark:text-amber-200' },
     outros: { name: 'Outros/Metodologia', bg: 'bg-slate-100 dark:bg-slate-800/40', border: 'border-slate-400 dark:border-slate-700', text: 'text-slate-800 dark:text-slate-200' }
@@ -731,7 +738,7 @@ export function MatrizView({
     const active = hoveredSubject || selectedSubject;
     if (!active) return 'none';
     if (active.id === subjectId) return 'self';
-    if (active.prereqs.includes(subjectId)) return 'prereq';
+    if ((active.prereqs || []).includes(subjectId)) return 'prereq';
     if (dependentsMap[active.id]?.includes(subjectId)) return 'dependent';
     return 'unrelated';
   };
@@ -789,6 +796,8 @@ export function MatrizView({
                 <option value="todos" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Todas as Áreas</option>
                 <option value="basico" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Núcleo Básico</option>
                 <option value="computacao" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Núcleo Computação</option>
+                <option value="profissionalizante" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Profissionalizantes</option>
+                <option value="especifica" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Específicas</option>
                 <option value="optativa" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Optativas</option>
                 <option value="estagio" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Estágio</option>
                 <option value="outros" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Metodologia / Outros</option>
@@ -825,7 +834,7 @@ export function MatrizView({
                     }`}
                     title={p.description || p.name}
                   >
-                    {p.name.includes('(') ? p.name.split('(')[0].trim() : (p.id || p.name)}
+                    {(p.name || '').includes('(') ? (p.name || '').split('(')[0].trim() : (p.id || p.name)}
                   </button>
                 ))}
               </div>
@@ -854,7 +863,7 @@ export function MatrizView({
       </section>
 
       {/* ÁREA PRINCIPAL: CONTEÚDO DA MATRIZ */}
-      <main className="flex-1 max-w-[1400px] w-full mx-auto px-4 flex flex-col gap-6 pb-12 pt-6 items-center">
+      <main className="flex-1 max-w-[1920px] w-full mx-auto px-4 flex flex-col gap-6 pb-12 pt-6 items-center">
         
         {/* LADO ESQUERDO: A MATRIZ CURRICULAR */}
         <div className="w-full min-w-0">
@@ -862,7 +871,7 @@ export function MatrizView({
             id="matriz-scroll-container"
             style={!isMobileGrid ? {
               display: 'grid',
-              gridTemplateColumns: `repeat(${maxPeriod}, minmax(130px, 1fr))`,
+              gridTemplateColumns: `repeat(${maxPeriod}, minmax(112px, 1fr))`,
               gap: '0.75rem'
             } : undefined}
             className={`
@@ -928,7 +937,7 @@ export function MatrizView({
                 key={p.number} 
                 className={`
                   flex-shrink-0 flex flex-col gap-3
-                  ${isMobileGrid ? 'w-full bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm' : 'w-[140px] md:w-[150px] lg:w-[124px] xl:w-[136px]'}
+                  ${isMobileGrid ? 'w-full bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm' : 'w-full min-w-0'}
                 `}
               >
                 {/* Cabeçalho do Período */}
@@ -1029,7 +1038,7 @@ export function MatrizView({
                         {/* Informações Inferiores */}
                         <div className="mt-2 flex items-center justify-between">
                           <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 bg-white/60 dark:bg-black/20 px-1 rounded border border-slate-200 dark:border-slate-700/50">
-                            {s.hours}h
+                            {s.hours != null ? `${s.hours}h` : 'CH a confirmar'}
                           </span>
                         </div>
                       </div>
@@ -1055,7 +1064,7 @@ export function MatrizView({
                   </div>
                   <div className="flex items-baseline gap-1 mt-1">
                     <span className="text-2xl font-bold text-slate-800 dark:text-slate-100">{stats.totalCompletedPlusExtracurricular}h</span>
-                    <span className="text-sm text-slate-500 dark:text-slate-400">/ {stats.totalCourseHours}h</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">/ {stats.totalCourseHours ?? '—'}h</span>
                   </div>
                 </div>
                 <div className="mt-4">
@@ -1078,7 +1087,7 @@ export function MatrizView({
                   <div className="flex justify-between items-start mb-1">
                     <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Horas ACEX (Extensão)</span>
                     <span className="text-xs text-indigo-700 dark:text-indigo-300 font-bold bg-indigo-100 dark:bg-indigo-900/50 px-1.5 py-0.5 rounded">
-                      Meta: {stats.maxAcex}h
+                      Meta: {stats.maxAcex ?? '—'}h
                     </span>
                   </div>
                   {stats.maxAcex > 0 ? (
@@ -1103,7 +1112,7 @@ export function MatrizView({
                       <span className="text-xs text-slate-500 dark:text-slate-400">h</span>
                     </div>
                   ) : (
-                    <div className="mt-4 text-xs text-slate-400 italic">Não exigido neste perfil curricular.</div>
+                    <div className="mt-4 text-xs text-slate-400 italic">{stats.maxAcex == null ? 'Carga não informada no documento.' : 'Não exigido neste perfil curricular.'}</div>
                   )}
                 </div>
                 {stats.maxAcex > 0 && (
@@ -1120,7 +1129,7 @@ export function MatrizView({
                   <div className="flex justify-between items-start mb-1">
                     <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Horas ACC (Comp.)</span>
                     <span className="text-xs text-indigo-700 dark:text-indigo-300 font-bold bg-indigo-100 dark:bg-indigo-900/50 px-1.5 py-0.5 rounded">
-                      Meta: {stats.maxAcc}h
+                      Meta: {stats.maxAcc ?? '—'}h
                     </span>
                   </div>
                   {stats.maxAcc > 0 ? (
@@ -1145,7 +1154,7 @@ export function MatrizView({
                       <span className="text-xs text-slate-500 dark:text-slate-400">h</span>
                     </div>
                   ) : (
-                    <div className="mt-4 text-xs text-slate-400 italic">Não exigido neste perfil curricular.</div>
+                    <div className="mt-4 text-xs text-slate-400 italic">{stats.maxAcc == null ? 'Carga não informada no documento.' : 'Não exigido neste perfil curricular.'}</div>
                   )}
                 </div>
                 {stats.maxAcc > 0 && (
@@ -1160,7 +1169,7 @@ export function MatrizView({
             {/* Bloco discreto de matérias optativas complementares concluídas */}
             <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-900/30 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
               <span className="text-slate-500">Horas Optativas Concluídas:</span>
-              <span className="text-indigo-600 dark:text-indigo-400">{stats.completedOptativeHours}h <span className="text-slate-400">/ {stats.optativeTarget}h</span></span>
+              <span className="text-indigo-600 dark:text-indigo-400">{stats.completedOptativeHours}h <span className="text-slate-400">/ {stats.optativeTarget ?? '—'}h</span></span>
             </div>
           </div>
         </div>
@@ -1205,7 +1214,7 @@ export function MatrizView({
               <div>
                 <h4 className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Carga Horária</h4>
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 block w-full text-center">
-                  {selectedSubject.hours}h
+                    {selectedSubject.hours != null ? `${selectedSubject.hours}h` : 'CH a confirmar'}
                 </span>
               </div>
               <div>
@@ -1227,11 +1236,11 @@ export function MatrizView({
               <div>
                 <h4 className="text-[11px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider mb-2 flex items-center justify-between">
                   Pré-requisitos 
-                  <span className="bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 px-1.5 py-0.5 rounded-full text-[9px]">{selectedSubject.prereqs.length}</span>
+                  <span className="bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 px-1.5 py-0.5 rounded-full text-[9px]">{(selectedSubject.prereqs || []).length}</span>
                 </h4>
-                {selectedSubject.prereqs.length > 0 ? (
+                {(selectedSubject.prereqs || []).length > 0 ? (
                   <div className="flex flex-col gap-2">
-                    {selectedSubject.prereqs.map(preId => {
+                    {(selectedSubject.prereqs || []).map(preId => {
                       const pre = subjects.find(s => s.id === preId);
                       return (
                         <div 
@@ -1246,7 +1255,7 @@ export function MatrizView({
                     })}
                   </div>
                 ) : (
-                  <div className="text-[12px] text-slate-400 dark:text-slate-500 italic p-3 bg-slate-50 dark:bg-slate-800/30 rounded-lg border border-dashed border-slate-200 dark:border-slate-700">Não exige.</div>
+                  <div className="text-[12px] text-slate-400 dark:text-slate-500 italic p-3 bg-slate-50 dark:bg-slate-800/30 rounded-lg border border-dashed border-slate-200 dark:border-slate-700">{selectedSubject.prereqs == null ? 'Não informado no documento.' : 'Não exige.'}</div>
                 )}
               </div>
 

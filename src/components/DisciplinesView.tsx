@@ -115,7 +115,7 @@ export function DisciplinesView({
 
   const filteredSubjects = useMemo(() => {
     return subjects.filter((s: any) => {
-      const matchQuery = s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      const matchQuery = (s.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                          (s.code && s.code.toLowerCase().includes(searchQuery.toLowerCase())) ||
                          (s.profile && s.profile.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchPeriod = selectedPeriod === 'todos' || s.period?.toString() === selectedPeriod;

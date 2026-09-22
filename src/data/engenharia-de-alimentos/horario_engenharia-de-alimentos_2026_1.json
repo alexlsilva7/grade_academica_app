@@ -1,0 +1,891 @@
+[
+  {
+    "id": "turma_001",
+    "code": "EAL00028",
+    "name": "DESENHO TÉC. B",
+    "professor": "MARIA BRAGA",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "08:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_002",
+    "code": "EAL00046",
+    "name": "QUÍM. GERAL A",
+    "professor": "FRANCISCO RESENDE",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "09:30 - 11:30"
+      },
+      {
+        "day": 5,
+        "time": "07:30 - 09:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_003",
+    "code": "EAL00049",
+    "name": "SOCIOL. ALIM. A",
+    "professor": "ROBERTO",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "07:30 - 09:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_004",
+    "code": "EAL00038",
+    "name": "INT. EAL B",
+    "professor": "MIRKO",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "09:30 - 11:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_005",
+    "code": "EAL00035",
+    "name": "Geom. Anal. B",
+    "professor": "MURILO",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "07:30 - 09:30"
+      },
+      {
+        "day": 5,
+        "time": "09:30 - 11:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_006",
+    "code": "EAL00024",
+    "name": "Cálculo I A",
+    "professor": "ISIS",
+    "period": 1,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "07:30 - 09:30"
+      },
+      {
+        "day": 3,
+        "time": "09:30 - 11:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_007",
+    "code": "EAL00047",
+    "name": "Quim. Org. I A",
+    "professor": "FABRÍCIO",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "15:00 - 16:00"
+      },
+      {
+        "day": 5,
+        "time": "13:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_008",
+    "code": "EAL00034",
+    "name": "Fisico Quimica A",
+    "professor": "FRANCISCO RESENDE",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "13:00 - 15:00"
+      },
+      {
+        "day": 5,
+        "time": "16:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_009",
+    "code": "FISC3005",
+    "name": "Fís. Geral I",
+    "professor": "CAIO",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "16:00 - 18:00"
+      },
+      {
+        "day": 3,
+        "time": "16:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_010",
+    "code": "EAL00037",
+    "name": "Mat. Primas. ALim.",
+    "professor": "Substituto",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "16:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_011",
+    "code": "UAG00110",
+    "name": "Meio Amb",
+    "professor": "GABRIELA",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "13:00 - 16:00"
+      },
+      {
+        "day": 3,
+        "time": "15:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_012",
+    "code": "EAL00025",
+    "name": "Cálculo II A",
+    "professor": "EVERSON",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "13:00 - 15:00"
+      },
+      {
+        "day": 4,
+        "time": "13:00 - 15:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_013",
+    "code": "EAL00039",
+    "name": "Met. Cientif. A",
+    "professor": "MARIA BRAGA",
+    "period": 2,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "15:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_014",
+    "code": "EAL00048",
+    "name": "Quim. Org. II A",
+    "professor": "FABRÍCIO",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "08:30 - 10:30"
+      },
+      {
+        "day": 4,
+        "time": "09:30 - 10:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_015",
+    "code": "PRBE3004",
+    "name": "Est. Basica",
+    "professor": "ROMERO",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "11:30 - 12:30"
+      },
+      {
+        "day": 3,
+        "time": "09:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_016",
+    "code": "FISC3003",
+    "name": "Fís. Geral II",
+    "professor": "ALBERTO",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "07:30 - 09:30"
+      },
+      {
+        "day": 4,
+        "time": "07:30 - 09:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_017",
+    "code": "EAL00040",
+    "name": "Microb Geral A",
+    "professor": "MARILENE",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "09:30 - 11:30"
+      },
+      {
+        "day": 3,
+        "time": "07:30 - 09:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_018",
+    "code": "UAG00114",
+    "name": "Quim Analítica",
+    "professor": "SUZANA",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 5,
+        "time": "08:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_019",
+    "code": "EAL00026",
+    "name": "Cálculo III A",
+    "professor": "ISIS",
+    "period": 3,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "10:30 - 12:30"
+      },
+      {
+        "day": 4,
+        "time": "10:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_020",
+    "code": "UAG00098",
+    "name": "INTRODUÇÃO À PROGRAMAÇÃO I",
+    "professor": "DIOGO DE LIMA",
+    "period": 4,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 5,
+        "time": "15:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_021",
+    "code": "EAL00055",
+    "name": "Termodinâmica A",
+    "professor": "MARTESON",
+    "period": 4,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "13:00 - 16:00"
+      },
+      {
+        "day": 3,
+        "time": "13:00 - 14:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_022",
+    "code": "EAL00027",
+    "name": "Cálculo IV",
+    "professor": "MURILO",
+    "period": 4,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "14:00 - 16:00"
+      },
+      {
+        "day": 5,
+        "time": "13:00 - 15:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_023",
+    "code": "EAL00033",
+    "name": "Física Geral 3 A",
+    "professor": "CAIO",
+    "period": 4,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "16:00 - 18:00"
+      },
+      {
+        "day": 4,
+        "time": "16:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_024",
+    "code": "EAL00045",
+    "name": "Quím. Alim. A",
+    "professor": "LUCIARES",
+    "period": 4,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "13:00 - 16:00"
+      },
+      {
+        "day": 3,
+        "time": "16:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_025",
+    "code": "EAL00074",
+    "name": "Bioq. Geral A",
+    "professor": "LUCIANA MOSER",
+    "period": 4,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "16:00 - 18:00"
+      },
+      {
+        "day": 4,
+        "time": "14:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_026",
+    "code": "UAG00103",
+    "name": "Micro. Alim.",
+    "professor": "MARILENE",
+    "period": 5,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 3,
+        "time": "09:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_027",
+    "code": "UAG00158",
+    "name": "Análise. Alim.",
+    "professor": "SUZANA",
+    "period": 5,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "08:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_028",
+    "code": "UAG00104",
+    "name": "Est. Exper",
+    "professor": "ROMERO",
+    "period": 5,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "08:30 - 11:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_029",
+    "code": "EAL00031",
+    "name": "FT 1 A",
+    "professor": "MARTESON",
+    "period": 5,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "07:30 - 09:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_030",
+    "code": "EAL00036",
+    "name": "Adm e econ",
+    "professor": "KLEBER MORAIS",
+    "period": 5,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "10:30 - 12:30"
+      },
+      {
+        "day": 5,
+        "time": "10:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_031",
+    "code": "EAL00023",
+    "name": "Bioq. Alim. A",
+    "professor": "GERLA",
+    "period": 5,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "07:30 - 10:30"
+      },
+      {
+        "day": 2,
+        "time": "11:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_032",
+    "code": "EAL00001",
+    "name": "Calc Numer",
+    "professor": "SANSUKE",
+    "period": 5,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "07:30 - 08:30"
+      },
+      {
+        "day": 5,
+        "time": "07:30 - 10:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_033",
+    "code": "UAG00161",
+    "name": "Higiene",
+    "professor": "Silvana",
+    "period": 6,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "13:00 - 14:00"
+      },
+      {
+        "day": 2,
+        "time": "15:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_034",
+    "code": "EAL00041",
+    "name": "Nutrição A",
+    "professor": "ÍRIS",
+    "period": 6,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "14:00 - 16:00"
+      },
+      {
+        "day": 2,
+        "time": "13:00 - 15:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_035",
+    "code": "EAL00054",
+    "name": "Tec. Cons. B",
+    "professor": "Substituto",
+    "period": 6,
+    "sessions": [
+      {
+        "day": 5,
+        "time": "13:00 - 17:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_036",
+    "code": "EAL00032",
+    "name": "FT 2 A",
+    "professor": "MARTESON",
+    "period": 6,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "16:00 - 18:00"
+      },
+      {
+        "day": 4,
+        "time": "16:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_037",
+    "code": "EAL00075",
+    "name": "Análise Sens A",
+    "professor": "LUCIARES",
+    "period": 6,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "16:00 - 18:00"
+      },
+      {
+        "day": 3,
+        "time": "13:00 - 15:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_038",
+    "code": "EAL00042",
+    "name": "OP 1",
+    "professor": "ANDREA",
+    "period": 6,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "15:00 - 16:00"
+      },
+      {
+        "day": 4,
+        "time": "13:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_039",
+    "code": "UAG00124",
+    "name": "Tec. Bebidas",
+    "professor": "MILENE",
+    "period": 7,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "09:30 - 12:30"
+      },
+      {
+        "day": 2,
+        "time": "11:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_040",
+    "code": "EAL00064",
+    "name": "Empreendedorismo",
+    "professor": "ROBERTA",
+    "period": 7,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "07:30 - 10:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_041",
+    "code": "UAG00121",
+    "name": "Tec. Leite",
+    "professor": "GERLA",
+    "period": 7,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "07:30 - 11:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_042",
+    "code": "UAG00162",
+    "name": "Cont. Qual.",
+    "professor": "MIRKO",
+    "period": 7,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "07:30 - 09:30"
+      },
+      {
+        "day": 3,
+        "time": "07:30 - 09:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_043",
+    "code": "EAL00051",
+    "name": "Tec. Carnes",
+    "professor": "RAIMUNDO",
+    "period": 7,
+    "sessions": [
+      {
+        "day": 5,
+        "time": "08:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_044",
+    "code": "EAL00043",
+    "name": "OP 2",
+    "professor": "ANDREA",
+    "period": 7,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "09:30 - 12:30"
+      },
+      {
+        "day": 4,
+        "time": "10:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_045",
+    "code": "EAL00053",
+    "name": "Tec. Frutas",
+    "professor": "Substituto",
+    "period": 8,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "13:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_046",
+    "code": "EAL00029",
+    "name": "Embalagem Alimentos B",
+    "professor": "MILENE",
+    "period": 8,
+    "sessions": [
+      {
+        "day": 2,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 3,
+        "time": "13:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_047",
+    "code": "EAL00052",
+    "name": "Tec. Cereais A",
+    "professor": "Silvana",
+    "period": 8,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "15:00 - 18:00"
+      },
+      {
+        "day": 2,
+        "time": "13:00 - 14:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_048",
+    "code": "UAG00119",
+    "name": "Refrigeração",
+    "professor": "MIRKO",
+    "period": 8,
+    "sessions": [
+      {
+        "day": 1,
+        "time": "13:00 - 15:00"
+      },
+      {
+        "day": 2,
+        "time": "14:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_049",
+    "code": "EAL00065",
+    "name": "Inst. Controle Proc",
+    "professor": "THIBÉRIO",
+    "period": 8,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "16:00 - 17:00"
+      },
+      {
+        "day": 5,
+        "time": "13:00 - 16:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_050",
+    "code": "EAL00044",
+    "name": "Proj. Ind. A",
+    "professor": "BERNADINO",
+    "period": 8,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "16:00 - 18:00"
+      },
+      {
+        "day": 5,
+        "time": "16:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_051",
+    "code": "AGRI3016",
+    "name": "INSTAL INDUST.",
+    "professor": "THIBERIO",
+    "period": 9,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "08:30 - 12:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_052",
+    "code": "EAL00030",
+    "name": "Eng. Seg. B",
+    "professor": "MIRKO",
+    "period": 9,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "09:30 - 11:30"
+      }
+    ]
+  },
+  {
+    "id": "turma_053",
+    "code": "UAG00134",
+    "name": "TCC 2",
+    "professor": "-",
+    "period": 10,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "18:30 - 20:10"
+      }
+    ]
+  },
+  {
+    "id": "turma_054",
+    "code": "ALIM3024",
+    "name": "ESO",
+    "professor": "-",
+    "period": 10,
+    "sessions": [
+      {
+        "day": 5,
+        "time": "18:30 - 21:50"
+      }
+    ]
+  },
+  {
+    "id": "turma_055",
+    "code": "EAL00013",
+    "name": "ALIMENTOS FUNCIONAIS A",
+    "professor": "Iris",
+    "period": 0,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "14:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_056",
+    "code": "EAL00011",
+    "name": "PROJETO DE PESQUISA PARA TCC",
+    "professor": "Maria Braga",
+    "period": 0,
+    "sessions": [
+      {
+        "day": 4,
+        "time": "16:00 - 18:00"
+      }
+    ]
+  },
+  {
+    "id": "turma_057",
+    "code": "UAG00127",
+    "name": "TRAT EFLUENT",
+    "professor": "GABRIELA",
+    "period": 0,
+    "sessions": [
+      {
+        "day": 3,
+        "time": "09:30 - 11:30"
+      },
+      {
+        "day": 4,
+        "time": "09:30 - 11:30"
+      }
+    ]
+  }
+]

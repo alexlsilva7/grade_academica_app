@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { bcc2026_1, eal2026_1, adm2026_1 } from '../data';
 import { Discipline, TimeSlot } from '../types';
 import { TIMESLOTS } from '../constants';
-import { isProduction } from '../utils/domain';
+import { canAccessAdmin } from '../utils/domain';
+import { validateExtraction } from '../utils/extraction';
 
 export interface SavedGrade {
   id: string;
@@ -14,6 +15,7 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 
 export function sanitizeDiscipline(d: Discipline): Discipline {
   if (!d) return d;
+  if (d.evidence) return d;
   let cleanName = d.name || '';
   let profile = (d.profile || '').trim();
 
@@ -32,7 +34,7 @@ export function sanitizeDiscipline(d: Discipline): Discipline {
   cleanName = cleanName.replace(/\s*\((?:matriz|grade)\s+(?:nova|antiga)\)/gi, '').trim();
 
   // "Optativa" não é perfil curricular: limpa o atributo profile para optativas
-  if (profile.toLowerCase() === 'optativa' || profile.toLowerCase() === 'sem perfil' || d.period === 0) {
+  if (profile.toLowerCase() === 'optativa' || profile.toLowerCase() === 'sem perfil') {
     profile = '';
   }
 
@@ -48,7 +50,9 @@ export function useSchedule() {
     try {
       const stored = localStorage.getItem('view_preference');
       const validView = (stored === 'home' || stored === 'schedule' || stored === 'matriz' || stored === 'disciplines' || stored === 'admin') ? stored : 'home';
-      if (validView === 'admin' && isProduction()) {
+      
+      // Se tentar abrir 'admin' fora do localhost, força o redirecionamento para 'home'
+      if (validView === 'admin' && !canAccessAdmin()) {
         return 'home';
       }
       return validView;
@@ -58,7 +62,8 @@ export function useSchedule() {
   });
 
   const setView = (newView: 'home' | 'schedule' | 'matriz' | 'disciplines' | 'admin') => {
-    if (newView === 'admin' && isProduction()) {
+    // Bloqueia qualquer tentativa programática de ir para o admin fora do localhost
+    if (newView === 'admin' && !canAccessAdmin()) {
       setViewInternal('home');
     } else {
       setViewInternal(newView);
@@ -512,13 +517,10 @@ export function useSchedule() {
       const newDisciplines = responseData.disciplines;
 
       if (newDisciplines && Array.isArray(newDisciplines) && newDisciplines.length > 0) {
-        const sanitizedDisciplines = newDisciplines.map(d => ({
-          ...d,
-          period: (d.period === null || d.period === undefined || d.period < 0) ? 0 : d.period,
-          sessions: d.sessions ? d.sessions.filter(s => 
-            [1, 2, 3, 4, 5, 6].includes(s.day)
-          ) : []
-        }));
+        const errors = validateExtraction(newDisciplines, 'schedule').filter(issue => issue.severity === 'error');
+        if (errors.length) throw new Error('A grade precisa de revisão no Administrador: ' + errors.map(issue => issue.message).join(' '));
+        const sanitizedDisciplines = newDisciplines;
+        if (responseData._extraction?.issues?.length) setConflictMsg('Extração com pendências: ' + responseData._extraction.issues.map((issue: any) => issue.message).join(' '));
         
         setDisciplinesList(sanitizedDisciplines);
         const newTitle = responseData.title || (responseData.courseName ? `${responseData.courseName} - Horário 2026.1` : file.name.replace(/\.[^/.]+$/, "").replace(/_/g, " "));

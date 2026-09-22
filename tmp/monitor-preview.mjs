@@ -1,0 +1,24 @@
+import express from 'express';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { setTimeout as delay } from 'node:timers/promises';
+import { extractionRoutes } from '../extractionRoutes.ts';
+import { ExtractionJobStore } from '../extractionJobs.ts';
+const defaults = schema => schema.nullable ? null : schema.type === 'OBJECT' ? Object.fromEntries(Object.entries(schema.properties).map(([k,s]) => [k,defaults(s)])) : schema.type === 'ARRAY' ? [] : schema.type === 'INTEGER' ? 0 : '';
+const client = { models: { generateContent: async args => {
+  args.config.onProgress?.('preparation', 'Preparando documento no provedor de teste.');
+  await delay(2500, undefined, {signal: args.config.abortSignal});
+  args.config.onProgress?.('extraction', 'Solicitação enviada. Aguardando o JSON completo do modelo de teste.');
+  await delay(16000, undefined, {signal: args.config.abortSignal});
+  const result = defaults(args.config.responseSchema);
+  result.records = [{ ...defaults(args.config.responseSchema.properties.records.items), name: 'Álgebra', code: 'MAT101', courseName: 'Curso de teste', period: 1, semester: '2026.1', sessions: [{day:1,time:'08:00 - 10:00'}], evidence: ['name','code','courseName','period','semester','sessions'].map(field=>({field,file:'Texto colado',page:null,excerpt:'Álgebra'})) }];
+  return {text:JSON.stringify(result),candidates:[{finishReason:'STOP'}]};
+} } };
+const app = express(); app.use(express.json({limit:'50mb'}));
+app.get('/api/courses',(_req,res)=>res.json({courses:[{id:'bcc',name:'Curso de teste',shortName:'TESTE'}]}));
+app.get('/api/courses/bcc',(_req,res)=>res.json({course:{id:'bcc',name:'Curso de teste',shortName:'TESTE'},curriculum:{subjects:[]},schedule:[]}));
+const store = new ExtractionJobStore(fs.mkdtempSync(path.join(os.tmpdir(),'academic-monitor-ui-')));
+app.use('/api', extractionRoutes(()=>client,store));
+app.use(express.static(path.resolve('dist')));
+app.listen(3002,'127.0.0.1',()=>console.log('Monitor preview: http://localhost:3002 (simulated provider)'));

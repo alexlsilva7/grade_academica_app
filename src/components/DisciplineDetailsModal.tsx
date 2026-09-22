@@ -24,7 +24,7 @@ export function DisciplineDetailsModal({
   // Find subject details in JSON by code
   const subjectDetails = discipline.code 
     ? bccData.subjects.find(s => s.code === discipline.code) 
-    : bccData.subjects.find(s => s.name.toLowerCase() === discipline.name.toLowerCase());
+    : bccData.subjects.find(s => (s.name || '').toLowerCase() === (discipline.name || '').toLowerCase());
 
   // Normalize codes to match variations like BCC00022 and BCC0022
   const normalizeCode = (c?: string) => c?.toUpperCase().replace(/([A-Z]+)0+([0-9]+)/, '$1$2') || '';
@@ -40,7 +40,7 @@ export function DisciplineDetailsModal({
   const finalConteudoDetails = conteudosData.disciplinas.find(d => 
     normalizedPossibleCodes.includes(normalizeCode(d.codigo))
   ) || conteudosData.disciplinas.find(d => 
-    d.nome.toLowerCase() === discipline.name.toLowerCase()
+    d.nome.toLowerCase() === (discipline.name || '').toLowerCase()
   );
 
   const displayCode = discipline.code || subjectDetails?.code || finalConteudoDetails?.codigo;

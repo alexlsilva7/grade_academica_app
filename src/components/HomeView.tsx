@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { BookOpen, Sun, Moon, Monitor, Download, Upload, BrainCircuit, CalendarDays, Layers, ArrowRight, ChevronDown, Trash2, Loader2, AlertCircle } from 'lucide-react';
 import { exportAllUserData, importAllUserData } from '../utils/backupHelper';
-import { isProduction } from '../utils/domain';
+import { canAccessAdmin } from '../utils/domain';
 import { CourseMeta } from '../types';
 
 interface HomeViewProps {
@@ -19,7 +19,8 @@ interface HomeViewProps {
 const DEFAULT_COURSES: CourseMeta[] = [
   { id: 'adm', name: 'Administração', shortName: 'ADM', hasCurriculum: true, hasSchedule: true },
   { id: 'bcc', name: 'Ciência da Computação', shortName: 'BCC', hasCurriculum: true, hasSchedule: true },
-  { id: 'eal', name: 'Engenharia de Alimentos', shortName: 'EAL', hasCurriculum: false, hasSchedule: true },
+  { id: 'eal', name: 'Engenharia de Alimentos', shortName: 'EAL', hasCurriculum: true, hasSchedule: true, profiles: ['EAL2018'] },
+  { id: 'medicina-veterinaria', name: 'Medicina Veterinária', shortName: 'MVET', hasCurriculum: true, hasSchedule: true, profiles: ['MVET03', 'MVET02'] },
 ];
 
 const PLANNED_COURSES = [
@@ -185,6 +186,7 @@ export function HomeView({
   };
 
   const currentCourseMeta = courses.find(c => c.id === selectedCourse);
+  const hasCurriculum = currentCourseMeta?.hasCurriculum ?? selectedCourse === 'bcc';
   const courseDisplayName = currentCourseMeta ? currentCourseMeta.name : (
     selectedCourse === 'bcc' ? 'Ciência da Computação' :
     selectedCourse === 'adm' ? 'Administração' :
@@ -295,7 +297,7 @@ export function HomeView({
                 ))}
               </div>
 
-              {!isProduction() && (
+              {canAccessAdmin() && (
                 <button 
                   onClick={() => setView('admin')}
                   className="w-full p-4 border border-dashed border-indigo-200 dark:border-indigo-800/80 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/40 dark:hover:bg-indigo-950/20 rounded-xl transition-all text-left group flex items-center justify-between cursor-pointer"
@@ -330,7 +332,7 @@ export function HomeView({
                       <button onClick={() => changeCourse(null)} className="text-sm text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline text-left cursor-pointer">
                         Alterar curso
                       </button>
-                      {!isProduction() && (
+                      {canAccessAdmin() && (
                         <>
                           <span className="text-slate-300 dark:text-slate-700">•</span>
                           <button
@@ -428,9 +430,9 @@ export function HomeView({
 
                 {/* Card: Matriz */}
                 <button 
-                  onClick={() => selectedCourse === 'bcc' ? setView('matriz') : alert('A matriz interativa com fluxograma e progresso está em desenvolvimento para este curso. Você pode consultar todas as disciplinas e ementas na aba Disciplinas.')}
+                  onClick={() => hasCurriculum ? setView('matriz') : alert('A matriz interativa com fluxograma e progresso está em desenvolvimento para este curso. Você pode consultar as disciplinas disponíveis na aba Disciplinas.')}
                   className={`w-full p-6 text-left border rounded-2xl flex flex-col justify-between h-full transition-all duration-300 ${
-                    selectedCourse === 'bcc' 
+                    hasCurriculum
                       ? 'border-slate-200 dark:border-slate-800 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-violet-50/20 dark:hover:bg-violet-950/10 shadow-sm hover:shadow-md hover:-translate-y-1 group bg-white dark:bg-slate-900 cursor-pointer'
                       : 'border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900 hover:border-slate-300 cursor-pointer'
                   }`}
@@ -438,7 +440,7 @@ export function HomeView({
                   <div>
                     <div className="flex items-center justify-between w-full mb-5">
                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                        selectedCourse === 'bcc'
+                        hasCurriculum
                           ? 'bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 group-hover:scale-110'
                           : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
                       }`}>
@@ -449,19 +451,19 @@ export function HomeView({
                       Matriz Curricular
                     </h3>
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                      {selectedCourse === 'bcc' 
+                      {hasCurriculum
                         ? 'Visualize a estrutura curricular de forma organizada por períodos letivos.'
                         : 'Visualização da árvore de pré-requisitos e fluxograma curricular.'}
                     </p>
                   </div>
                   
                   <div className="mt-5 flex items-center text-xs font-semibold text-violet-600 dark:text-violet-400 gap-1 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
-                    <span>{selectedCourse === 'bcc' ? 'Visualizar Grade' : 'Ver Matriz'}</span>
+                    <span>{hasCurriculum ? 'Visualizar Grade' : 'Ver Matriz'}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </div>
                 </button>
 
-                {!isProduction() && (
+                {canAccessAdmin() && (
                   <button 
                     onClick={() => setView('admin')}
                     className="w-full p-6 border border-dashed border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 rounded-xl transition-all text-left shadow-sm group flex flex-col gap-2 md:col-span-3 cursor-pointer"

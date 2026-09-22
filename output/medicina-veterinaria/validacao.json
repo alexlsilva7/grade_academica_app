@@ -1,0 +1,51 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "profile": "MVET03",
+      "components": 79,
+      "ementas": 79,
+      "periodHoursIncludingOptionalSlots": [
+        375,
+        375,
+        375,
+        375,
+        375,
+        375,
+        375,
+        375,
+        330,
+        330
+      ],
+      "uniqueInternalIds": true,
+      "allReferencesResolveWithinProfile": true,
+      "noCyclesInConfirmedPrerequisites": true,
+      "allRecordsHaveSourceEvidence": true,
+      "optionalCatalogueHours": 1050
+    },
+    {
+      "profile": "MVET02",
+      "components": 66,
+      "ementas": 61,
+      "periodHoursIncludingOptionalSlots": [
+        375,
+        375,
+        375,
+        375,
+        375,
+        375,
+        375,
+        375,
+        375,
+        375,
+        405
+      ],
+      "uniqueInternalIds": true,
+      "allReferencesResolveWithinProfile": true,
+      "noCyclesInConfirmedPrerequisites": true,
+      "allRecordsHaveSourceEvidence": true,
+      "optionalCatalogueHours": 315
+    }
+  ],
+  "limitation": "Validacao estrutural e aritmetica; divergencias documentais permanecem no relatorio. O grafo exclui condicoes complexas nao resolvidas."
+}

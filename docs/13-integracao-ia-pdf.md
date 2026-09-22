@@ -1,159 +1,45 @@
-# 13 - Integração com Inteligência Artificial e Extração de PDF
+# Extração de documentos acadêmicos
 
-Este documento especifica a engenharia de prompt, esquemas de dados e fluxos de integração com a API do **Google Gemini** para extração automatizada de grades horárias e turmas da UFAPE em formato PDF.
+Os quatro endpoints de extração utilizam `extractionPipeline.ts`. A validação de domínio e a conversão árvore → catálogo ficam em `src/utils/extraction.ts`.
 
----
+A extração tem uma única etapa de IA: documento + tipo desejado → JSON completo. Veja também [Configuração da extração](pipeline-configuravel.md).
 
-## 1. Arquitetura da Integração com IA
+## Entrada
 
-```mermaid
-flowchart LR
-    PDFFile[Arquivo PDF do Horário UFAPE] --> Base64Convert[Codificação em Base64]
-    Base64Convert --> GeminiClient[Cliente Google GenAI / Gemini 3.5 Flash]
-    
-    subgraph GeminiProcessing[Processamento Multimodal no Gemini]
-        SystemPrompt[System Instruction: Especialista Acadêmico UFAPE]
-        SchemaConstraint[JSON Schema Enforcement: responseSchema]
-    end
-    
-    GeminiClient --> GeminiProcessing
-    GeminiProcessing --> ValidatedJSON[JSON Estruturado com Turmas e Sessões]
-    ValidatedJSON --> ReviewUI[Interface de Revisão e Edição]
-```
+Todos os modos aceitam `files: [{ fileName, mimeType, base64Data }]`, `textContent` e `model`. Arquivos e texto podem ser enviados juntos. O formato antigo `base64Data` + `mimeType` continua aceito. Cada arquivo recebe um índice para distinguir nomes repetidos.
 
----
+Formatos: PDF, PNG, JPEG e WEBP. Máximo de 20 arquivos e limite HTTP de 50 MB, incluindo Base64. PDFs inválidos ou protegidos que não possam ser abertos retornam erro, sem aplicar resultados parciais.
 
-## 2. Prompt de Sistema Oficial (`systemInstruction`)
+## Extração única
 
-O prompt abaixo foi especificamente projetado e testado para os quadros de horário emitidos pela UFAPE (geralmente gerados por sistemas acadêmicos internos ou planilhas exportadas para PDF):
+O usuário escolhe horários, catálogo curricular ou matriz com pré-requisitos, seleciona um modelo e envia PDF, imagens e/ou texto. Todos os documentos são enviados juntos, sem recortes, inventário, leitor por página ou lotes de disciplinas. Uma única chamada de geração retorna todos os campos do modo selecionado, incluindo detalhes, relações e perfis.
 
-```text
-Você é um cientista de dados acadêmicos especialista em extração e mapeamento de grades horárias e grades curriculares universitárias da UFAPE (Universidade Federal do Agreste de Pernambuco).
-Analise detalhadamente o documento PDF fornecido contendo os quadros de horário letivo.
+O servidor valida o JSON e as evidências, consolida registros e resolve as referências do grafo localmente, sem chamar outro modelo. A interface abre o editor JSON ao concluir; copiar e baixar preservam também a árvore, os perfis e o relatório quando disponíveis. A revisão e a gravação no curso continuam disponíveis.
 
---- REGRAS DE EXTRAÇÃO CRÍTICAS (PADRÃO DO SISTEMA) ---
-1. IDENTIFICAÇÃO DE TURMA E PERÍODO:
-   - Cada tabela começa com um cabeçalho identificando a turma, por exemplo: 'TURMA: 1º período (Turma 1) CC5' ou 'TURMA: 2º período (Turma 2) CC2'.
-   - Extraia o período recomendado como um número inteiro. Ex: '1º período' -> 1, '2º período' -> 2, '6º período' -> 6. Se for eletiva/optativa ou desconhecido, use 0.
-   - Inclua a informação da turma no nome da disciplina caso a tabela indique. Ex: 'Introdução à Programação I (Turma 1)' ou 'Introdução à Programação I (Turma 2)'.
+Modelos que aceitam arquivos podem ser selecionados no modo de upload. Os modelos NVIDIA de texto ficam disponíveis para texto colado. Configurações antigas de modelos por etapa não alteram o novo fluxo.
 
-2. MAPEAMENTO DE DIAS DA SEMANA (INTEIROS SEGUNDO O SISTEMA):
-   - seg ou Segunda -> 1
-   - ter ou Terça -> 2
-   - qua ou Quarta -> 3
-   - qui ou Quinta -> 4
-   - sex ou Sexta -> 5
-   - sab, Sábado ou Sábado -> 6
+## Fidelidade e evidências
 
-3. ADAPTAÇÃO E DIVISÃO DE HORÁRIOS PARA OS TIMESLOTS PADRÃO DO SISTEMA:
-   O sistema suporta estritamente os seguintes horários de aulas (TimeSlots):
-   - '14:00 - 16:00'
-   - '16:00 - 18:00'
-   - '18:30 - 20:10'
-   - '20:10 - 21:50'
-   Qualquer horário extraído deve se adaptar para uma dessas fatias. Se houver um bloco de 4 horas como 'h1400_1800' ou '14:00 - 18:00', divida-o obrigatoriamente em DUAS sessões para aquela mesma disciplina no mesmo dia: uma na faixa '14:00 - 16:00' e outra na faixa '16:00 - 18:00'!
-   Mapeie 'h1830_2010' para '18:30 - 20:10' e 'h2010_2150' para '20:10 - 21:50'.
+- Dados ausentes, ilegíveis ou ambíguos permanecem `null`. Zero e lista vazia representam ausência documentada.
+- Códigos oficiais nunca são sintetizados. IDs internos são gerados pelo servidor.
+- Créditos não são calculados pelas horas. A divisão teórica/prática/extensão não é inferida.
+- Optativas conservam o perfil; período desconhecido não vira zero.
+- Cada registro inclui `evidence: [{ field, file, page, excerpt }]`. Páginas começam em 1 na fonte original; texto colado usa `page: null`.
+- Referências a arquivos/páginas inexistentes são descartadas. Valores sem referência válida viram `null` com pendência.
+- Divergências conservam as evidências disponíveis. Referências e transcrições são produzidas pela IA e precisam de conferência no original: validação estrutural não comprova exatidão.
 
-4. AGREGAÇÃO DAS SESSÕES POR DISCIPLINA (MUITO IMPORTANTE):
-   - NÃO crie múltiplos itens de disciplina repetidos para a mesma matéria e mesma turma!
-   - Uma disciplina deve ser um único objeto no array de resultado, aglutinando todas as suas aulas encontradas na tabela dentro do seu array 'sessions'.
-   - Por exemplo, se 'Lógica Matemática I (Marcius)' ocorre na Quarta às 18:30 - 20:10 e na Sexta às 18:30 - 20:10, crie apenas uma disciplina no array contendo as duas sessões dentro do parâmetro 'sessions'.
+## Revisão e persistência
 
-5. NOMES DOS PROFESSORES:
-   - Identifique e extraia o professor fornecido entre parênteses no final do conteúdo da célula. Ex: 'Cálculo I (Normando)' -> Nome da disciplina: 'Cálculo I', Professor: 'Normando'.
-   - Caso o professor não esteja disponível, preencha com '-'.
+A resposta contém `subjects` ou `disciplines`, perfis, `_modelUsed` e `_extraction` (fontes, etapas, pendências e evidências de metadados). O administrador mostra pendências e trechos por campo. Campos numéricos vazios continuam desconhecidos ao abrir/salvar editores. O total de horas é editado separadamente.
 
-6. CÓDIGOS ACADÊMICOS INTERNOS (CODE):
-   - Gere um código acadêmico realista se ele não tiver na célula, seguindo o padrão de 4 letras e 4 números (ex: CCMP3057 para Introdução à Programação, MATM3008 para matemática, ou baseado nas iniciais da disciplina como ALGE3021 para Álgebra Linear, etc.).
-   - O ID deve ser um slug amigável em minúsculo do nome e turma, por exemplo: 'p1_introducao_programacao_t1'.
-```
+A gravação revalida os dados no servidor e rejeita erros de domínio; avisos de informação ausente permitem salvar um catálogo incompleto. Evidências ficam nos registros; o relatório curricular fica em `extraction`, e o relatório de horários em `extracao_horario_*.json`. `treeSubjects` preserva a árvore sem perfil identificado.
 
----
+## Limites e falhas
 
-## 3. Schema Estruturado da Resposta da IA (`responseSchema`)
+Respostas vazias, truncadas ou incompatíveis com o schema interrompem a extração. Não há uma segunda chamada para corrigir JSON. Erros transitórios (429, 5xx e timeout) recebem até três novas tentativas da mesma solicitação e do mesmo modelo, respeitando Retry-After. Cancelar interrompe a espera e encaminha o sinal ao SDK. Cada chamada tem timeout de 180 segundos.
 
-Para garantir que o Gemini retorne exatamente o JSON desejado sem texto explicativo ou marcação de markdown adicional, o SDK utiliza `responseMimeType: "application/json"` e a seguinte definição de schema:
+O documento completo precisa caber no contexto e no limite de saída do modelo escolhido. Um resultado truncado gera erro, sem aplicar um JSON parcial. A validação estrutural não garante que todas as informações da fonte foram extraídas.
 
-```json
-{
-  "type": "OBJECT",
-  "properties": {
-    "title": {
-      "type": "STRING",
-      "description": "Título do curso ou nome sugerido para a grade baseada no arquivo, por exemplo: 'BCC 2026.1 - Horário Letivo'"
-    },
-    "disciplines": {
-      "type": "ARRAY",
-      "description": "Lista estruturada de todas as disciplinas encontradas unificadas sem duplicações",
-      "items": {
-        "type": "OBJECT",
-        "properties": {
-          "id": { "type": "STRING", "description": "ID único em minúsculo, por exemplo: p1_intro_prog_t1" },
-          "code": { "type": "STRING", "description": "Código acadêmico de 4 letras e 4 números, ex: CCMP1234" },
-          "name": { "type": "STRING", "description": "Nome limpo da disciplina com respectiva turma, ex: Introdução à Programação I (Turma 1)" },
-          "professor": { "type": "STRING", "description": "Nome do professor da disciplina" },
-          "period": { "type": "INTEGER", "description": "Período correto de 1 a 9. Use 0 se for optativa/eletiva." },
-          "sessions": {
-            "type": "ARRAY",
-            "items": {
-              "type": "OBJECT",
-              "properties": {
-                "day": { "type": "INTEGER", "description": "1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sáb" },
-                "time": { "type": "STRING", "description": "'14:00 - 16:00', '16:00 - 18:00', '18:30 - 20:10', '20:10 - 21:50'" }
-              },
-              "required": ["day", "time"]
-            }
-          }
-        },
-        "required": ["id", "code", "name", "professor", "period", "sessions"]
-      }
-    }
-  },
-  "required": ["title", "disciplines"]
-}
-```
+## Verificação
 
----
-
-## 4. Implementação Nativa em Dart/Flutter (`package:google_generative_ai`)
-
-No Flutter, essa extração pode ser executada sem intermediários utilizando o pacote oficial do Google:
-
-```dart
-import 'dart:convert';
-import 'dart:typed_data';
-import 'package:google_generative_ai/google_generative_ai.dart';
-
-class GeminiPdfExtractorService {
-  final String apiKey;
-
-  GeminiPdfExtractorService({required this.apiKey});
-
-  Future<Map<String, dynamic>> extractFromPdfBytes(Uint8List pdfBytes) async {
-    final model = GenerativeModel(
-      model: 'gemini-1.5-flash', // ou 'gemini-2.0-flash'
-      apiKey: apiKey,
-      generationConfig: GenerationConfig(
-        responseMimeType: 'application/json',
-      ),
-      systemInstruction: Content.system(systemInstructionText),
-    );
-
-    final pdfPart = DataPart('application/pdf', pdfBytes);
-    final prompt = TextPart(
-      'Extraia cuidadosamente todas as turmas, horários e disciplinas descritos neste documento curricular seguindo os critérios estruturais sistêmicos descritos.'
-    );
-
-    final response = await model.generateContent([
-      Content.multi([prompt, pdfPart])
-    ]);
-
-    if (response.text == null || response.text!.isEmpty) {
-      throw Exception('Não foi possível extrair dados do documento PDF.');
-    }
-
-    return jsonDecode(response.text!) as Map<String, dynamic>;
-  }
-}
-```
-Com isso, o app Flutter ganha a capacidade de extrair horários de qualquer PDF de forma autônoma, local e com processamento em nuvem ultra veloz.
+`npm test` usa respostas simuladas do provedor para testar múltiplos arquivos, divisão de PDFs, referências, conflitos, dados ausentes, conversão de pré-requisitos, ciclos e truncamento. `npm run lint` verifica tipos e `npm run build` gera os bundles. A avaliação de precisão com documentos reais revisados é uma etapa separada.
