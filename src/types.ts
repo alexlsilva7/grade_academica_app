@@ -32,7 +32,7 @@ export interface Workload {
   teorica: number | null;
   pratica: number | null;
   extensao: number | null;
-  semipresencialEad: number | null;
+  semipresencialEad?: number | null;
   total: number | null;
 }
 
@@ -84,6 +84,14 @@ export interface CurriculumProfile {
   accHours: number | null;
   optativeHours: number | null;
   mandatoryHours?: number | null;
+  requisitos?: {
+    total?: number;
+    acex_extensao?: number;
+    acc_complementar?: number;
+    optativas?: number;
+    obrigatorias?: number;
+    [key: string]: any;
+  };
   subjects: TreeSubjectNode[];
 }
 
@@ -91,6 +99,16 @@ export interface CurriculumData {
   export_date?: string;
   courseName?: string;
   courseShortName?: string;
+  institution?: string;
+  instituicao?: string;
+  requisitos?: {
+    total?: number;
+    acex_extensao?: number;
+    acc_complementar?: number;
+    optativas?: number;
+    obrigatorias?: number;
+    [key: string]: any;
+  };
   activeProfileId?: string;
   profiles?: CurriculumProfile[];
   treeSubjects?: TreeSubjectNode[];

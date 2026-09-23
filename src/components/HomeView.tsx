@@ -18,8 +18,8 @@ interface HomeViewProps {
 
 const DEFAULT_COURSES: CourseMeta[] = [
   { id: 'adm', name: 'Administração', shortName: 'ADM', hasCurriculum: true, hasSchedule: true },
-  { id: 'bcc', name: 'Ciência da Computação', shortName: 'BCC', hasCurriculum: true, hasSchedule: true },
-  { id: 'eal', name: 'Engenharia de Alimentos', shortName: 'EAL', hasCurriculum: true, hasSchedule: true, profiles: ['EAL2018'] },
+  { id: 'bcc', name: 'Ciência da Computação', shortName: 'BCC', hasCurriculum: true, hasSchedule: true, profiles: ['BCC03', 'BCC02'] },
+  { id: 'eal', name: 'Engenharia de Alimentos', shortName: 'EAL', hasCurriculum: true, hasSchedule: true, profiles: ['EAL03'] },
   { id: 'medicina-veterinaria', name: 'Medicina Veterinária', shortName: 'MVET', hasCurriculum: true, hasSchedule: true, profiles: ['MVET03', 'MVET02'] },
 ];
 
@@ -185,12 +185,19 @@ export function HomeView({
     }
   };
 
-  const currentCourseMeta = courses.find(c => c.id === selectedCourse);
-  const hasCurriculum = currentCourseMeta?.hasCurriculum ?? selectedCourse === 'bcc';
+  const currentCourseMeta = courses.find(c => 
+    c.id === selectedCourse || 
+    (selectedCourse === 'engenharia-de-alimentos' && c.id === 'eal') ||
+    (selectedCourse === 'eal' && c.id === 'engenharia-de-alimentos') ||
+    (selectedCourse === 'mvet' && c.id === 'medicina-veterinaria') ||
+    (selectedCourse === 'medicina-veterinaria' && c.id === 'mvet')
+  );
+  const hasCurriculum = currentCourseMeta?.hasCurriculum ?? (selectedCourse === 'bcc' || selectedCourse === 'eal' || selectedCourse === 'engenharia-de-alimentos' || selectedCourse === 'medicina-veterinaria' || selectedCourse === 'adm');
   const courseDisplayName = currentCourseMeta ? currentCourseMeta.name : (
     selectedCourse === 'bcc' ? 'Ciência da Computação' :
     selectedCourse === 'adm' ? 'Administração' :
-    selectedCourse === 'eal' ? 'Engenharia de Alimentos' :
+    (selectedCourse === 'eal' || selectedCourse === 'engenharia-de-alimentos') ? 'Engenharia de Alimentos' :
+    (selectedCourse === 'medicina-veterinaria' || selectedCourse === 'mvet') ? 'Medicina Veterinária' :
     selectedCourse?.toUpperCase() || 'Curso Selecionado'
   );
 

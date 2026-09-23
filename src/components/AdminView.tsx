@@ -590,6 +590,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
             teorica: item.workload?.teorica !== null && item.workload?.teorica !== undefined && item.workload?.teorica !== '' ? Number(item.workload.teorica) : null,
             pratica: item.workload?.pratica !== null && item.workload?.pratica !== undefined && item.workload?.pratica !== '' ? Number(item.workload.pratica) : null,
             extensao: item.workload?.extensao !== null && item.workload?.extensao !== undefined && item.workload?.extensao !== '' ? Number(item.workload.extensao) : null,
+            semipresencialEad: item.workload?.semipresencialEad !== null && item.workload?.semipresencialEad !== undefined && item.workload?.semipresencialEad !== '' ? Number(item.workload.semipresencialEad) : null,
             total: item.workload?.total !== null && item.workload?.total !== undefined && item.workload?.total !== '' ? Number(item.workload.total) : (item.hours ? Number(item.hours) : null)
           },
           prerequisites: Array.isArray(item.prerequisites) ? item.prerequisites : [],

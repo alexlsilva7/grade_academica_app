@@ -23,6 +23,9 @@ import {
 import { ThemeMode } from '../hooks/useSchedule';
 import { Navbar } from './Navbar';
 import { CurriculumProfile, TreeSubjectNode } from '../types';
+import ealCurriculum from '../data/eal/curriculo_eal.json';
+import mvetCurriculum from '../data/medicina-veterinaria/curriculo_medicina-veterinaria.json';
+import admCurriculum from '../data/adm/curriculo_adm.json';
 
 // --- ESTRUTURA COMPLETA DA MATRIZ DO CURSO ---
 const INITIAL_SUBJECTS_NEW = [
@@ -178,6 +181,40 @@ const DEFAULT_BCC_PROFILES: CurriculumProfile[] = [
   }
 ];
 
+const DEFAULT_ADM_PROFILES: CurriculumProfile[] = [
+  {
+    id: 'ADM01',
+    name: 'Matriz Curricular de Administração',
+    totalHours: null,
+    acexHours: null,
+    accHours: null,
+    optativeHours: null,
+    subjects: (admCurriculum as any[]).map((s, idx) => ({
+      id: s.id || `adm_${idx}`,
+      code: s.code,
+      name: s.name,
+      period: s.period == null ? null : s.period === 'Optativa' ? 0 : Number(s.period),
+      hours: s.workload?.total ?? null,
+      type: s.type?.toLowerCase().includes('opt') ? 'optativa' : 'basico',
+      prereqs: (s.prerequisites || []).map((p: any) => p.code || p.name),
+      desc: s.ementa || ''
+    }))
+  }
+];
+
+function getDefaultProfilesForCourse(course: string | null): CurriculumProfile[] {
+  if (course === 'eal' || course === 'engenharia-de-alimentos') {
+    return (ealCurriculum as any).profiles || [];
+  }
+  if (course === 'medicina-veterinaria' || course === 'mvet') {
+    return (mvetCurriculum as any).profiles || [];
+  }
+  if (course === 'adm') {
+    return DEFAULT_ADM_PROFILES;
+  }
+  return DEFAULT_BCC_PROFILES;
+}
+
 interface Subject {
   id: string;
   code?: string;
@@ -212,21 +249,38 @@ export function MatrizView({
   selectedProfile, 
   setSelectedProfile 
 }: MatrizViewProps) {
-  // --- PERFIS CURRICULARES (DINÂMICOS OU PADRÃO) ---
-  const [availableProfiles, setAvailableProfiles] = useState<CurriculumProfile[]>(DEFAULT_BCC_PROFILES);
+  // --- PERFIS CURRICULARES (DINÂMICOS OU PADRÃO DO CURSO) ---
+  const initialProfiles = useMemo(() => getDefaultProfilesForCourse(course), [course]);
+  const [availableProfiles, setAvailableProfiles] = useState<CurriculumProfile[]>(initialProfiles);
 
   const [activeProfileId, setActiveProfileId] = useState<string>(() => {
     if (selectedProfile && selectedProfile !== 'all') return selectedProfile;
     const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
     const legacyKey = course ? `matrix_version_${course}` : 'bcc_matrix_version';
     const stored = localStorage.getItem(key);
-    if (stored && stored !== 'all') return stored;
-    const legacy = localStorage.getItem(legacyKey);
-    if (legacy === 'antiga') return 'BCC02';
-    return 'BCC03';
+    if (stored && stored !== 'all' && initialProfiles.some(p => p.id === stored)) return stored;
+    if (course === 'bcc' || !course) {
+      const legacy = localStorage.getItem(legacyKey);
+      if (legacy === 'antiga') return 'BCC02';
+      return 'BCC03';
+    }
+    return initialProfiles[0]?.id || '';
   });
 
-  // Carregar perfis do curso dinamicamente
+  // Atualizar perfis caso a prop course mude
+  useEffect(() => {
+    const profs = getDefaultProfilesForCourse(course);
+    setAvailableProfiles(profs);
+    const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
+    const stored = localStorage.getItem(key);
+    if (stored && stored !== 'all' && profs.some(p => p.id === stored)) {
+      setActiveProfileId(stored);
+    } else {
+      setActiveProfileId(profs[0]?.id || '');
+    }
+  }, [course]);
+
+  // Carregar perfis do curso dinamicamente da API se disponível
   useEffect(() => {
     let isCancelled = false;
     async function loadCourseData() {
@@ -266,8 +320,6 @@ export function MatrizView({
             };
             setAvailableProfiles([singleProfile]);
             setActiveProfileId(singleProfile.id);
-          } else if (course === 'bcc' || !course) {
-            setAvailableProfiles(DEFAULT_BCC_PROFILES);
           }
         }
       } catch (e) {
@@ -287,8 +339,8 @@ export function MatrizView({
   }, [selectedProfile]);
 
   const activeProfile = useMemo(() => {
-    return availableProfiles.find(p => p.id === activeProfileId) || availableProfiles[0] || DEFAULT_BCC_PROFILES[0];
-  }, [availableProfiles, activeProfileId]);
+    return availableProfiles.find(p => p.id === activeProfileId) || availableProfiles[0] || initialProfiles[0];
+  }, [availableProfiles, activeProfileId, initialProfiles]);
 
   // Carregar disciplinas com estado a partir do perfil ativo e localStorage
   const [subjects, setSubjects] = useState<Subject[]>(() => {
@@ -303,13 +355,13 @@ export function MatrizView({
         }
       } catch {}
     }
-    const initialList = activeProfile?.subjects || INITIAL_SUBJECTS_NEW;
+    const initialList = activeProfile?.subjects || [];
     return initialList.map(s => ({ ...s, status: 'pendente', grade: '' }));
   });
 
   // Recarregar disciplinas e progresso quando perfil ativo mudar
   useEffect(() => {
-    if (!activeProfile) return;
+    if (!activeProfile || !activeProfile.subjects) return;
     const key = `${course || 'bcc'}_matriz_progress_${activeProfile.id}`;
     const legacyKey = activeProfile.id === 'BCC02' ? 'bcc_matriz_progress_antiga' : 'bcc_matriz_progress';
     const saved = localStorage.getItem(key) || ((course === 'bcc' || !course) ? localStorage.getItem(legacyKey) : null);
@@ -333,7 +385,7 @@ export function MatrizView({
     }
 
     setSubjects(activeProfile.subjects.map(s => ({ ...s, status: 'pendente', grade: '' })));
-  }, [activeProfile.id, course]);
+  }, [activeProfile, course]);
 
   // Persistir progresso do perfil ativo no localStorage
   useEffect(() => {
@@ -342,14 +394,16 @@ export function MatrizView({
     try {
       localStorage.setItem(key, JSON.stringify(subjects));
       
-      if (activeProfile.id === 'BCC03' || activeProfile.id === 'nova') {
-        localStorage.setItem('bcc_matriz_progress', JSON.stringify(subjects));
-        const completedList = subjects
-          .filter(s => s.status === 'concluido')
-          .map(s => s.code || s.id);
-        localStorage.setItem('completedDisciplines', JSON.stringify(completedList));
-      } else if (activeProfile.id === 'BCC02' || activeProfile.id === 'antiga') {
-        localStorage.setItem('bcc_matriz_progress_antiga', JSON.stringify(subjects));
+      if (course === 'bcc' || !course) {
+        if (activeProfile.id === 'BCC03' || activeProfile.id === 'nova') {
+          localStorage.setItem('bcc_matriz_progress', JSON.stringify(subjects));
+          const completedList = subjects
+            .filter(s => s.status === 'concluido')
+            .map(s => s.code || s.id);
+          localStorage.setItem('completedDisciplines', JSON.stringify(completedList));
+        } else if (activeProfile.id === 'BCC02' || activeProfile.id === 'antiga') {
+          localStorage.setItem('bcc_matriz_progress_antiga', JSON.stringify(subjects));
+        }
       }
     } catch (e) {
       console.error('Falha ao salvar progresso da matriz', e);
@@ -381,8 +435,8 @@ export function MatrizView({
     const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
     localStorage.setItem(key, profileId);
     localStorage.setItem('saved_selectedProfile', profileId);
-    if (course) {
-      localStorage.setItem(`matrix_version_${course}`, profileId === 'BCC02' ? 'antiga' : 'nova');
+    if (course === 'bcc' || !course) {
+      localStorage.setItem(`matrix_version_${course || 'bcc'}`, profileId === 'BCC02' ? 'antiga' : 'nova');
     }
   };
 
@@ -398,12 +452,16 @@ export function MatrizView({
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('bcc_acex_hours', acexHours.toString());
-  }, [acexHours]);
+    if (course === 'bcc' || !course) {
+      localStorage.setItem('bcc_acex_hours', acexHours.toString());
+    }
+  }, [acexHours, course]);
 
   useEffect(() => {
-    localStorage.setItem('bcc_acc_hours', accHours.toString());
-  }, [accHours]);
+    if (course === 'bcc' || !course) {
+      localStorage.setItem('bcc_acc_hours', accHours.toString());
+    }
+  }, [accHours, course]);
 
   // --- CÁLCULO DE RELAÇÕES ---
   const dependentsMap = useMemo(() => {
@@ -671,7 +729,8 @@ export function MatrizView({
       maxAcex,
       maxAcc,
       totalCourseHours,
-      optativeTarget: activeProfile.optativeHours
+      optativeTarget: activeProfile.optativeHours,
+      mandatoryTarget: activeProfile.mandatoryHours
     };
   }, [subjects, acexHours, accHours, activeProfile]);
 
@@ -1166,10 +1225,16 @@ export function MatrizView({
               </div>
             </div>
             
-            {/* Bloco discreto de matérias optativas complementares concluídas */}
-            <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-900/30 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
-              <span className="text-slate-500">Horas Optativas Concluídas:</span>
-              <span className="text-indigo-600 dark:text-indigo-400">{stats.completedOptativeHours}h <span className="text-slate-400">/ {stats.optativeTarget ?? '—'}h</span></span>
+            {/* Bloco de matérias obrigatórias e optativas concluídas */}
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-bold text-slate-700 dark:text-slate-300">
+              <div className="p-4 bg-slate-50 dark:bg-slate-900/30 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <span className="text-slate-500">Horas Obrigatórias Concluídas:</span>
+                <span className="text-indigo-600 dark:text-indigo-400">{stats.completedRegularHours}h <span className="text-slate-400">/ {stats.mandatoryTarget ?? '—'}h</span></span>
+              </div>
+              <div className="p-4 bg-slate-50 dark:bg-slate-900/30 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <span className="text-slate-500">Horas Optativas Concluídas:</span>
+                <span className="text-indigo-600 dark:text-indigo-400">{stats.completedOptativeHours}h <span className="text-slate-400">/ {stats.optativeTarget ?? '—'}h</span></span>
+              </div>
             </div>
           </div>
         </div>

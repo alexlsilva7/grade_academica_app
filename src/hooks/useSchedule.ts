@@ -426,7 +426,7 @@ export function useSchedule() {
   });
 
   const loadPredefinedGrade = async (type: string) => {
-    if (type === 'eal') {
+    if (type === 'eal' || type === 'engenharia-de-alimentos') {
       setDisciplinesList(eal2026_1.map(sanitizeDiscipline));
       setGradeTitle('EAL - Engenharia de Alimentos - Período 2026.1');
     } else if (type === 'adm') {

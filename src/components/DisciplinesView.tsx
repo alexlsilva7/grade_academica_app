@@ -2,8 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { Navbar } from './Navbar';
 import { Search, Filter, BookOpen, Clock, Info } from 'lucide-react';
 import bccData from '../data/bcc/curriculo_bcc.json';
-import ealData from '../data/eal/horario_eal_2026_1.json';
+import ealData from '../data/eal/curriculo_eal.json';
 import admData from '../data/adm/curriculo_adm.json';
+import mvetData from '../data/medicina-veterinaria/curriculo_medicina-veterinaria.json';
 
 interface DisciplinesViewProps {
   setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines') => void;
@@ -66,8 +67,22 @@ export function DisciplinesView({
     }
   }, [course]);
 
-  const activeData: any = dynamicData || (course === 'eal' ? ealData : course === 'adm' ? admData : bccData);
-  const subjects: any[] = Array.isArray(activeData) ? activeData : (activeData.subjects || []);
+  const activeData: any = dynamicData || (
+    (course === 'eal' || course === 'engenharia-de-alimentos') ? ealData :
+    course === 'adm' ? admData :
+    (course === 'medicina-veterinaria' || course === 'mvet') ? mvetData :
+    bccData
+  );
+
+  const subjects: any[] = useMemo(() => {
+    if (!activeData) return [];
+    if (Array.isArray(activeData)) return activeData;
+    if (Array.isArray(activeData.subjects)) return activeData.subjects;
+    if (Array.isArray(activeData.profiles)) {
+      return activeData.profiles.flatMap((p: any) => p.subjects || []);
+    }
+    return [];
+  }, [activeData]);
 
   const profiles = useMemo(() => {
     const p = new Set<string>();

@@ -3,6 +3,9 @@ import { X, Book, Clock, AlertCircle, Link, FileText, CheckCircle2, Circle } fro
 import { Discipline } from '../types';
 import bccData from '../data/bcc/curriculo_bcc.json';
 import conteudosData from '../data/bcc/conteudos_bcc.json';
+import ealData from '../data/eal/curriculo_eal.json';
+import mvetData from '../data/medicina-veterinaria/curriculo_medicina-veterinaria.json';
+import admData from '../data/adm/curriculo_adm.json';
 
 interface DisciplineDetailsModalProps {
   discipline: Discipline;
@@ -11,6 +14,13 @@ interface DisciplineDetailsModalProps {
   toggleCompleted: (id: string) => void;
   getDisciplineConflictInstance: (disc: Discipline) => { withName: string } | null;
 }
+
+const allSubjectsList: any[] = [
+  ...(bccData.subjects || []),
+  ...((ealData as any).profiles || []).flatMap((p: any) => p.subjects || []),
+  ...((mvetData as any).profiles || []).flatMap((p: any) => p.subjects || []),
+  ...(Array.isArray(admData) ? admData : [])
+];
 
 export function DisciplineDetailsModal({ 
   discipline, 
@@ -21,10 +31,10 @@ export function DisciplineDetailsModal({
 }: DisciplineDetailsModalProps) {
   const conflict = getDisciplineConflictInstance(discipline);
 
-  // Find subject details in JSON by code
+  // Find subject details in JSON by code or name
   const subjectDetails = discipline.code 
-    ? bccData.subjects.find(s => s.code === discipline.code) 
-    : bccData.subjects.find(s => (s.name || '').toLowerCase() === (discipline.name || '').toLowerCase());
+    ? allSubjectsList.find(s => s.code === discipline.code) 
+    : allSubjectsList.find(s => (s.name || '').toLowerCase() === (discipline.name || '').toLowerCase());
 
   // Normalize codes to match variations like BCC00022 and BCC0022
   const normalizeCode = (c?: string) => c?.toUpperCase().replace(/([A-Z]+)0+([0-9]+)/, '$1$2') || '';
@@ -32,7 +42,7 @@ export function DisciplineDetailsModal({
   const possibleCodes = [
     discipline.code,
     subjectDetails?.code,
-    ...(subjectDetails?.equivalences?.map(e => e.code) || [])
+    ...(subjectDetails?.equivalences?.map((e: any) => e.code) || [])
   ].filter(Boolean) as string[];
 
   const normalizedPossibleCodes = possibleCodes.map(normalizeCode);
@@ -120,7 +130,7 @@ export function DisciplineDetailsModal({
               </div>
 
               {/* Workload */}
-              {subjectDetails?.workload && (
+              {subjectDetails?.workload ? (
                 <div className="bg-blue-50/50 dark:bg-blue-950/10 border border-blue-100 dark:border-blue-900/30 rounded-lg p-3">
                   <h3 className="text-xs uppercase tracking-wider font-bold text-blue-800 dark:text-blue-300 mb-2 flex items-center">
                     <Clock className="w-3.5 h-3.5 mr-1" />
@@ -129,87 +139,110 @@ export function DisciplineDetailsModal({
                   <div className="grid grid-cols-3 gap-2">
                     <div className="bg-white dark:bg-slate-950 px-2 py-1.5 rounded border border-blue-50 dark:border-slate-800 animate-in fade-in duration-300">
                       <div className="text-[10px] text-blue-500 dark:text-blue-400 uppercase font-semibold">Teórica</div>
-                      <div className="text-sm font-bold text-slate-700 dark:text-slate-200">{subjectDetails.workload.teorica}h</div>
+                      <div className="text-sm font-bold text-slate-700 dark:text-slate-200">{subjectDetails.workload.teorica ?? '-'}h</div>
                     </div>
                     <div className="bg-white dark:bg-slate-950 px-2 py-1.5 rounded border border-blue-50 dark:border-slate-800 animate-in fade-in duration-300">
                       <div className="text-[10px] text-blue-500 dark:text-blue-400 uppercase font-semibold">Prática</div>
-                      <div className="text-sm font-bold text-slate-700 dark:text-slate-200">{subjectDetails.workload.pratica}h</div>
+                      <div className="text-sm font-bold text-slate-700 dark:text-slate-200">{subjectDetails.workload.pratica ?? '-'}h</div>
                     </div>
                     <div className="bg-white dark:bg-slate-950 px-2 py-1.5 rounded border border-blue-50 dark:border-slate-800 animate-in fade-in duration-300">
                       <div className="text-[10px] text-blue-500 dark:text-blue-400 uppercase font-semibold">Extensão</div>
-                      <div className="text-sm font-bold text-slate-700 dark:text-slate-200">{subjectDetails.workload.extensao}h</div>
+                      <div className="text-sm font-bold text-slate-700 dark:text-slate-200">{subjectDetails.workload.extensao ?? '-'}h</div>
                     </div>
                   </div>
                 </div>
-              )}
+              ) : (subjectDetails?.hours || (discipline as any).hours) ? (
+                <div className="bg-blue-50/50 dark:bg-blue-950/10 border border-blue-100 dark:border-blue-900/30 rounded-lg p-3">
+                  <h3 className="text-xs uppercase tracking-wider font-bold text-blue-800 dark:text-blue-300 flex items-center">
+                    <Clock className="w-3.5 h-3.5 mr-1" />
+                    Carga Horária: {subjectDetails?.hours || (discipline as any).hours}h
+                  </h3>
+                </div>
+              ) : null}
 
               {/* Requirements & Equivalences */}
-              {subjectDetails && (subjectDetails.prerequisites.length > 0 || subjectDetails.corequisites.length > 0 || subjectDetails.equivalences.length > 0) && (
-                <div className="space-y-3">
-                  {subjectDetails.prerequisites.length > 0 && (
-                    <div>
-                      <h3 className="text-xs uppercase tracking-wider font-bold text-amber-600 dark:text-amber-400 mb-1 flex items-center">
-                        <AlertCircle className="w-3.5 h-3.5 mr-1" />
-                        Pré-requisitos
-                      </h3>
-                      <ul className="list-disc pl-5 space-y-1">
-                        {subjectDetails.prerequisites.map((req: any, idx: number) => (
-                          <li key={idx} className="text-sm text-slate-700 dark:text-slate-300">
-                            <span className="font-mono text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1 rounded mr-1">{req.code}</span>
-                            {req.name}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+              {(() => {
+                const prereqsList = (subjectDetails?.prerequisites && subjectDetails.prerequisites.length > 0)
+                  ? subjectDetails.prerequisites
+                  : (subjectDetails?.prereqs && subjectDetails.prereqs.length > 0)
+                    ? subjectDetails.prereqs.map((p: any) => typeof p === 'string' ? { code: p, name: p } : p)
+                    : [];
+                const coreqsList = subjectDetails?.corequisites || [];
+                const equivsList = subjectDetails?.equivalences || [];
 
-                  {subjectDetails.corequisites.length > 0 && (
-                    <div>
-                      <h3 className="text-xs uppercase tracking-wider font-bold text-orange-600 dark:text-orange-400 mb-1 flex items-center">
-                        <Link className="w-3.5 h-3.5 mr-1" />
-                        Co-requisitos
-                      </h3>
-                      <ul className="list-disc pl-5 space-y-1">
-                        {subjectDetails.corequisites.map((req: any, idx: number) => (
-                          <li key={idx} className="text-sm text-slate-700 dark:text-slate-300">
-                            <span className="font-mono text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1 rounded mr-1">{req.code}</span>
-                            {req.name}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                if (prereqsList.length === 0 && coreqsList.length === 0 && equivsList.length === 0) return null;
 
-                  {subjectDetails.equivalences.length > 0 && (
-                    <div>
-                      <h3 className="text-xs uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400 mb-1 flex items-center">
-                        <Book className="w-3.5 h-3.5 mr-1" />
-                        Equivalências
-                      </h3>
-                      <ul className="list-disc pl-5 space-y-1">
-                        {subjectDetails.equivalences.map((eq: any, idx: number) => (
-                          <li key={idx} className="text-sm text-slate-700 dark:text-slate-300">
-                            <span className="font-mono text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1 rounded mr-1">{eq.code}</span>
-                            {eq.name}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              )}
+                return (
+                  <div className="space-y-3">
+                    {prereqsList.length > 0 && (
+                      <div>
+                        <h3 className="text-xs uppercase tracking-wider font-bold text-amber-600 dark:text-amber-400 mb-1 flex items-center">
+                          <AlertCircle className="w-3.5 h-3.5 mr-1" />
+                          Pré-requisitos
+                        </h3>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {prereqsList.map((req: any, idx: number) => (
+                            <li key={idx} className="text-sm text-slate-700 dark:text-slate-300">
+                              <span className="font-mono text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1 rounded mr-1">{req.code || req.name}</span>
+                              {req.name && req.name !== req.code ? req.name : ''}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {coreqsList.length > 0 && (
+                      <div>
+                        <h3 className="text-xs uppercase tracking-wider font-bold text-orange-600 dark:text-orange-400 mb-1 flex items-center">
+                          <Link className="w-3.5 h-3.5 mr-1" />
+                          Co-requisitos
+                        </h3>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {coreqsList.map((req: any, idx: number) => (
+                            <li key={idx} className="text-sm text-slate-700 dark:text-slate-300">
+                              <span className="font-mono text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1 rounded mr-1">{req.code}</span>
+                              {req.name}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {equivsList.length > 0 && (
+                      <div>
+                        <h3 className="text-xs uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400 mb-1 flex items-center">
+                          <Book className="w-3.5 h-3.5 mr-1" />
+                          Equivalências
+                        </h3>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {equivsList.map((eq: any, idx: number) => (
+                            <li key={idx} className="text-sm text-slate-700 dark:text-slate-300">
+                              <span className="font-mono text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1 rounded mr-1">{eq.code}</span>
+                              {eq.name}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* Ementa */}
-              {subjectDetails?.ementa && subjectDetails.ementa !== "Não encontrada" && (
-                <div>
-                  <h3 className="text-xs uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 mb-2 border-b border-slate-200 dark:border-slate-800 pb-1">
-                    Ementa
-                  </h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
-                    {subjectDetails.ementa}
-                  </p>
-                </div>
-              )}
+              {(() => {
+                const ementaText = subjectDetails?.ementa || subjectDetails?.desc || (discipline as any).desc || (discipline as any).ementa;
+                if (!ementaText || ementaText === "Não encontrada") return null;
+                return (
+                  <div>
+                    <h3 className="text-xs uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 mb-2 border-b border-slate-200 dark:border-slate-800 pb-1">
+                      Ementa
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+                      {ementaText}
+                    </p>
+                  </div>
+                );
+              })()}
 
               {/* Conteúdo Programático */}
               {finalConteudoDetails?.conteudo_programatico && (

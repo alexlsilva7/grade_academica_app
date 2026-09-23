@@ -55,9 +55,19 @@ if (!fs.existsSync(REGISTRY_PATH)) {
       id: "eal",
       name: "Engenharia de Alimentos",
       shortName: "EAL",
-      hasCurriculum: false,
+      hasCurriculum: true,
       hasSchedule: true,
-      semesters: ["2026.1"]
+      semesters: ["2026.1"],
+      profiles: ["EAL03"]
+    },
+    {
+      id: "medicina-veterinaria",
+      name: "Medicina Veterinária",
+      shortName: "MVET",
+      hasCurriculum: true,
+      hasSchedule: true,
+      semesters: ["2026.1"],
+      profiles: ["MVET03", "MVET02"]
     }
   ];
   fs.writeFileSync(REGISTRY_PATH, JSON.stringify(initialRegistry, null, 2), "utf-8");
@@ -177,14 +187,30 @@ app.get("/api/courses", (req, res) => {
 app.get("/api/courses/:id", (req, res) => {
   try {
     const { id } = req.params;
+    const cleanId = id.toLowerCase();
     const courses = getRegistry();
-    const courseMeta = courses.find((c: any) => c.id === id);
+    const courseMeta = courses.find((c: any) => 
+      c.id === cleanId ||
+      (cleanId === 'engenharia-de-alimentos' && c.id === 'eal') ||
+      (cleanId === 'eal' && c.id === 'engenharia-de-alimentos') ||
+      (cleanId === 'mvet' && c.id === 'medicina-veterinaria') ||
+      (cleanId === 'medicina-veterinaria' && c.id === 'mvet')
+    );
 
     if (!courseMeta) {
       return res.status(404).json({ error: `Curso '${id}' não encontrado.` });
     }
 
-    const courseDir = path.join(DATA_DIR, id);
+    let courseDir = path.join(DATA_DIR, courseMeta.id);
+    if (!fs.existsSync(courseDir)) {
+      if (courseMeta.id === 'eal' && fs.existsSync(path.join(DATA_DIR, 'engenharia-de-alimentos'))) {
+        courseDir = path.join(DATA_DIR, 'engenharia-de-alimentos');
+      } else if (courseMeta.id === 'engenharia-de-alimentos' && fs.existsSync(path.join(DATA_DIR, 'eal'))) {
+        courseDir = path.join(DATA_DIR, 'eal');
+      } else if (courseMeta.id === 'medicina-veterinaria' && fs.existsSync(path.join(DATA_DIR, 'mvet'))) {
+        courseDir = path.join(DATA_DIR, 'mvet');
+      }
+    }
     let curriculum: any = null;
     let schedule: any = null;
     let scheduleExtraction: any = null;

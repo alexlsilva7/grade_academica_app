@@ -35,8 +35,9 @@ export function Navbar({
 
   const getCourseName = () => {
     if (course === 'bcc') return 'Bacharelado em Ciência da Computação';
-    if (course === 'eal') return 'Engenharia de Alimentos';
+    if (course === 'eal' || course === 'engenharia-de-alimentos') return 'Engenharia de Alimentos';
     if (course === 'adm') return 'Administração';
+    if (course === 'medicina-veterinaria' || course === 'mvet') return 'Medicina Veterinária';
     return '';
   };
 
