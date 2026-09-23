@@ -22,9 +22,7 @@ test('Server alias resolution logic for courses', () => {
   function resolveCourseDir(courseMeta: any) {
     let courseDir = path.join(DATA_DIR, courseMeta.id);
     if (!fs.existsSync(courseDir)) {
-      if (courseMeta.id === 'eal' && fs.existsSync(path.join(DATA_DIR, 'engenharia-de-alimentos'))) {
-        courseDir = path.join(DATA_DIR, 'engenharia-de-alimentos');
-      } else if (courseMeta.id === 'engenharia-de-alimentos' && fs.existsSync(path.join(DATA_DIR, 'eal'))) {
+      if ((courseMeta.id === 'engenharia-de-alimentos' || courseMeta.id === 'eal') && fs.existsSync(path.join(DATA_DIR, 'eal'))) {
         courseDir = path.join(DATA_DIR, 'eal');
       } else if (courseMeta.id === 'medicina-veterinaria' && fs.existsSync(path.join(DATA_DIR, 'mvet'))) {
         courseDir = path.join(DATA_DIR, 'mvet');

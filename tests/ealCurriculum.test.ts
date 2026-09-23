@@ -55,12 +55,4 @@ test('EAL data files and registry consistency', () => {
   const mandatorySubjects = profile.subjects.filter((s: any) => s.type !== 'optativa' && s.academicType !== 'Optativa');
   const mandatoryHoursSum = mandatorySubjects.reduce((sum: number, s: any) => sum + (s.hours || 0), 0);
   assert.equal(mandatoryHoursSum, 3210, 'Sum of mandatory subjects hours must match 3210');
-
-  // Verify mirror file in engenharia-de-alimentos folder
-  const altPath = path.join(dataDir, 'engenharia-de-alimentos', 'curriculo_engenharia-de-alimentos.json');
-  assert.ok(fs.existsSync(altPath), 'engenharia-de-alimentos mirror exists');
-  const altCurr = JSON.parse(fs.readFileSync(altPath, 'utf-8'));
-  assert.equal(altCurr.profiles[0].acexHours, 390);
-  assert.equal(altCurr.profiles[0].accHours, 120);
-  assert.equal(altCurr.profiles[0].mandatoryHours, 3210);
 });
