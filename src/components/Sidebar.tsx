@@ -1,5 +1,6 @@
 import React, { RefObject } from 'react';
 import { ArrowLeft, BookOpen, Search, X, CheckCircle2, Info, CheckCircle, Circle, Square, CheckSquare, AlertCircle, Sun, Moon, Monitor, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Discipline } from '../types';
 import { DAYS } from '../constants';
 import { hasDisciplineDetails } from '../utils/detailsHelper';
@@ -69,11 +70,11 @@ export function Sidebar({
         {availableProfiles && availableProfiles.length > 1 && (
           <div className="flex flex-col gap-1.5 pb-2 border-b border-slate-100 dark:border-slate-800/60">
             <div className="flex items-center justify-between">
-              <label htmlFor="sidebar-profile-select" className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+              <label htmlFor="sidebar-profile-select" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Perfil / Matriz
               </label>
               {selectedProfile !== 'all' && (
-                <span className="text-[9px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.2 rounded border border-indigo-200/60 dark:border-indigo-800/40">
+                <span className="text-[11px] font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded border border-indigo-200/60 dark:border-indigo-800/40">
                   {selectedProfile}
                 </span>
               )}
@@ -96,10 +97,10 @@ export function Sidebar({
         )}
 
         <div className="flex justify-between items-center">
-          <h2 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Períodos</h2>
+          <h2 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Períodos</h2>
         </div>
         {periods.length > 0 && (
-          <div className="flex gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-md overflow-x-auto scrollbar-hide flex-shrink-0">
+          <div className="flex gap-1.5 bg-slate-100 dark:bg-slate-950 p-1.5 rounded-lg overflow-x-auto scrollbar-hide flex-shrink-0">
             {periods.map(period => (
               <button
                 key={period}
@@ -107,7 +108,7 @@ export function Sidebar({
                   setSelectedPeriod(period);
                   setSearchQuery('');
                 }}
-                className={`flex-1 min-w-[36px] py-1.5 px-3 text-xs font-medium rounded transition-colors whitespace-nowrap ${
+                className={`flex-1 min-w-[40px] min-h-[40px] sm:min-h-[44px] py-2 px-3 text-xs font-semibold rounded-md transition-colors whitespace-nowrap flex items-center justify-center ${
                   selectedPeriod === period && !searchQuery
                     ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm'
                     : 'text-slate-500 dark:text-slate-400 bg-transparent hover:text-slate-700 dark:hover:text-slate-200'
@@ -131,9 +132,10 @@ export function Sidebar({
           {searchQuery && (
             <button 
               onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
+              className="absolute right-1 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg transition-colors"
+              aria-label="Limpar pesquisa"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-4 h-4" />
             </button>
           )}
         </div>
@@ -165,8 +167,10 @@ export function Sidebar({
             const isCompleted = completedDisciplines.includes(discIdentifier);
             const conflict = getDisciplineConflictInstance(disc);
             return (
-              <div
+              <motion.div
                 key={disc.id}
+                whileTap={{ scale: 0.96 }}
+                transition={{ duration: 0.15 }}
                 onClick={() => {
                   if (!isCompleted) {
                     toggleDiscipline(disc);
@@ -188,26 +192,31 @@ export function Sidebar({
                       {getCleanDisciplineName(disc.name)}
                     </h4>
                     {isCompleted && (
-                      <span className="inline-flex items-center text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 mt-1">
-                        <CheckCircle className="w-3 h-3 mr-1" /> Concluída
+                      <span className="inline-flex items-center text-[11px] uppercase font-semibold text-emerald-700 dark:text-emerald-300 mt-1">
+                        <CheckCircle className="w-3.5 h-3.5 mr-1" /> Concluída
                       </span>
                     )}
                     {conflict && (
-                      <span className="inline-flex items-center text-[10px] font-semibold text-amber-700 dark:text-amber-400 mt-1 bg-amber-100 dark:bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-200/60 dark:border-amber-800/40" title={`Conflita com: ${conflict.withName}`}>
-                        <AlertCircle className="w-3 h-3 mr-1 shrink-0 text-amber-600 dark:text-amber-400 animate-pulse" /> Conflito: {conflict.withName}
+                      <span className="inline-flex items-center text-[11px] font-semibold text-amber-800 dark:text-amber-300 mt-1 bg-amber-100 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-200/60 dark:border-amber-800/40" title={`Conflita com: ${conflict.withName}`}>
+                        <AlertCircle className="w-3.5 h-3.5 mr-1 shrink-0 text-amber-600 dark:text-amber-400 animate-pulse" /> Conflito: {conflict.withName}
                       </span>
                     )}
                   </div>
-                  <div className="flex gap-2 items-center shrink-0">
+                  <div className="flex gap-1 items-center shrink-0">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleCompleted(discIdentifier);
                       }}
-                      className={`p-0.5 rounded transition-colors ${isCompleted ? 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-700' : 'text-slate-300 dark:text-slate-500 hover:text-emerald-500'}`}
+                      className={`w-10 h-10 min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center rounded-lg transition-colors ${
+                        isCompleted 
+                          ? 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/40' 
+                          : 'text-slate-400 dark:text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      }`}
                       title={isCompleted ? "Remover de concluídas" : "Marcar como concluída"}
+                      aria-label={isCompleted ? "Remover de concluídas" : "Marcar como concluída"}
                     >
-                      <CheckSquare className="w-4 h-4" />
+                      <CheckSquare className="w-5 h-5" />
                     </button>
                     {hasDisciplineDetails(disc) && (
                       <button
@@ -215,41 +224,58 @@ export function Sidebar({
                           e.stopPropagation();
                           onShowDetails(disc);
                         }}
-                        className="p-0.5 text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded transition-colors"
+                        className="w-10 h-10 min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 rounded-lg transition-colors"
                         title="Ver Detalhes"
+                        aria-label="Ver Detalhes"
                       >
-                        <Info className="w-4 h-4" />
+                        <Info className="w-5 h-5" />
                       </button>
                     )}
-                    {scheduled ? (
-                      <div className="w-4 h-4 bg-indigo-600 dark:bg-indigo-700 rounded-full flex items-center justify-center shadow-sm shadow-indigo-200 dark:shadow-none">
-                        <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />
-                      </div>
-                    ) : (
-                      <div className={`w-4 h-4 rounded-full border ${isCompleted ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-100/50 dark:bg-emerald-950/30' : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800'}`} />
-                    )}
+                    <AnimatePresence mode="wait" initial={false}>
+                      {scheduled ? (
+                        <motion.div
+                          key="scheduled"
+                          initial={{ scale: 0.5, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0.5, opacity: 0 }}
+                          transition={{ duration: 0.15, ease: "easeOut" }}
+                          className="w-5 h-5 bg-indigo-600 dark:bg-indigo-700 rounded-full flex items-center justify-center shadow-sm shadow-indigo-200 dark:shadow-none ml-1"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="unscheduled"
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0.8, opacity: 0 }}
+                          transition={{ duration: 0.15, ease: "easeOut" }}
+                          className={`w-5 h-5 rounded-full border ml-1 flex items-center justify-center ${isCompleted ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-100/50 dark:bg-emerald-950/30' : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800'}`}
+                        />
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
-                <div className={`text-xs mt-1 ${scheduled ? 'text-indigo-700 dark:text-indigo-300' : isCompleted ? 'text-emerald-700/70 dark:text-emerald-400/80' : 'text-slate-500 dark:text-slate-400'}`}>
+                <div className={`text-xs font-medium truncate mt-1 ${scheduled ? 'text-indigo-700 dark:text-indigo-300' : isCompleted ? 'text-emerald-700/80 dark:text-emerald-300/80' : 'text-slate-600 dark:text-slate-400'}`}>
                   {disc.professor}
                 </div>
                 <div className={`mt-2 flex flex-wrap items-center gap-1.5 ${isCompleted && !scheduled ? 'opacity-70' : ''}`}>
-                   <span className={`inline-flex items-center text-[9px] uppercase font-black px-1.5 py-0.5 rounded shadow-sm ${scheduled ? 'bg-indigo-600 dark:bg-indigo-750 text-white' : isCompleted ? 'bg-emerald-600 dark:bg-emerald-750 text-white' : 'bg-slate-800 dark:bg-slate-700 text-white'}`}>
+                   <span className={`inline-flex items-center text-[11px] uppercase font-bold px-2 py-0.5 rounded shadow-sm ${scheduled ? 'bg-indigo-600 dark:bg-indigo-700 text-white' : isCompleted ? 'bg-emerald-600 dark:bg-emerald-700 text-white' : 'bg-slate-800 dark:bg-slate-700 text-white'}`}>
                     {disc.period === 0 ? 'Opt' : `${disc.period}º`}
                   </span>
                   {disc.profile && (
-                    <span className="inline-flex items-center text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                    <span className="inline-flex items-center text-[11px] uppercase font-semibold px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                       {disc.profile}
                     </span>
                   )}
-                  <div className={`h-3 w-[1px] ${isCompleted ? 'bg-emerald-200 dark:bg-emerald-900/50' : 'bg-slate-300 dark:bg-slate-700'}`} />
+                  <div className={`h-3.5 w-[1px] ${isCompleted ? 'bg-emerald-200 dark:bg-emerald-900/50' : 'bg-slate-300 dark:bg-slate-700'}`} />
                   {disc.sessions.map((session, i) => (
-                    <span key={i} className={`inline-flex items-center text-[9px] uppercase font-bold px-1.5 py-0.5 rounded ${scheduled ? 'bg-indigo-100 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-300' : isCompleted ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>
+                    <span key={i} className={`inline-flex items-center text-[11px] uppercase font-semibold px-2 py-0.5 rounded ${scheduled ? 'bg-indigo-100 dark:bg-indigo-950/50 text-indigo-800 dark:text-indigo-200' : isCompleted ? 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-200' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`}>
                       {DAYS.find(d => d.id === session.day)?.name.substring(0, 3)} {session.time}
                     </span>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             );
           })
         )}

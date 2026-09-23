@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { ThemeMode } from '../hooks/useSchedule';
 import { Navbar } from './Navbar';
+import { motion } from 'motion/react';
 import { CurriculumProfile, TreeSubjectNode } from '../types';
 import ealCurriculum from '../data/eal/curriculo_eal.json';
 import mvetCurriculum from '../data/medicina-veterinaria/curriculo_medicina-veterinaria.json';
@@ -881,12 +882,12 @@ export function MatrizView({
             
             {/* Seletor Dinâmico de Perfil Curricular */}
             {availableProfiles.length > 1 && (
-              <div className="flex items-center bg-white dark:bg-slate-900 rounded-lg border border-slate-300 dark:border-slate-700 p-1 w-full sm:w-auto h-[34px]">
+              <div className="flex items-center bg-white dark:bg-slate-900 rounded-lg border border-slate-300 dark:border-slate-700 p-1 w-full sm:w-auto min-h-[40px]">
                 {availableProfiles.map(p => (
                   <button
                     key={p.id}
                     onClick={() => handleSelectProfile(p.id)}
-                    className={`flex-1 sm:flex-none px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
+                    className={`flex-1 sm:flex-none px-3 py-1.5 min-h-[36px] sm:min-h-[40px] text-xs font-semibold rounded-md transition-colors flex items-center justify-center ${
                       activeProfile.id === p.id 
                         ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 shadow-sm' 
                         : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
@@ -902,19 +903,19 @@ export function MatrizView({
             {/* Alternar Vista para Mobile */}
             <button
               onClick={() => setIsMobileGrid(!isMobileGrid)}
-              className="md:hidden flex items-center gap-1.5 text-xs bg-white dark:bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 w-full sm:w-auto justify-center"
+              className="md:hidden flex items-center gap-1.5 text-xs font-semibold bg-white dark:bg-slate-900 px-3 py-2 min-h-[40px] rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 w-full sm:w-auto justify-center"
             >
-              <Eye className="h-3.5 w-3.5" />
+              <Eye className="h-4 w-4" />
               <span>{isMobileGrid ? "Ver Grade Larga" : "Ver Lista Compacta"}</span>
             </button>
 
             {/* Limpar Progresso */}
             <button 
               onClick={() => setShowResetConfirm(true)}
-              className="flex items-center gap-1.5 text-xs bg-rose-50 dark:bg-rose-950/20 px-3 py-1.5 rounded-lg border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 w-full sm:w-auto justify-center shrink-0 cursor-pointer font-semibold shadow-xs"
+              className="flex items-center gap-1.5 text-xs bg-rose-50 dark:bg-rose-950/20 px-3 py-2 min-h-[40px] rounded-lg border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 w-full sm:w-auto justify-center shrink-0 cursor-pointer font-semibold shadow-xs"
               title="Limpar progresso completo da matriz"
             >
-              <RotateCcw className="h-3.5 w-3.5" />
+              <RotateCcw className="h-4 w-4" />
               <span>Limpar Progresso</span>
             </button>
           </div>
@@ -1000,9 +1001,9 @@ export function MatrizView({
                 `}
               >
                 {/* Cabeçalho do Período */}
-                <div className="bg-slate-800 dark:bg-slate-800 text-white p-2 text-center rounded-lg shadow-sm relative overflow-hidden">
-                  <div className="text-[11px] font-bold uppercase tracking-wider">{p.number}º Período</div>
-                  <div className="text-[9px] text-slate-300 mt-0.5 font-medium">
+                <div className="bg-slate-800 dark:bg-slate-800 text-white p-2.5 text-center rounded-lg shadow-sm relative overflow-hidden">
+                  <div className="text-xs font-bold uppercase tracking-wider">{p.number}º Período</div>
+                  <div className="text-[11px] text-slate-300 dark:text-slate-200 mt-0.5 font-medium">
                     {p.completedHours}h / {p.totalHours}h
                   </div>
                   <div className="absolute top-0 bottom-0 left-0 bg-indigo-500/80 -z-10 transition-all duration-300" style={{ width: `${(p.completedHours / p.totalHours) * 100}%` }}></div>
@@ -1078,25 +1079,25 @@ export function MatrizView({
                         </div>
 
                         {/* Nome da Disciplina */}
-                        <div className={`text-[10px] xl:text-[11px] font-bold leading-snug break-words pr-5 select-none`}>
+                        <div className="text-xs font-bold leading-snug break-words pr-5 select-none">
                           {s.name}
                         </div>
 
                         {/* Labels de Relação on Hover */}
                         {(hoveredSubject || selectedSubject) && relationship === 'prereq' && (
-                          <div className="mt-1 text-[9px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+                          <div className="mt-1 text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
                             Pré-requisito
                           </div>
                         )}
                         {(hoveredSubject || selectedSubject) && relationship === 'dependent' && (
-                          <div className="mt-1 text-[9px] font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">
+                          <div className="mt-1 text-[11px] font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">
                             Libera
                           </div>
                         )}
 
                         {/* Informações Inferiores */}
                         <div className="mt-2 flex items-center justify-between">
-                          <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 bg-white/60 dark:bg-black/20 px-1 rounded border border-slate-200 dark:border-slate-700/50">
+                          <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 bg-white/70 dark:bg-black/30 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700/50">
                             {s.hours != null ? `${s.hours}h` : 'CH a confirmar'}
                           </span>
                         </div>
@@ -1132,10 +1133,11 @@ export function MatrizView({
                     <span>{stats.progressPercent.toFixed(1)}%</span>
                   </div>
                   <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-200/45 dark:border-slate-700/50">
-                    <div 
-                      className="bg-indigo-500 dark:bg-indigo-400 h-2.5 rounded-full transition-all duration-500" 
-                      style={{ width: `${stats.progressPercent}%` }}
-                    ></div>
+                    <motion.div 
+                      className="bg-indigo-500 dark:bg-indigo-400 h-2.5 rounded-full" 
+                      animate={{ width: `${stats.progressPercent}%` }} 
+                      transition={{ duration: 0.6, ease: "easeOut" }} 
+                    />
                   </div>
                 </div>
               </div>
@@ -1252,38 +1254,39 @@ export function MatrizView({
           >
             <div className="flex justify-between items-start border-b border-slate-100 dark:border-slate-800 pb-4 mb-4">
               <div>
-                <span className={`text-[10px] font-bold uppercase tracking-wider ${typeLabels[selectedSubject.type]?.text || 'text-slate-500'}`}>
+                <span className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider ${typeLabels[selectedSubject.type]?.text || 'text-slate-500'}`}>
                   {selectedSubject.period}º Período • {typeLabels[selectedSubject.type]?.name}
                 </span>
                 <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mt-1">{selectedSubject.name}</h3>
               </div>
               <button 
                 onClick={() => setSelectedSubject(null)} 
-                className="p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:text-slate-300 dark:hover:bg-slate-800 transition-colors"
+                className="w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
                 title="Fechar"
+                aria-label="Fechar"
               >
                 ✕
               </button>
             </div>
 
             <div>
-              <h4 className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <Info className="w-3.5 h-3.5" /> Ementa
+              <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <Info className="w-4 h-4" /> Ementa
               </h4>
-              <p className="text-[13px] text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700/50">
+              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl border border-slate-100 dark:border-slate-700/50">
                 {selectedSubject.desc || "Ementa não detalhada."}
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mt-5">
               <div>
-                <h4 className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Carga Horária</h4>
+                <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Carga Horária</h4>
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 block w-full text-center">
                     {selectedSubject.hours != null ? `${selectedSubject.hours}h` : 'CH a confirmar'}
                 </span>
               </div>
               <div>
-                <h4 className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Estado Atual</h4>
+                <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Estado Atual</h4>
                 <select
                   value={selectedSubject.status}
                   onChange={(e) => setSubjectStatus(selectedSubject.id, e.target.value as 'pendente' | 'cursando' | 'concluido')}
@@ -1299,9 +1302,9 @@ export function MatrizView({
             {/* Pré-requisitos e Dependências */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
               <div>
-                <h4 className="text-[11px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                <h4 className="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider mb-2 flex items-center justify-between">
                   Pré-requisitos 
-                  <span className="bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 px-1.5 py-0.5 rounded-full text-[9px]">{(selectedSubject.prereqs || []).length}</span>
+                  <span className="bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 px-2 py-0.5 rounded-full text-[11px] font-bold">{(selectedSubject.prereqs || []).length}</span>
                 </h4>
                 {(selectedSubject.prereqs || []).length > 0 ? (
                   <div className="flex flex-col gap-2">
@@ -1311,23 +1314,23 @@ export function MatrizView({
                         <div 
                           key={preId} 
                           onClick={() => pre && setSelectedSubject(pre)}
-                          className="cursor-pointer text-[12px] p-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 text-slate-700 dark:text-slate-300 rounded-lg hover:border-rose-400 dark:hover:border-rose-500 transition-colors flex justify-between items-center group"
+                          className="cursor-pointer text-xs min-h-[40px] p-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 text-slate-700 dark:text-slate-300 rounded-lg hover:border-rose-400 dark:hover:border-rose-500 transition-colors flex justify-between items-center group"
                         >
                           <span className="font-medium truncate pr-2" title={pre?.name}>{pre?.name}</span>
-                          <ChevronRight className="h-3.5 w-3.5 text-slate-400 group-hover:text-rose-500 flex-shrink-0 transition-colors" />
+                          <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-rose-500 flex-shrink-0 transition-colors" />
                         </div>
                       );
                     })}
                   </div>
                 ) : (
-                  <div className="text-[12px] text-slate-400 dark:text-slate-500 italic p-3 bg-slate-50 dark:bg-slate-800/30 rounded-lg border border-dashed border-slate-200 dark:border-slate-700">{selectedSubject.prereqs == null ? 'Não informado no documento.' : 'Não exige.'}</div>
+                  <div className="text-xs text-slate-400 dark:text-slate-500 italic p-3 bg-slate-50 dark:bg-slate-800/30 rounded-lg border border-dashed border-slate-200 dark:border-slate-700">{selectedSubject.prereqs == null ? 'Não informado no documento.' : 'Não exige.'}</div>
                 )}
               </div>
 
               <div>
-                <h4 className="text-[11px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                <h4 className="text-xs font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider mb-2 flex items-center justify-between">
                   Libera 
-                  <span className="bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300 px-1.5 py-0.5 rounded-full text-[9px]">{dependentsMap[selectedSubject.id]?.length || 0}</span>
+                  <span className="bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300 px-2 py-0.5 rounded-full text-[11px] font-bold">{dependentsMap[selectedSubject.id]?.length || 0}</span>
                 </h4>
                 {dependentsMap[selectedSubject.id]?.length > 0 ? (
                   <div className="flex flex-col gap-2">
@@ -1337,16 +1340,16 @@ export function MatrizView({
                         <div 
                           key={depId} 
                           onClick={() => dep && setSelectedSubject(dep)}
-                          className="cursor-pointer text-[12px] p-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 text-slate-700 dark:text-slate-300 rounded-lg hover:border-teal-400 dark:hover:border-teal-500 transition-colors flex justify-between items-center group"
+                          className="cursor-pointer text-xs min-h-[40px] p-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 text-slate-700 dark:text-slate-300 rounded-lg hover:border-teal-400 dark:hover:border-teal-500 transition-colors flex justify-between items-center group"
                         >
                           <span className="font-medium truncate pr-2" title={dep?.name}>{dep?.name}</span>
-                          <ChevronRight className="h-3.5 w-3.5 text-slate-400 group-hover:text-teal-500 flex-shrink-0 transition-colors" />
+                          <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-teal-500 flex-shrink-0 transition-colors" />
                         </div>
                       );
                     })}
                   </div>
                 ) : (
-                  <div className="text-[12px] text-slate-400 dark:text-slate-500 italic p-3 bg-slate-50 dark:bg-slate-800/30 rounded-lg border border-dashed border-slate-200 dark:border-slate-700">Não liberta outras matérias.</div>
+                  <div className="text-xs text-slate-400 dark:text-slate-500 italic p-3 bg-slate-50 dark:bg-slate-800/30 rounded-lg border border-dashed border-slate-200 dark:border-slate-700">Não liberta outras matérias.</div>
                 )}
               </div>
             </div>
@@ -1373,14 +1376,14 @@ export function MatrizView({
                 <button
                   type="button"
                   onClick={() => setShowResetConfirm(false)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-lg transition-colors border border-transparent dark:border-slate-700 cursor-pointer"
+                  className="px-4 py-2.5 min-h-[40px] sm:min-h-[44px] flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-lg transition-colors border border-transparent dark:border-slate-700 cursor-pointer"
                 >
                   Voltar
                 </button>
                 <button
                   type="button"
                   onClick={resetProgress}
-                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+                  className="px-4 py-2.5 min-h-[40px] sm:min-h-[44px] flex items-center justify-center bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer"
                 >
                   Confirmar Limpar
                 </button>

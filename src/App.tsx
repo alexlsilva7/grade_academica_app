@@ -7,6 +7,7 @@ import { Sidebar } from './components/Sidebar';
 import { ScheduleGrid } from './components/ScheduleGrid';
 import { MobileNav } from './components/MobileNav';
 import { DisciplineDetailsModal } from './components/DisciplineDetailsModal';
+import { AnimatePresence } from 'motion/react';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { canAccessAdmin } from './utils/domain';
@@ -100,15 +101,17 @@ export default function App() {
             />
           </div>
           
-          {scheduleProps.detailsDiscipline && (
-            <DisciplineDetailsModal 
-              discipline={scheduleProps.detailsDiscipline}
-              onClose={() => scheduleProps.setDetailsDiscipline(null)}
-              completedDisciplines={scheduleProps.completedDisciplines}
-              toggleCompleted={scheduleProps.toggleCompleted}
-              getDisciplineConflictInstance={scheduleProps.getDisciplineConflictInstance}
-            />
-          )}
+          <AnimatePresence>
+            {scheduleProps.detailsDiscipline && (
+              <DisciplineDetailsModal 
+                discipline={scheduleProps.detailsDiscipline}
+                onClose={() => scheduleProps.setDetailsDiscipline(null)}
+                completedDisciplines={scheduleProps.completedDisciplines}
+                toggleCompleted={scheduleProps.toggleCompleted}
+                getDisciplineConflictInstance={scheduleProps.getDisciplineConflictInstance}
+              />
+            )}
+          </AnimatePresence>
 
           <MobileNav 
             mobileTab={scheduleProps.mobileTab}
