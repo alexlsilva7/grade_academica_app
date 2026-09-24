@@ -120,13 +120,13 @@ export function Sidebar({
                   setSelectedPeriod(period);
                   setSearchQuery('');
                 }}
-                className={`flex-1 min-w-[40px] min-h-[40px] sm:min-h-[44px] py-2 px-3 text-xs font-semibold rounded-md transition-colors whitespace-nowrap flex items-center justify-center ${
+                className={`shrink-0 ${period === 0 ? 'px-3.5' : 'min-w-[38px] px-2.5'} min-h-[38px] sm:min-h-[40px] py-2 text-xs font-semibold rounded-md transition-all whitespace-nowrap flex items-center justify-center cursor-pointer ${
                   selectedPeriod === period && !searchQuery
-                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm'
-                    : 'text-slate-500 dark:text-slate-400 bg-transparent hover:text-slate-700 dark:hover:text-slate-200'
+                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm font-bold'
+                    : 'text-slate-500 dark:text-slate-400 bg-transparent hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-900/60'
                 }`}
               >
-                {period === 0 ? 'OPTATIVAS' : `${period}º`}
+                {period === 0 ? 'Optativas' : `${period}º`}
               </button>
             ))}
           </div>

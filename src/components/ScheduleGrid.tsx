@@ -1,9 +1,16 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { AlertCircle, X, Info, HelpCircle, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Discipline, TimeSlot } from '../types';
-import { DAYS, TIMESLOTS as DEFAULT_TIMESLOTS } from '../constants';
+import { Discipline } from '../types';
+import { DAYS } from '../constants';
 import { hasDisciplineDetails } from '../utils/detailsHelper';
+import {
+  getDisplayBlocks,
+  findSessionStartBlock,
+  calculateBlockSpan,
+  ShiftFilter,
+  CanonicalBlock
+} from '../utils/scheduleBlocks';
 
 interface ScheduleGridProps {
   mobileTab: string;
@@ -15,6 +22,11 @@ interface ScheduleGridProps {
   onExportImage?: () => void;
 }
 
+export type GridCell = 
+  | { type: 'session'; discipline: Discipline; sessionTime: string; rowSpan: number }
+  | { type: 'covered' }
+  | { type: 'empty' };
+
 export function ScheduleGrid({
   mobileTab,
   schedule,
@@ -24,26 +36,60 @@ export function ScheduleGrid({
   onOpenTour,
   onExportImage
 }: ScheduleGridProps) {
+  const [shiftFilter, setShiftFilter] = useState<ShiftFilter>('auto');
   
-  const timeSlots = useMemo(() => {
-    const times = new Set<TimeSlot>();
-    if (disciplinesList && disciplinesList.length > 0) {
-      disciplinesList.forEach(d => {
-        d.sessions.forEach(s => times.add(s.time));
-      });
-    } else {
-      DEFAULT_TIMESLOTS.forEach(t => times.add(t));
-    }
-    
-    // Sort logic
-    const parseTime = (t: string) => {
-      const parts = t.split(':');
-      if (parts.length >= 2) return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-      return 0;
-    };
-    
-    return Array.from(times).sort((a, b) => parseTime(a as string) - parseTime(b as string));
-  }, [disciplinesList]);
+  const displayBlocks = useMemo(() => {
+    return getDisplayBlocks(schedule, disciplinesList, shiftFilter);
+  }, [schedule, disciplinesList, shiftFilter]);
+
+  const gridMatrix = useMemo(() => {
+    const matrix: Record<number, Record<number, GridCell>> = {};
+    displayBlocks.forEach((_, idx) => {
+      matrix[idx] = {};
+    });
+
+    DAYS.forEach(day => {
+      for (let bIdx = 0; bIdx < displayBlocks.length; bIdx++) {
+        if (matrix[bIdx][day.id]?.type === 'covered') continue;
+
+        const block = displayBlocks[bIdx];
+        let matchedSession: any = null;
+        let matchedDisc: Discipline | null = null;
+
+        for (const disc of schedule) {
+          for (const s of disc.sessions) {
+            if (s.day !== day.id) continue;
+            const startBlock = findSessionStartBlock(s.time, displayBlocks);
+            if (startBlock?.id === block.id) {
+              matchedSession = s;
+              matchedDisc = disc;
+              break;
+            }
+          }
+          if (matchedSession) break;
+        }
+
+        if (matchedSession && matchedDisc) {
+          const span = calculateBlockSpan(matchedSession.time, bIdx, displayBlocks);
+          matrix[bIdx][day.id] = {
+            type: 'session',
+            discipline: matchedDisc,
+            sessionTime: matchedSession.time,
+            rowSpan: span
+          };
+          for (let k = 1; k < span; k++) {
+            if (bIdx + k < displayBlocks.length) {
+              matrix[bIdx + k][day.id] = { type: 'covered' };
+            }
+          }
+        } else {
+          matrix[bIdx][day.id] = { type: 'empty' };
+        }
+      }
+    });
+
+    return matrix;
+  }, [displayBlocks, schedule]);
 
   const undeterminedDisciplines = useMemo(() => {
     return schedule.filter(d => d.sessions.length === 0);
@@ -58,6 +104,23 @@ export function ScheduleGrid({
           <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
             {schedule.length} {schedule.length === 1 ? 'matéria' : 'matérias'}
           </span>
+
+          {/* Shift Filter Pills */}
+          <div className="hidden lg:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-lg text-xs font-semibold ml-2 border border-slate-200/60 dark:border-slate-700/60">
+            {(['auto', 'manha', 'tarde', 'noite', 'all'] as const).map(shift => (
+              <button
+                key={shift}
+                onClick={() => setShiftFilter(shift)}
+                className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                  shiftFilter === shift
+                    ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                }`}
+              >
+                {shift === 'auto' ? 'Automático' : shift === 'manha' ? 'Manhã' : shift === 'tarde' ? 'Tarde' : shift === 'noite' ? 'Noite' : 'Todos'}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
@@ -181,27 +244,35 @@ export function ScheduleGrid({
                 </tr>
               </thead>
               <tbody className="bg-slate-100 dark:bg-slate-950 gap-px">
-                {timeSlots.map((time, timeIdx) => (
-                  <tr key={time} className="bg-white dark:bg-slate-900">
-                    <td className="px-3 py-3 text-center text-xs font-semibold text-slate-700 dark:text-slate-300 border-r border-b border-slate-200 dark:border-slate-800 whitespace-nowrap align-middle">
-                      {time}
+                {displayBlocks.map((block, blockIdx) => (
+                  <tr key={block.id} className="bg-white dark:bg-slate-900">
+                    <td className="px-2 sm:px-3 py-2 text-center text-xs font-semibold text-slate-700 dark:text-slate-300 border-r border-b border-slate-200 dark:border-slate-800 whitespace-nowrap align-middle bg-slate-50/70 dark:bg-slate-900/70 w-28">
+                      <div className="font-mono font-bold text-xs text-slate-800 dark:text-slate-200">{block.label}</div>
+                      <div className="text-[10px] text-slate-400 capitalize">{block.shift}</div>
                     </td>
                     {DAYS.map(day => {
-                      const scheduledDisc = schedule.find(disc =>
-                        disc.sessions.some(s => s.day === day.id && s.time === time)
-                      );
-                      
-                      return (
-                        <td key={`${day.id}-${time}`} className="p-1 sm:p-1.5 border-r border-slate-200 dark:border-slate-800 border-b last:border-r-0 align-top relative group min-h-[5.5rem] h-24 transition-colors">
-                          <AnimatePresence>
-                            {scheduledDisc && (
+                      const cell = gridMatrix[blockIdx]?.[day.id];
+                      if (!cell || cell.type === 'covered') {
+                        return null; // Omit td because previous block rowSpan covers this cell!
+                      }
+
+                      if (cell.type === 'session') {
+                        const scheduledDisc = cell.discipline;
+                        return (
+                          <td
+                            key={`${day.id}-${block.id}`}
+                            rowSpan={cell.rowSpan}
+                            className="p-1 sm:p-1.5 border-r border-slate-200 dark:border-slate-800 border-b last:border-r-0 align-top relative group transition-colors"
+                            style={{ minHeight: `${cell.rowSpan * 5}rem`, height: `${cell.rowSpan * 5.5}rem` }}
+                          >
+                            <AnimatePresence>
                               <motion.div
-                                key={`${scheduledDisc.id}-${day.id}-${time}`}
+                                key={`${scheduledDisc.id}-${day.id}-${block.id}`}
                                 initial={{ opacity: 0, scale: 0.9, y: 4 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.85 }}
                                 transition={{ duration: 0.2, ease: "easeOut" }}
-                                className="absolute inset-1 p-2 bg-indigo-50/95 dark:bg-indigo-950/60 border-l-[3px] border-indigo-500 rounded-lg flex flex-col justify-between hover:bg-indigo-100 hover:border-indigo-600 dark:hover:bg-indigo-900/40 transition-colors cursor-pointer ring-1 ring-inset ring-indigo-200/50 dark:ring-indigo-800/30 overflow-hidden"
+                                className="absolute inset-1 p-2 bg-indigo-50/95 dark:bg-indigo-950/60 border-l-[3.5px] border-indigo-600 rounded-lg flex flex-col justify-between hover:bg-indigo-100 hover:border-indigo-700 dark:hover:bg-indigo-900/40 transition-colors cursor-pointer ring-1 ring-inset ring-indigo-200/50 dark:ring-indigo-800/30 overflow-hidden shadow-xs"
                               >
                                 <div className="min-w-0 pr-8">
                                   <div className="flex items-center gap-1.5 flex-wrap">
@@ -210,7 +281,7 @@ export function ScheduleGrid({
                                         {scheduledDisc.code}
                                       </span>
                                     )}
-                                    <span className="text-xs font-bold text-indigo-950 dark:text-indigo-100 uppercase leading-snug line-clamp-1" title={scheduledDisc.name}>
+                                    <span className="text-xs font-bold text-indigo-950 dark:text-indigo-100 uppercase leading-snug line-clamp-2" title={scheduledDisc.name}>
                                       {scheduledDisc.name}
                                     </span>
                                   </div>
@@ -218,6 +289,16 @@ export function ScheduleGrid({
                                     {scheduledDisc.professor}
                                   </div>
                                 </div>
+
+                                <div className="mt-1 flex items-center justify-between text-[10px] font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                                  <span>{cell.sessionTime}</span>
+                                  {cell.rowSpan > 1 && (
+                                    <span className="text-[9px] font-sans font-semibold bg-indigo-100/90 dark:bg-indigo-900/80 px-1.5 py-0.2 rounded text-indigo-800 dark:text-indigo-200">
+                                      {cell.rowSpan} aulas
+                                    </span>
+                                  )}
+                                </div>
+
                                 <div className="absolute top-1 right-1 flex items-center opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity gap-0.5">
                                   {hasDisciplineDetails(scheduledDisc) && (
                                     <button
@@ -245,9 +326,17 @@ export function ScheduleGrid({
                                   </button>
                                 </div>
                               </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </td>
+                            </AnimatePresence>
+                          </td>
+                        );
+                      }
+
+                      // Empty cell
+                      return (
+                        <td
+                          key={`${day.id}-${block.id}`}
+                          className="p-1 sm:p-1.5 border-r border-slate-200 dark:border-slate-800 border-b last:border-r-0 align-top relative group h-20 transition-colors"
+                        />
                       );
                     })}
                   </tr>

@@ -1,6 +1,11 @@
 import React, { useMemo } from 'react';
 import { Discipline } from '../types';
 import { DAYS } from '../constants';
+import {
+  getDisplayBlocks,
+  findSessionStartBlock,
+  calculateBlockSpan
+} from '../utils/scheduleBlocks';
 
 interface ScheduleExportCardProps {
   course: string | null;
@@ -9,6 +14,11 @@ interface ScheduleExportCardProps {
   schedule: Discipline[];
   disciplinesList: Discipline[];
 }
+
+export type ExportGridCell =
+  | { type: 'session'; discipline: Discipline; sessionTime: string; rowSpan: number }
+  | { type: 'covered' }
+  | { type: 'empty' };
 
 export const ScheduleExportCard = React.forwardRef<HTMLDivElement, ScheduleExportCardProps>(({
   course,
@@ -36,32 +46,58 @@ export const ScheduleExportCard = React.forwardRef<HTMLDivElement, ScheduleExpor
 
   const daysToShow = hasSaturday ? DAYS : DAYS.slice(0, 5);
 
-  const timeSlots = useMemo(() => {
-    const parseTime = (t: string) => {
-      const parts = t.split(':');
-      if (parts.length >= 2) return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-      return 0;
-    };
+  const displayBlocks = useMemo(() => {
+    return getDisplayBlocks(schedule, disciplinesList, 'auto');
+  }, [schedule, disciplinesList]);
 
-    const scheduleTimes = new Set<string>();
-    schedule.forEach(d => d.sessions.forEach(s => scheduleTimes.add(s.time)));
-    if (scheduleTimes.size === 0) return [];
-
-    const catalogTimes = new Set<string>();
-    disciplinesList.forEach(d => d.sessions.forEach(s => catalogTimes.add(s.time)));
-    const sortedCatalog = Array.from(catalogTimes).sort((a, b) => parseTime(a) - parseTime(b));
-
-    const scheduleTimesArray = Array.from(scheduleTimes).sort((a, b) => parseTime(a) - parseTime(b));
-    const minStart = parseTime(scheduleTimesArray[0]);
-    const maxStart = parseTime(scheduleTimesArray[scheduleTimesArray.length - 1]);
-
-    const relevant = sortedCatalog.filter(t => {
-      const pt = parseTime(t);
-      return pt >= minStart && pt <= maxStart;
+  const gridMatrix = useMemo(() => {
+    const matrix: Record<number, Record<number, ExportGridCell>> = {};
+    displayBlocks.forEach((_, idx) => {
+      matrix[idx] = {};
     });
 
-    return relevant.length > 0 ? relevant : scheduleTimesArray;
-  }, [schedule, disciplinesList]);
+    daysToShow.forEach(day => {
+      for (let bIdx = 0; bIdx < displayBlocks.length; bIdx++) {
+        if (matrix[bIdx][day.id]?.type === 'covered') continue;
+
+        const block = displayBlocks[bIdx];
+        let matchedSession: any = null;
+        let matchedDisc: Discipline | null = null;
+
+        for (const disc of schedule) {
+          for (const s of disc.sessions) {
+            if (s.day !== day.id) continue;
+            const startBlock = findSessionStartBlock(s.time, displayBlocks);
+            if (startBlock?.id === block.id) {
+              matchedSession = s;
+              matchedDisc = disc;
+              break;
+            }
+          }
+          if (matchedSession) break;
+        }
+
+        if (matchedSession && matchedDisc) {
+          const span = calculateBlockSpan(matchedSession.time, bIdx, displayBlocks);
+          matrix[bIdx][day.id] = {
+            type: 'session',
+            discipline: matchedDisc,
+            sessionTime: matchedSession.time,
+            rowSpan: span
+          };
+          for (let k = 1; k < span; k++) {
+            if (bIdx + k < displayBlocks.length) {
+              matrix[bIdx + k][day.id] = { type: 'covered' };
+            }
+          }
+        } else {
+          matrix[bIdx][day.id] = { type: 'empty' };
+        }
+      }
+    });
+
+    return matrix;
+  }, [displayBlocks, schedule, daysToShow]);
 
   const undeterminedDisciplines = useMemo(() => {
     return schedule.filter(d => d.sessions.length === 0);
@@ -126,22 +162,27 @@ export const ScheduleExportCard = React.forwardRef<HTMLDivElement, ScheduleExpor
             </tr>
           </thead>
           <tbody>
-            {timeSlots.map((time, timeIdx) => (
-              <tr key={time} className={timeIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
-                <td className="py-2.5 px-3 text-center text-xs font-mono font-bold text-slate-600 border-r border-b border-slate-200 whitespace-nowrap bg-slate-50/80 align-middle">
-                  {time}
+            {displayBlocks.map((block, blockIdx) => (
+              <tr key={block.id} className={blockIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
+                <td className="py-2 px-3 text-center text-xs font-mono font-bold text-slate-700 border-r border-b border-slate-200 whitespace-nowrap bg-slate-50/80 align-middle w-28">
+                  <div>{block.label}</div>
+                  <div className="text-[10px] text-slate-400 capitalize">{block.shift}</div>
                 </td>
                 {daysToShow.map(day => {
-                  const scheduledDisc = schedule.find(disc =>
-                    disc.sessions.some(s => s.day === day.id && s.time === time)
-                  );
+                  const cell = gridMatrix[blockIdx]?.[day.id];
+                  if (!cell || cell.type === 'covered') {
+                    return null;
+                  }
 
-                  return (
-                    <td
-                      key={`${day.id}-${time}`}
-                      className="p-1.5 border-r border-b border-slate-200 last:border-r-0 align-top h-24 relative"
-                    >
-                      {scheduledDisc && (
+                  if (cell.type === 'session') {
+                    const scheduledDisc = cell.discipline;
+                    return (
+                      <td
+                        key={`${day.id}-${block.id}`}
+                        rowSpan={cell.rowSpan}
+                        className="p-1.5 border-r border-b border-slate-200 last:border-r-0 align-top relative"
+                        style={{ height: `${cell.rowSpan * 5.5}rem` }}
+                      >
                         <div className="h-full p-2 bg-indigo-50/95 border-l-[3.5px] border-indigo-600 rounded-md flex flex-col justify-between ring-1 ring-inset ring-indigo-200/60 overflow-hidden shadow-xs">
                           <div>
                             <div className="flex items-center gap-1.5 flex-wrap">
@@ -157,15 +198,32 @@ export const ScheduleExportCard = React.forwardRef<HTMLDivElement, ScheduleExpor
                                 {scheduledDisc.name}
                               </span>
                             </div>
+                            {scheduledDisc.professor && (
+                              <div className="text-[10px] font-semibold text-indigo-700 truncate mt-0.5">
+                                {scheduledDisc.professor}
+                              </div>
+                            )}
                           </div>
-                          {scheduledDisc.professor && (
-                            <div className="text-[10px] font-semibold text-indigo-700 truncate mt-1">
-                              {scheduledDisc.professor}
-                            </div>
-                          )}
+
+                          <div className="mt-1 flex items-center justify-between text-[10px] font-mono font-bold text-indigo-600">
+                            <span>{cell.sessionTime}</span>
+                            {cell.rowSpan > 1 && (
+                              <span className="text-[9px] font-sans font-semibold bg-indigo-100/90 px-1.5 py-0.2 rounded text-indigo-800">
+                                {cell.rowSpan} aulas
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      )}
-                    </td>
+                      </td>
+                    );
+                  }
+
+                  // Empty cell
+                  return (
+                    <td
+                      key={`${day.id}-${block.id}`}
+                      className="p-1.5 border-r border-b border-slate-200 last:border-r-0 align-top h-20 relative"
+                    />
                   );
                 })}
               </tr>
