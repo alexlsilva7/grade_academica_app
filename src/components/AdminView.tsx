@@ -229,10 +229,19 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
       if (res.ok) {
         // Clean up localStorage for this course
         try {
-          localStorage.removeItem(`schedule_${selectedCourseId}`);
-          localStorage.removeItem(`selected_profile_${selectedCourseId}`);
-          localStorage.removeItem(`disciplines_selectedProfile_${selectedCourseId}`);
-          localStorage.removeItem(`matrix_version_${selectedCourseId}`);
+          Object.keys(localStorage).forEach(key => {
+            if (
+              key.startsWith(`schedule_${selectedCourseId}`) ||
+              key.startsWith(`selected_profile_${selectedCourseId}`) ||
+              key.startsWith(`disciplines_selectedProfile_${selectedCourseId}`) ||
+              key.startsWith(`matrix_version_${selectedCourseId}`) ||
+              key.startsWith(`${selectedCourseId}_matriz_progress`) ||
+              key.startsWith(`${selectedCourseId}_acex_hours`) ||
+              key.startsWith(`${selectedCourseId}_acc_hours`)
+            ) {
+              localStorage.removeItem(key);
+            }
+          });
           if (localStorage.getItem('selectedCourse') === selectedCourseId) {
             localStorage.removeItem('selectedCourse');
           }

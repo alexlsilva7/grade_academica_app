@@ -144,10 +144,19 @@ export function HomeView({
       if (res.ok) {
         // Clear saved localStorage data for this course
         try {
-          localStorage.removeItem(`schedule_${selectedCourse}`);
-          localStorage.removeItem(`selected_profile_${selectedCourse}`);
-          localStorage.removeItem(`disciplines_selectedProfile_${selectedCourse}`);
-          localStorage.removeItem(`matrix_version_${selectedCourse}`);
+          Object.keys(localStorage).forEach(key => {
+            if (
+              key.startsWith(`schedule_${selectedCourse}`) ||
+              key.startsWith(`selected_profile_${selectedCourse}`) ||
+              key.startsWith(`disciplines_selectedProfile_${selectedCourse}`) ||
+              key.startsWith(`matrix_version_${selectedCourse}`) ||
+              key.startsWith(`${selectedCourse}_matriz_progress`) ||
+              key.startsWith(`${selectedCourse}_acex_hours`) ||
+              key.startsWith(`${selectedCourse}_acc_hours`)
+            ) {
+              localStorage.removeItem(key);
+            }
+          });
           localStorage.removeItem('selectedCourse');
         } catch {}
 
