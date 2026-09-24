@@ -469,6 +469,42 @@ app.delete("/api/courses/:id", localhostOnly, (req, res) => {
   }
 });
 
+// PATCH /api/courses/:id/visibility - Atualiza visibilidade do curso e de seus módulos
+app.patch("/api/courses/:id/visibility", localhostOnly, (req, res) => {
+  try {
+    const { id } = req.params;
+    const { hidden, showSchedule, showDisciplines, showMatriz } = req.body;
+    
+    const registry = getRegistry();
+    const cleanId = id.toLowerCase().replace(/[^a-z0-9_-]/g, "");
+    const courseIndex = registry.findIndex((c: any) => c.id.toLowerCase() === cleanId);
+
+    if (courseIndex === -1) {
+      return res.status(404).json({ error: "Curso não encontrado no registro." });
+    }
+
+    // Atualiza apenas os campos enviados
+    registry[courseIndex] = {
+      ...registry[courseIndex],
+      ...(hidden !== undefined ? { hidden: Boolean(hidden) } : {}),
+      ...(showSchedule !== undefined ? { showSchedule: Boolean(showSchedule) } : {}),
+      ...(showDisciplines !== undefined ? { showDisciplines: Boolean(showDisciplines) } : {}),
+      ...(showMatriz !== undefined ? { showMatriz: Boolean(showMatriz) } : {})
+    };
+
+    saveRegistry(registry);
+
+    res.json({
+      success: true,
+      message: "Visibilidade atualizada com sucesso.",
+      course: registry[courseIndex]
+    });
+  } catch (error: any) {
+    console.error("Erro ao atualizar visibilidade do curso:", error);
+    res.status(500).json({ error: "Falha ao atualizar visibilidade.", details: error.message });
+  }
+});
+
 app.use('/api', localhostOnly, extractionRoutes(getAIClient));
 
 // --- VITE DEV OR PRODUCTION STATICS HANDLERS ---

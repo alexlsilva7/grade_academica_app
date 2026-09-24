@@ -1,8 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { BookOpen, Sun, Moon, Monitor, Download, Upload, BrainCircuit, CalendarDays, Layers, ArrowRight, ChevronDown, Trash2, Loader2, AlertCircle } from 'lucide-react';
+import { BookOpen, Sun, Moon, Monitor, Download, Upload, BrainCircuit, CalendarDays, Layers, ArrowRight, ChevronDown, Trash2, Loader2, AlertCircle, Sliders } from 'lucide-react';
 import { exportAllUserData, importAllUserData } from '../utils/backupHelper';
 import { canAccessAdmin } from '../utils/domain';
 import { CourseMeta } from '../types';
+import { CoursesVisibilityModal } from './CoursesVisibilityModal';
 
 interface HomeViewProps {
   loadPredefinedGrade: (type: string) => void;
@@ -46,6 +47,7 @@ export function HomeView({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [courses, setCourses] = useState<CourseMeta[]>(DEFAULT_COURSES);
   const [courseProfiles, setCourseProfiles] = useState<string[]>([]);
+  const [isVisibilityModalOpen, setIsVisibilityModalOpen] = useState(false);
 
   useEffect(() => {
     fetch('/api/courses')
@@ -194,6 +196,7 @@ export function HomeView({
     }
   };
 
+  const visibleCourses = courses.filter(c => !c.hidden);
   const currentCourseMeta = courses.find(c => 
     c.id === selectedCourse || 
     (selectedCourse === 'engenharia-de-alimentos' && c.id === 'eal') ||
@@ -201,6 +204,9 @@ export function HomeView({
     (selectedCourse === 'mvet' && c.id === 'medicina-veterinaria') ||
     (selectedCourse === 'medicina-veterinaria' && c.id === 'mvet')
   );
+  const showSchedule = currentCourseMeta?.showSchedule !== false;
+  const showDisciplines = currentCourseMeta?.showDisciplines !== false;
+  const showMatriz = currentCourseMeta?.showMatriz !== false;
   const hasCurriculum = currentCourseMeta?.hasCurriculum ?? (selectedCourse === 'bcc' || selectedCourse === 'eal' || selectedCourse === 'engenharia-de-alimentos' || selectedCourse === 'medicina-veterinaria' || selectedCourse === 'adm');
   const courseDisplayName = currentCourseMeta ? currentCourseMeta.name : (
     selectedCourse === 'bcc' ? 'Ciência da Computação' :
@@ -216,6 +222,17 @@ export function HomeView({
       {/* Top right actions */}
       <div className="absolute top-6 right-6 flex items-center gap-2 z-10 animate-in fade-in duration-500">
         
+        {/* Visibility Manager Button */}
+        {canAccessAdmin() && (
+          <button
+            onClick={() => setIsVisibilityModalOpen(true)}
+            className="flex items-center justify-center w-10 h-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full transition-all cursor-pointer"
+            title="Gerenciar visibilidade de cursos e módulos"
+          >
+            <Sliders className="w-5 h-5" />
+          </button>
+        )}
+
         {/* Export Button */}
         <button
           onClick={exportAllUserData}
@@ -283,7 +300,7 @@ export function HomeView({
               
               <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
                 {/* Active and Registered Courses */}
-                {courses.map(course => (
+                {visibleCourses.map(course => (
                   <button 
                     key={course.id}
                     onClick={() => changeCourse(course.id)}
@@ -395,89 +412,101 @@ export function HomeView({
               
               <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 {/* Card: Horário Letivo */}
-                <button 
-                  onClick={() => loadPredefinedGrade(selectedCourse)}
-                  className="w-full p-6 text-left border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/20 dark:hover:bg-indigo-950/10 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between h-full bg-white dark:bg-slate-900 cursor-pointer"
-                >
-                  <div>
-                    <div className="flex items-center justify-between w-full mb-5">
-                      <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-300">
-                        <CalendarDays className="w-6 h-6" />
+                {showSchedule && (
+                  <button 
+                    onClick={() => loadPredefinedGrade(selectedCourse)}
+                    className="w-full p-6 text-left border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/20 dark:hover:bg-indigo-950/10 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between h-full bg-white dark:bg-slate-900 cursor-pointer"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between w-full mb-5">
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-300">
+                          <CalendarDays className="w-6 h-6" />
+                        </div>
                       </div>
+                      <h3 className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 text-lg tracking-tight transition-colors">
+                        Horário Letivo
+                      </h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                        Monte sua grade horária personalizada com as turmas ofertadas este semestre.
+                      </p>
                     </div>
-                    <h3 className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 text-lg tracking-tight transition-colors">
-                      Horário Letivo
-                    </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                      Monte sua grade horária personalizada com as turmas ofertadas este semestre.
-                    </p>
-                  </div>
-                  
-                  <div className="mt-5 flex items-center text-xs font-semibold text-indigo-600 dark:text-indigo-400 gap-1 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
-                    <span>Montar Grade</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </div>
-                </button>
+                    
+                    <div className="mt-5 flex items-center text-xs font-semibold text-indigo-600 dark:text-indigo-400 gap-1 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
+                      <span>Montar Grade</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </div>
+                  </button>
+                )}
                 
                 {/* Card: Disciplinas */}
-                <button 
-                  onClick={() => setView('disciplines')}
-                  className="w-full p-6 text-left border border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-800 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/10 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between h-full bg-white dark:bg-slate-900 cursor-pointer"
-                >
-                  <div>
-                    <div className="flex items-center justify-between w-full mb-5">
-                      <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform duration-300">
-                        <BookOpen className="w-6 h-6" />
+                {showDisciplines && (
+                  <button 
+                    onClick={() => setView('disciplines')}
+                    className="w-full p-6 text-left border border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-800 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/10 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between h-full bg-white dark:bg-slate-900 cursor-pointer"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between w-full mb-5">
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform duration-300">
+                          <BookOpen className="w-6 h-6" />
+                        </div>
                       </div>
+                      <h3 className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 text-lg tracking-tight transition-colors">
+                        Disciplinas
+                      </h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                        Consulte a lista completa de disciplinas, ementas e pré-requisitos do curso.
+                      </p>
                     </div>
-                    <h3 className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 text-lg tracking-tight transition-colors">
-                      Disciplinas
-                    </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                      Consulte a lista completa de disciplinas, ementas e pré-requisitos do curso.
-                    </p>
-                  </div>
-                  
-                  <div className="mt-5 flex items-center text-xs font-semibold text-emerald-600 dark:text-emerald-400 gap-1 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
-                    <span>Consultar Catálogo</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </div>
-                </button>
+                    
+                    <div className="mt-5 flex items-center text-xs font-semibold text-emerald-600 dark:text-emerald-400 gap-1 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
+                      <span>Consultar Catálogo</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </div>
+                  </button>
+                )}
 
                 {/* Card: Matriz */}
-                <button 
-                  onClick={() => hasCurriculum ? setView('matriz') : alert('A matriz interativa com fluxograma e progresso está em desenvolvimento para este curso. Você pode consultar as disciplinas disponíveis na aba Disciplinas.')}
-                  className={`w-full p-6 text-left border rounded-2xl flex flex-col justify-between h-full transition-all duration-300 ${
-                    hasCurriculum
-                      ? 'border-slate-200 dark:border-slate-800 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-violet-50/20 dark:hover:bg-violet-950/10 shadow-sm hover:shadow-md hover:-translate-y-1 group bg-white dark:bg-slate-900 cursor-pointer'
-                      : 'border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900 hover:border-slate-300 cursor-pointer'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between w-full mb-5">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                        hasCurriculum
-                          ? 'bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 group-hover:scale-110'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
-                      }`}>
-                        <Layers className="w-6 h-6" />
+                {showMatriz && (
+                  <button 
+                    onClick={() => hasCurriculum ? setView('matriz') : alert('A matriz interativa com fluxograma e progresso está em desenvolvimento para este curso. Você pode consultar as disciplinas disponíveis na aba Disciplinas.')}
+                    className={`w-full p-6 text-left border rounded-2xl flex flex-col justify-between h-full transition-all duration-300 ${
+                      hasCurriculum
+                        ? 'border-slate-200 dark:border-slate-800 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-violet-50/20 dark:hover:bg-violet-950/10 shadow-sm hover:shadow-md hover:-translate-y-1 group bg-white dark:bg-slate-900 cursor-pointer'
+                        : 'border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900 hover:border-slate-300 cursor-pointer'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between w-full mb-5">
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                          hasCurriculum
+                            ? 'bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 group-hover:scale-110'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                        }`}>
+                          <Layers className="w-6 h-6" />
+                        </div>
                       </div>
+                      <h3 className="font-bold text-lg tracking-tight text-slate-800 dark:text-slate-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                        Matriz Curricular
+                      </h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                        {hasCurriculum
+                          ? 'Visualize a estrutura curricular de forma organizada por períodos letivos.'
+                          : 'Visualização da árvore de pré-requisitos e fluxograma curricular.'}
+                      </p>
                     </div>
-                    <h3 className="font-bold text-lg tracking-tight text-slate-800 dark:text-slate-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
-                      Matriz Curricular
-                    </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                      {hasCurriculum
-                        ? 'Visualize a estrutura curricular de forma organizada por períodos letivos.'
-                        : 'Visualização da árvore de pré-requisitos e fluxograma curricular.'}
-                    </p>
+                    
+                    <div className="mt-5 flex items-center text-xs font-semibold text-violet-600 dark:text-violet-400 gap-1 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
+                      <span>{hasCurriculum ? 'Visualizar Grade' : 'Ver Matriz'}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </div>
+                  </button>
+                )}
+
+                {!showSchedule && !showDisciplines && !showMatriz && (
+                  <div className="col-span-full p-8 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-2xl text-center text-slate-500 dark:text-slate-400 text-sm">
+                    Nenhum módulo está disponível para este curso no momento.
                   </div>
-                  
-                  <div className="mt-5 flex items-center text-xs font-semibold text-violet-600 dark:text-violet-400 gap-1 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
-                    <span>{hasCurriculum ? 'Visualizar Grade' : 'Ver Matriz'}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </div>
-                </button>
+                )}
 
                 {canAccessAdmin() && (
                   <button 
@@ -559,6 +588,14 @@ export function HomeView({
           </div>
         </div>
       )}
+
+      {/* Gerenciador de visibilidade de cursos e módulos */}
+      <CoursesVisibilityModal
+        isOpen={isVisibilityModalOpen}
+        onClose={() => setIsVisibilityModalOpen(false)}
+        courses={courses}
+        onCourseUpdated={(updated) => setCourses(updated)}
+      />
     </div>
   );
 }

@@ -11,7 +11,9 @@
     "profiles": [
       "BCC03",
       "BCC02"
-    ]
+    ],
+    "hidden": false,
+    "showDisciplines": true
   },
   {
     "id": "adm",
@@ -21,7 +23,8 @@
     "hasSchedule": true,
     "semesters": [
       "2026.1"
-    ]
+    ],
+    "hidden": true
   },
   {
     "id": "medicina-veterinaria",
@@ -35,7 +38,8 @@
     "profiles": [
       "MVET03",
       "MVET02"
-    ]
+    ],
+    "hidden": true
   },
   {
     "id": "eal",
@@ -44,10 +48,12 @@
     "hasCurriculum": true,
     "hasSchedule": true,
     "semesters": [
-      "2026.1"
+      "2026.1",
+      "2026.2"
     ],
     "profiles": [
       "EAL03"
-    ]
+    ],
+    "showDisciplines": true
   }
 ]

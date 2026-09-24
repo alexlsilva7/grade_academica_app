@@ -124,4 +124,9 @@ export interface CourseMeta {
   hasSchedule: boolean;
   semesters?: string[];
   profiles?: string[];
+  // Controles de visibilidade:
+  hidden?: boolean;          // Oculta o curso por completo da tela inicial
+  showSchedule?: boolean;    // Exibir/ocultar card de Horário Letivo (padrão: true)
+  showDisciplines?: boolean; // Exibir/ocultar card de Disciplinas (padrão: true)
+  showMatriz?: boolean;      // Exibir/ocultar card de Matriz Curricular (padrão: true)
 }
