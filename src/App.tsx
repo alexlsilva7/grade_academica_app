@@ -13,10 +13,12 @@ import { AlertCircle, Loader2 } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { canAccessAdmin } from './utils/domain';
 import { ScheduleTour } from './components/ScheduleTour';
+import { ScheduleImageModal } from './components/ScheduleImageModal';
 
 export default function App() {
   const scheduleProps = useSchedule();
   const [isScheduleTourOpen, setIsScheduleTourOpen] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   // Auto-abrir tutorial de horários na primeira visita à tela de grade
   useEffect(() => {
@@ -83,6 +85,7 @@ export default function App() {
             semesters={scheduleProps.availableSemesters}
             selectedSemester={scheduleProps.selectedSemester}
             onSemesterChange={scheduleProps.handleSemesterChange}
+            onExportImage={() => setIsImageModalOpen(true)}
           />
           
           <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
@@ -119,6 +122,7 @@ export default function App() {
               removeFromSchedule={scheduleProps.removeFromSchedule}
               onShowDetails={scheduleProps.setDetailsDiscipline}
               onOpenTour={() => setIsScheduleTourOpen(true)}
+              onExportImage={() => setIsImageModalOpen(true)}
             />
           </div>
           
@@ -144,6 +148,15 @@ export default function App() {
             isOpen={isScheduleTourOpen}
             onClose={() => setIsScheduleTourOpen(false)}
             setMobileTab={scheduleProps.setMobileTab}
+          />
+
+          <ScheduleImageModal 
+            isOpen={isImageModalOpen}
+            onClose={() => setIsImageModalOpen(false)}
+            course={scheduleProps.selectedCourse}
+            semester={scheduleProps.selectedSemester || "2026.1"}
+            schedule={scheduleProps.schedule}
+            disciplinesList={scheduleProps.disciplinesList}
           />
         </div>
       )}

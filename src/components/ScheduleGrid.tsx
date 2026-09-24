@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { AlertCircle, X, Info, HelpCircle } from 'lucide-react';
+import { AlertCircle, X, Info, HelpCircle, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Discipline, TimeSlot } from '../types';
 import { DAYS, TIMESLOTS as DEFAULT_TIMESLOTS } from '../constants';
@@ -12,6 +12,7 @@ interface ScheduleGridProps {
   removeFromSchedule: (id: string) => void;
   onShowDetails?: (disc: Discipline) => void;
   onOpenTour?: () => void;
+  onExportImage?: () => void;
 }
 
 export function ScheduleGrid({
@@ -20,7 +21,8 @@ export function ScheduleGrid({
   disciplinesList,
   removeFromSchedule,
   onShowDetails,
-  onOpenTour
+  onOpenTour,
+  onExportImage
 }: ScheduleGridProps) {
   
   const timeSlots = useMemo(() => {
@@ -58,17 +60,31 @@ export function ScheduleGrid({
           </span>
         </div>
 
-        {onOpenTour && (
-          <button
-            data-tour="schedule-help-button"
-            onClick={onOpenTour}
-            className="flex items-center gap-1.5 text-xs bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 px-3 py-1.5 rounded-lg font-semibold transition-colors shadow-xs cursor-pointer"
-            title="Passo a passo de como montar a grade"
-          >
-            <HelpCircle className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-            <span>Como Usar</span>
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {onExportImage && (
+            <button
+              onClick={onExportImage}
+              disabled={schedule.length === 0}
+              className="flex items-center gap-1.5 text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg font-semibold transition-colors shadow-xs disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              title={schedule.length === 0 ? "Adicione disciplinas para salvar a imagem da grade" : "Exportar grade como imagem"}
+            >
+              <Camera className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
+              <span>Salvar Imagem</span>
+            </button>
+          )}
+
+          {onOpenTour && (
+            <button
+              data-tour="schedule-help-button"
+              onClick={onOpenTour}
+              className="flex items-center gap-1.5 text-xs bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 px-3 py-1.5 rounded-lg font-semibold transition-colors shadow-xs cursor-pointer"
+              title="Passo a passo de como montar a grade"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+              <span>Como Usar</span>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col pb-24 md:pb-6 gap-6">
@@ -180,8 +196,7 @@ export function ScheduleGrid({
                           <AnimatePresence>
                             {scheduledDisc && (
                               <motion.div
-                                key={scheduledDisc.id}
-                                layoutId={scheduledDisc.id}
+                                key={`${scheduledDisc.id}-${day.id}-${time}`}
                                 initial={{ opacity: 0, scale: 0.9, y: 4 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.85 }}

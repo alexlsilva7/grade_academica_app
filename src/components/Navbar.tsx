@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { ArrowLeft, Sun, Moon, Monitor, Download, Upload, MoreVertical } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, Monitor, Download, Upload, MoreVertical, Camera } from 'lucide-react';
 import { exportAllUserData, importAllUserData } from '../utils/backupHelper';
 import { ThemeMode } from '../hooks/useSchedule';
 
@@ -15,6 +15,7 @@ interface NavbarProps {
   semesters?: string[];
   selectedSemester?: string;
   onSemesterChange?: (sem: string) => void;
+  onExportImage?: () => void;
 }
 
 export function Navbar({
@@ -28,7 +29,8 @@ export function Navbar({
   showAcademicPeriod,
   semesters,
   selectedSemester,
-  onSemesterChange
+  onSemesterChange,
+  onExportImage
 }: NavbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -155,6 +157,22 @@ export function Navbar({
 
             {isMenuOpen && (
               <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg py-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                {onExportImage && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        onExportImage();
+                      }}
+                      className="w-full px-4 py-2.5 text-left text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center gap-2.5 transition-colors cursor-pointer"
+                    >
+                      <Camera className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                      <span>Salvar como Imagem</span>
+                    </button>
+                    <div className="h-px bg-slate-100 dark:bg-slate-700 my-1" />
+                  </>
+                )}
+
                 <button
                   onClick={() => {
                     setIsMenuOpen(false);
