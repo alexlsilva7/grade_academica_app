@@ -4,6 +4,7 @@ export function exportAllUserData() {
   const staticKeys = [
     'themePreference',
     'selectedCourse',
+    'selectedSemester',
     'view_preference',
     'saved_gradeTitle',
     'saved_selectedPeriod',

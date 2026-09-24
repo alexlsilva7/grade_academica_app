@@ -5,7 +5,7 @@ import {
   Clock, 
   TrendingUp, 
   Search, 
-  Filter, 
+  HelpCircle, 
   RotateCcw, 
   GraduationCap, 
   Info,
@@ -27,6 +27,7 @@ import { CurriculumProfile, TreeSubjectNode } from '../types';
 import ealCurriculum from '../data/eal/curriculo_eal.json';
 import mvetCurriculum from '../data/medicina-veterinaria/curriculo_medicina-veterinaria.json';
 import admCurriculum from '../data/adm/curriculo_adm.json';
+import { MatrizTour } from './MatrizTour';
 
 // --- ESTRUTURA COMPLETA DA MATRIZ DO CURSO ---
 const INITIAL_SUBJECTS_NEW = [
@@ -253,6 +254,7 @@ export function MatrizView({
   // --- PERFIS CURRICULARES (DINÂMICOS OU PADRÃO DO CURSO) ---
   const initialProfiles = useMemo(() => getDefaultProfilesForCourse(course), [course]);
   const [availableProfiles, setAvailableProfiles] = useState<CurriculumProfile[]>(initialProfiles);
+  const [loadedCourseName, setLoadedCourseName] = useState<string>('');
 
   const [activeProfileId, setActiveProfileId] = useState<string>(() => {
     if (selectedProfile && selectedProfile !== 'all') return selectedProfile;
@@ -289,6 +291,11 @@ export function MatrizView({
         const res = await fetch(`/api/courses/${course || 'bcc'}`);
         if (res.ok && !isCancelled) {
           const data = await res.json();
+          if (data.course?.name) {
+            setLoadedCourseName(data.course.name);
+          } else if (data.curriculum?.courseName) {
+            setLoadedCourseName(data.curriculum.courseName);
+          }
           if (data.curriculum?.profiles && Array.isArray(data.curriculum.profiles) && data.curriculum.profiles.length > 0) {
             setAvailableProfiles(data.curriculum.profiles);
             const found = data.curriculum.profiles.some((p: CurriculumProfile) => p.id === activeProfileId);
@@ -447,10 +454,21 @@ export function MatrizView({
   const [svgSize, setSvgSize] = useState({ width: 0, height: 0 });
   const [arrows, setArrows] = useState<{ id: string; type: 'prereq' | 'dependent'; path: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterType, setFilterType] = useState('todos');
+  const [isTourOpen, setIsTourOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState('todos');
   const [isMobileGrid, setIsMobileGrid] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  // Abrir tutorial automaticamente na primeira visita
+  useEffect(() => {
+    const seen = localStorage.getItem('matriz_tutorial_seen');
+    if (!seen) {
+      const timer = setTimeout(() => {
+        setIsTourOpen(true);
+      }, 700);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     if (course === 'bcc' || !course) {
@@ -614,7 +632,7 @@ export function MatrizView({
       cancelAnimationFrame(handle);
       window.removeEventListener('resize', updateArrowCoordinates);
     };
-  }, [hoveredSubject, selectedSubject, isMobileGrid, searchQuery, filterType, filterStatus, subjects, dependentsMap]);
+  }, [hoveredSubject, selectedSubject, isMobileGrid, searchQuery, filterStatus, subjects, dependentsMap]);
 
   // --- ACÇÕES ---
   const toggleSubjectStatus = (id: string) => {
@@ -713,8 +731,9 @@ export function MatrizView({
     });
 
     const completedAcademicHours = completedRegularHours + completedOptativeHours;
-    const maxAcex = activeProfile.acexHours;
-    const maxAcc = activeProfile.accHours;
+    const isEal = course === 'eal' || course === 'engenharia-de-alimentos' || activeProfile.id?.startsWith('EAL');
+    const maxAcex = activeProfile.acexHours ?? (isEal ? 390 : null);
+    const maxAcc = activeProfile.accHours ?? (isEal ? 120 : null);
     const currentAcex = maxAcex > 0 ? Math.min(maxAcex, acexHours) : 0;
     const currentAcc = maxAcc > 0 ? Math.min(maxAcc, accHours) : 0;
     const totalCompletedPlusExtracurricular = completedAcademicHours + currentAcex + currentAcc;
@@ -747,7 +766,7 @@ export function MatrizView({
   const filteredSubjects = useMemo(() => {
     return subjects.filter(s => {
       const matchesSearch = normalizeText(s.name).includes(normalizeText(searchQuery));
-      const matchesType = filterType === 'todos' || s.type === filterType;
+
       
       let matchesStatus = true;
       if (filterStatus === 'concluido') matchesStatus = s.status === 'concluido';
@@ -755,9 +774,26 @@ export function MatrizView({
       else if (filterStatus === 'pendente') matchesStatus = s.status === 'pendente';
       else if (filterStatus === 'disponivel') matchesStatus = s.status === 'pendente' && isUnlocked(s.id);
 
-      return matchesSearch && matchesType && matchesStatus;
+      return matchesSearch && matchesStatus;
     });
-  }, [subjects, searchQuery, filterType, filterStatus]);
+  }, [subjects, searchQuery, filterStatus]);
+
+  // Alvos para o tour interativo
+  const firstSubjectId = useMemo(() => {
+    return filteredSubjects[0]?.id || subjects[0]?.id || '';
+  }, [filteredSubjects, subjects]);
+
+  const samplePrereqSubject = useMemo(() => {
+    return subjects.find(s => (s.prereqs || []).length > 0) || null;
+  }, [subjects]);
+
+  const handleHoverSamplePrereq = (active: boolean) => {
+    if (active && samplePrereqSubject) {
+      setHoveredSubject(samplePrereqSubject);
+    } else {
+      setHoveredSubject(null);
+    }
+  };
 
   const maxPeriod = useMemo(() => {
     const periodNumbers = subjects.map(s => Number(s.period) || 0).filter(p => p > 0);
@@ -820,6 +856,7 @@ export function MatrizView({
         setView={setView}
         title="Matriz Curricular"
         course={course}
+        courseName={loadedCourseName}
         darkMode={darkMode}
         themePreference={themePreference}
         cycleTheme={cycleTheme}
@@ -831,40 +868,20 @@ export function MatrizView({
       {/* FILTROS E PESQUISA */}
       <section className="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 py-3 sticky top-16 z-30">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-3">
-          {/* Caixa de Pesquisa */}
-          <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Pesquisar por nome de disciplina..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
-            />
-          </div>
-
-          {/* Filtros de Tipos e Estados */}
-          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-            <div className="flex items-center gap-1.5 text-xs bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 w-full sm:w-auto">
-              <Filter className="h-3.5 w-3.5 text-slate-500" />
-              <span className="text-slate-500 hidden sm:inline">Área:</span>
-              <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="focus:outline-none bg-transparent cursor-pointer font-medium text-slate-700 dark:text-slate-300 text-xs w-full"
-              >
-                <option value="todos" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Todas as Áreas</option>
-                <option value="basico" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Núcleo Básico</option>
-                <option value="computacao" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Núcleo Computação</option>
-                <option value="profissionalizante" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Profissionalizantes</option>
-                <option value="especifica" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Específicas</option>
-                <option value="optativa" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Optativas</option>
-                <option value="estagio" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Estágio</option>
-                <option value="outros" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Metodologia / Outros</option>
-              </select>
+          {/* Caixa de Pesquisa e Filtro de Estado */}
+          <div data-tour="search-filters" className="flex flex-col sm:flex-row items-center gap-2.5 w-full md:w-auto flex-1 max-w-xl">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Pesquisar por nome de disciplina..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
+              />
             </div>
 
-            <div className="flex items-center gap-1.5 text-xs bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 w-full sm:w-auto">
+            <div className="flex items-center gap-1.5 text-xs bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 w-full sm:w-auto shrink-0 h-[34px]">
               <CheckCircle className="h-3.5 w-3.5 text-slate-500" />
               <span className="text-slate-500 hidden sm:inline">Estado:</span>
               <select
@@ -879,7 +896,10 @@ export function MatrizView({
                 <option value="disponivel" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">Desbloqueadas para Cursar</option>
               </select>
             </div>
-            
+          </div>
+
+          {/* Ações da Direita */}
+          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
             {/* Seletor Dinâmico de Perfil Curricular */}
             {availableProfiles.length > 1 && (
               <div className="flex items-center bg-white dark:bg-slate-900 rounded-lg border border-slate-300 dark:border-slate-700 p-1 w-full sm:w-auto min-h-[40px]">
@@ -907,6 +927,17 @@ export function MatrizView({
             >
               <Eye className="h-4 w-4" />
               <span>{isMobileGrid ? "Ver Grade Larga" : "Ver Lista Compacta"}</span>
+            </button>
+
+            {/* Botão Permanente de Tutorial / Como Usar */}
+            <button
+              data-tour="help-button"
+              onClick={() => setIsTourOpen(true)}
+              className="flex items-center gap-1.5 text-xs bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 px-3 py-1.5 rounded-lg font-semibold transition-colors shadow-xs cursor-pointer w-full sm:w-auto justify-center shrink-0 h-[34px]"
+              title="Passo a passo de como utilizar a matriz"
+            >
+              <HelpCircle className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+              <span>Como Usar</span>
             </button>
 
             {/* Limpar Progresso */}
@@ -943,7 +974,7 @@ export function MatrizView({
             {/* SVG Connector Overlay */}
             {!isMobileGrid && (hoveredSubject || selectedSubject) && arrows.length > 0 && (
               <svg 
-                className="absolute top-0 left-0 pointer-events-none z-20 overflow-visible" 
+                className={`absolute top-0 left-0 pointer-events-none overflow-visible ${isTourOpen ? 'z-[103]' : 'z-20'}`} 
                 style={{ 
                   width: `${svgSize.width}px`, 
                   height: `${svgSize.height}px` 
@@ -1029,11 +1060,11 @@ export function MatrizView({
 
                     if (hoveredSubject || selectedSubject) {
                       if (relationship === 'self') {
-                        styles = `${baseStyles} shadow-md scale-[1.03] z-30`;
+                        styles = `${baseStyles} shadow-md scale-[1.03] ${isTourOpen ? 'z-[103]' : 'z-30'}`;
                       } else if (relationship === 'prereq') {
-                        styles = `${baseStyles} ring-2 ring-rose-200 dark:ring-rose-900 shadow-md scale-[1.02] z-30 border-rose-400`;
+                        styles = `${baseStyles} ring-2 ring-rose-200 dark:ring-rose-900 shadow-md scale-[1.02] ${isTourOpen ? 'z-[103]' : 'z-30'} border-rose-400`;
                       } else if (relationship === 'dependent') {
-                        styles = `${baseStyles} ring-2 ring-teal-200 dark:ring-teal-900 shadow-md scale-[1.02] z-30 border-teal-400`;
+                        styles = `${baseStyles} ring-2 ring-teal-200 dark:ring-teal-900 shadow-md scale-[1.02] ${isTourOpen ? 'z-[103]' : 'z-30'} border-teal-400`;
                       } else if (relationship === 'unrelated') {
                         highlightClass = 'opacity-30 scale-95 saturate-50 grayscale-[0.5]';
                       }
@@ -1043,6 +1074,7 @@ export function MatrizView({
                       <div
                         key={s.id}
                         id={`subject-card-${s.id}`}
+                        data-tour={s.id === firstSubjectId ? 'first-subject' : s.id === samplePrereqSubject?.id ? 'prereq-subject' : undefined}
                         onMouseEnter={() => setHoveredSubject(s)}
                         onMouseLeave={() => setHoveredSubject(null)}
                         onClick={() => toggleSubjectStatus(s.id)}
@@ -1110,7 +1142,7 @@ export function MatrizView({
           </div>
 
           {/* BARRAS E PAINÉIS DE RESUMO DE CARGA HORÁRIA E REQUISITOS (ACEX/ACC) EM BAIXO */}
-          <div className="mt-8 max-w-[1400px] w-full mx-auto">
+          <div id="tour-stats-summary" data-tour="stats-summary" className="mt-8 max-w-[1400px] w-full mx-auto">
             <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4 px-1 flex items-center gap-2">
               <BarChart2 className="w-4 h-4 text-indigo-500" /> Resumo de Requisitos e Carga Horária
             </h4>
@@ -1392,6 +1424,15 @@ export function MatrizView({
           </div>
         </div>
       )}
+
+    
+
+      {/* Tutorial Passo a Passo Interativo (Spotlight Walkthrough) */}
+      <MatrizTour
+        isOpen={isTourOpen}
+        onClose={() => setIsTourOpen(false)}
+        onHoverSamplePrereq={handleHoverSamplePrereq}
+      />
 
     </div>
   );

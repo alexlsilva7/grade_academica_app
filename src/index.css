@@ -64,3 +64,9 @@
 .animate-dash-flow {
   animation: dash 1s linear infinite;
 }
+
+/* Tour Spotlight Elevated Element */
+.tour-spotlight-active {
+  position: relative !important;
+  z-index: 101 !important;
+}

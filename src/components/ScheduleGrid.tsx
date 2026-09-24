@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { AlertCircle, X, Info } from 'lucide-react';
+import { AlertCircle, X, Info, HelpCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Discipline, TimeSlot } from '../types';
 import { DAYS, TIMESLOTS as DEFAULT_TIMESLOTS } from '../constants';
@@ -11,6 +11,7 @@ interface ScheduleGridProps {
   disciplinesList: Discipline[];
   removeFromSchedule: (id: string) => void;
   onShowDetails?: (disc: Discipline) => void;
+  onOpenTour?: () => void;
 }
 
 export function ScheduleGrid({
@@ -18,7 +19,8 @@ export function ScheduleGrid({
   schedule,
   disciplinesList,
   removeFromSchedule,
-  onShowDetails
+  onShowDetails,
+  onOpenTour
 }: ScheduleGridProps) {
   
   const timeSlots = useMemo(() => {
@@ -48,8 +50,25 @@ export function ScheduleGrid({
   return (
     <div className={`flex-1 flex flex-col h-full overflow-hidden ${mobileTab === 'schedule' ? 'flex flex-col' : 'hidden md:flex flex-col'} bg-slate-50 dark:bg-slate-950`}>
       {/* Top bar */}
-      <div className="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 md:px-6 flex items-center justify-between flex-shrink-0 animate-in fade-in duration-300">
-        <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Sua Grade</h2>
+      <div data-tour="schedule-header" className="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 md:px-6 flex items-center justify-between flex-shrink-0 animate-in fade-in duration-300">
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Sua Grade</h2>
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+            {schedule.length} {schedule.length === 1 ? 'matéria' : 'matérias'}
+          </span>
+        </div>
+
+        {onOpenTour && (
+          <button
+            data-tour="schedule-help-button"
+            onClick={onOpenTour}
+            className="flex items-center gap-1.5 text-xs bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 px-3 py-1.5 rounded-lg font-semibold transition-colors shadow-xs cursor-pointer"
+            title="Passo a passo de como montar a grade"
+          >
+            <HelpCircle className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+            <span>Como Usar</span>
+          </button>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col pb-24 md:pb-6 gap-6">
@@ -130,7 +149,7 @@ export function ScheduleGrid({
         </AnimatePresence>
 
         {/* Schedule Grid */}
-        <div className="bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm flex-1 flex flex-col min-h-0">
+        <div data-tour="schedule-grid" className="bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm flex-1 flex flex-col min-h-0">
           <div className="overflow-x-auto flex-1 flex flex-col bg-slate-100 dark:bg-slate-900">
             <table className="w-full text-left border-collapse min-w-[700px] h-full">
               <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">

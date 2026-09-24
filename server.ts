@@ -155,6 +155,7 @@ app.get("/api/courses", (req, res) => {
     const courses = getRegistry();
     const enriched = courses.map((c: any) => {
       let profiles: string[] = Array.isArray(c.profiles) ? [...c.profiles] : [];
+      let semesters: string[] = Array.isArray(c.semesters) ? [...c.semesters] : [];
       const courseDir = path.join(DATA_DIR, c.id);
       if (fs.existsSync(courseDir)) {
         const files = fs.readdirSync(courseDir);
@@ -166,7 +167,14 @@ app.get("/api/courses", (req, res) => {
             profiles = Array.from(new Set([...profiles, ...currProfiles]));
           } catch {}
         }
-        const schedFile = files.find(f => f.startsWith("horario_") && f.endsWith(".json"));
+        const schedFiles = files.filter(f => f.startsWith("horario_") && f.endsWith(".json"));
+        schedFiles.forEach(f => {
+          const match = f.match(/^horario_[a-z0-9_-]+_(\d{4}_\d)\.json$/);
+          if (match) {
+            semesters.push(match[1].replace('_', '.'));
+          }
+        });
+        const schedFile = schedFiles.sort().reverse()[0];
         if (schedFile) {
           try {
             const sched = JSON.parse(fs.readFileSync(path.join(courseDir, schedFile), "utf-8"));
@@ -175,7 +183,11 @@ app.get("/api/courses", (req, res) => {
           } catch {}
         }
       }
-      return { ...c, profiles: profiles.length > 0 ? profiles : undefined };
+      return { 
+        ...c, 
+        profiles: profiles.length > 0 ? profiles : undefined,
+        semesters: Array.from(new Set(semesters)).sort()
+      };
     });
     res.json({ courses: enriched });
   } catch (error: any) {
@@ -188,13 +200,17 @@ app.get("/api/courses/:id", (req, res) => {
   try {
     const { id } = req.params;
     const cleanId = id.toLowerCase();
+    const requestedSemester = req.query.semester as string | undefined; // Permite ?semester=2026.2
     const courses = getRegistry();
     const courseMeta = courses.find((c: any) => 
       c.id === cleanId ||
+      c.id.toLowerCase() === cleanId ||
+      (c.shortName && c.shortName.toLowerCase() === cleanId) ||
       (cleanId === 'engenharia-de-alimentos' && c.id === 'eal') ||
       (cleanId === 'eal' && c.id === 'engenharia-de-alimentos') ||
       (cleanId === 'mvet' && c.id === 'medicina-veterinaria') ||
-      (cleanId === 'medicina-veterinaria' && c.id === 'mvet')
+      (cleanId === 'medicina-veterinaria' && c.id === 'mvet') ||
+      (cleanId === 'vet' && c.id === 'medicina-veterinaria')
     );
 
     if (!courseMeta) {
@@ -216,7 +232,19 @@ app.get("/api/courses/:id", (req, res) => {
     if (fs.existsSync(courseDir)) {
       const files = fs.readdirSync(courseDir);
 
-      // Look for curriculum file
+      // Identifica todos os semestres disponíveis nos arquivos horario_<id>_<semestre>.json
+      const availableSemesters: string[] = [];
+      files.forEach(f => {
+        const match = f.match(/^horario_[a-z0-9_-]+_(\d{4}_\d)\.json$/);
+        if (match) {
+          availableSemesters.push(match[1].replace('_', '.'));
+        }
+      });
+      if (availableSemesters.length > 0) {
+        courseMeta.semesters = Array.from(new Set(availableSemesters)).sort();
+      }
+
+      // Procura currículo
       const currFile = files.find(f => f.startsWith("curriculo_") && f.endsWith(".json"));
       if (currFile) {
         try {
@@ -232,13 +260,25 @@ app.get("/api/courses/:id", (req, res) => {
         }
       }
 
-      // Look for schedule file
-      const schedFile = files.find(f => f.startsWith("horario_") && f.endsWith(".json"));
-      if (schedFile) {
+      // Procura o arquivo de horário correspondente ao semestre solicitado ou o mais recente
+      let targetSchedFile: string | undefined;
+      if (requestedSemester) {
+        const semClean = requestedSemester.replace(/\./g, '_');
+        targetSchedFile = files.find(f => f === `horario_${courseMeta.id}_${semClean}.json` || (f.startsWith('horario_') && f.endsWith(`_${semClean}.json`)));
+      }
+      if (!targetSchedFile) {
+        // Pega o mais recente ou o primeiro
+        const schedFiles = files.filter(f => f.startsWith("horario_") && f.endsWith(".json")).sort().reverse();
+        targetSchedFile = schedFiles[0];
+      }
+
+      if (targetSchedFile) {
         try {
-          schedule = JSON.parse(fs.readFileSync(path.join(courseDir, schedFile), "utf-8"));
-          const reportPath = path.join(courseDir, `extracao_${schedFile}`);
-          if (fs.existsSync(reportPath)) scheduleExtraction = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
+          schedule = JSON.parse(fs.readFileSync(path.join(courseDir, targetSchedFile), "utf-8"));
+          const reportPath = path.join(courseDir, `extracao_${targetSchedFile}`);
+          if (fs.existsSync(reportPath)) {
+            scheduleExtraction = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
+          }
           if (schedule) {
             const schedProfiles = extractProfilesFromSchedule(schedule);
             if (schedProfiles.length > 0) {
@@ -350,13 +390,26 @@ app.post("/api/courses", localhostOnly, (req, res) => {
       ...detectedProfiles
     ])).filter(Boolean);
 
+    // Atualizar semestres acumulando os existentes
+    const existingSemesters = Array.isArray(existingMeta?.semesters) ? existingMeta.semesters : [];
+    const diskFiles = fs.existsSync(courseDir) ? fs.readdirSync(courseDir) : [];
+    const diskSemesters: string[] = [];
+    diskFiles.forEach(f => {
+      const match = f.match(/^horario_[a-z0-9_-]+_(\d{4}_\d)\.json$/);
+      if (match) {
+        diskSemesters.push(match[1].replace('_', '.'));
+      }
+    });
+    const formattedSem = sem.replace(/_/g, ".");
+    const mergedSemesters = Array.from(new Set([...existingSemesters, ...diskSemesters, formattedSem])).sort();
+
     const updatedMeta: any = {
       id: cleanId,
       name: name.trim(),
       shortName: (shortName || cleanId.toUpperCase()).trim(),
       hasCurriculum,
       hasSchedule,
-      semesters: [sem.replace(/_/g, ".")]
+      semesters: mergedSemesters
     };
 
     if (mergedProfiles.length > 0) {

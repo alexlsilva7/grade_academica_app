@@ -1,5 +1,5 @@
 import React, { RefObject } from 'react';
-import { ArrowLeft, BookOpen, Search, X, CheckCircle2, Info, CheckCircle, Circle, Square, CheckSquare, AlertCircle, Sun, Moon, Monitor, ChevronDown } from 'lucide-react';
+import { ArrowLeft, BookOpen, Search, X, CheckCircle2, Info, CheckCircle, Circle, Square, CheckSquare, AlertCircle, Sun, Moon, Monitor, ChevronDown, HelpCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Discipline } from '../types';
 import { DAYS } from '../constants';
@@ -29,6 +29,7 @@ interface SidebarProps {
   darkMode: boolean;
   themePreference: 'light' | 'dark' | 'system';
   cycleTheme: () => void;
+  onOpenTour?: () => void;
 }
 
 export function Sidebar({
@@ -54,7 +55,8 @@ export function Sidebar({
   getDisciplineConflictInstance,
   darkMode,
   themePreference,
-  cycleTheme
+  cycleTheme,
+  onOpenTour
 }: SidebarProps) {
   const getCleanDisciplineName = (name: string) => {
     return name
@@ -68,7 +70,7 @@ export function Sidebar({
       <div className="p-4 border-b border-slate-100 dark:border-slate-800/80 flex flex-col gap-3 shrink-0">
         {/* Profile / Matriz select when multiple profiles exist - DISPLAYED ON TOP */}
         {availableProfiles && availableProfiles.length > 1 && (
-          <div className="flex flex-col gap-1.5 pb-2 border-b border-slate-100 dark:border-slate-800/60">
+          <div data-tour="schedule-profiles" className="flex flex-col gap-1.5 pb-2 border-b border-slate-100 dark:border-slate-800/60">
             <div className="flex items-center justify-between">
               <label htmlFor="sidebar-profile-select" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Perfil / Matriz
@@ -98,9 +100,19 @@ export function Sidebar({
 
         <div className="flex justify-between items-center">
           <h2 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Períodos</h2>
+          {onOpenTour && (
+            <button
+              onClick={onOpenTour}
+              className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-1 cursor-pointer transition-colors"
+              title="Passo a passo de como montar a grade"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+              <span>Como Usar</span>
+            </button>
+          )}
         </div>
         {periods.length > 0 && (
-          <div className="flex gap-1.5 bg-slate-100 dark:bg-slate-950 p-1.5 rounded-lg overflow-x-auto scrollbar-hide flex-shrink-0">
+          <div data-tour="schedule-periods" className="flex gap-1.5 bg-slate-100 dark:bg-slate-950 p-1.5 rounded-lg overflow-x-auto scrollbar-hide flex-shrink-0">
             {periods.map(period => (
               <button
                 key={period}
@@ -120,7 +132,7 @@ export function Sidebar({
           </div>
         )}
         
-        <div className="relative">
+        <div data-tour="schedule-search" className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
           <input
             type="text"
@@ -161,7 +173,7 @@ export function Sidebar({
             <p className="text-sm text-slate-500 dark:text-slate-400">Nenhuma disciplina encontrada.</p>
           </div>
         ) : (
-          displayedDisciplines.map(disc => {
+          displayedDisciplines.map((disc, idx) => {
             const scheduled = isDisciplineScheduled(disc.id);
             const discIdentifier = disc.code || disc.id;
             const isCompleted = completedDisciplines.includes(discIdentifier);
@@ -171,6 +183,7 @@ export function Sidebar({
                 key={disc.id}
                 whileTap={{ scale: 0.96 }}
                 transition={{ duration: 0.15 }}
+                data-tour={idx === 0 ? "schedule-first-card" : undefined}
                 onClick={() => {
                   if (!isCompleted) {
                     toggleDiscipline(disc);

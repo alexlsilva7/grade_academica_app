@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useSchedule } from './hooks/useSchedule';
 import { HomeView } from './components/HomeView';
 import { MatrizView } from './components/MatrizView';
@@ -11,9 +12,24 @@ import { AnimatePresence } from 'motion/react';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { canAccessAdmin } from './utils/domain';
+import { ScheduleTour } from './components/ScheduleTour';
 
 export default function App() {
   const scheduleProps = useSchedule();
+  const [isScheduleTourOpen, setIsScheduleTourOpen] = useState(false);
+
+  // Auto-abrir tutorial de horários na primeira visita à tela de grade
+  useEffect(() => {
+    if (scheduleProps.view === 'schedule') {
+      const seen = localStorage.getItem('horario_tutorial_seen');
+      if (!seen) {
+        const timer = setTimeout(() => {
+          setIsScheduleTourOpen(true);
+        }, 700);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [scheduleProps.view]);
 
   return (
     <>
@@ -64,6 +80,9 @@ export default function App() {
             themePreference={scheduleProps.themePreference}
             cycleTheme={scheduleProps.cycleTheme}
             showAcademicPeriod={true}
+            semesters={scheduleProps.availableSemesters}
+            selectedSemester={scheduleProps.selectedSemester}
+            onSemesterChange={scheduleProps.handleSemesterChange}
           />
           
           <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
@@ -91,6 +110,7 @@ export default function App() {
               darkMode={scheduleProps.darkMode}
               themePreference={scheduleProps.themePreference}
               cycleTheme={scheduleProps.cycleTheme}
+              onOpenTour={() => setIsScheduleTourOpen(true)}
             />
             <ScheduleGrid 
               mobileTab={scheduleProps.mobileTab}
@@ -98,6 +118,7 @@ export default function App() {
               disciplinesList={scheduleProps.disciplinesList}
               removeFromSchedule={scheduleProps.removeFromSchedule}
               onShowDetails={scheduleProps.setDetailsDiscipline}
+              onOpenTour={() => setIsScheduleTourOpen(true)}
             />
           </div>
           
@@ -117,6 +138,12 @@ export default function App() {
             mobileTab={scheduleProps.mobileTab}
             setMobileTab={scheduleProps.setMobileTab}
             schedule={scheduleProps.schedule}
+          />
+
+          <ScheduleTour 
+            isOpen={isScheduleTourOpen}
+            onClose={() => setIsScheduleTourOpen(false)}
+            setMobileTab={scheduleProps.setMobileTab}
           />
         </div>
       )}

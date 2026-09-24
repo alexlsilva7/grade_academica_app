@@ -199,9 +199,10 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
         // Schedule
         if (Array.isArray(data.schedule)) {
           setDisciplines(data.schedule);
-          setScheduleSemester(data.schedule.find((d: Discipline) => d.semester)?.semester || meta.semesters?.[0] || '');
+          const currentSemester = data.schedule.find((d: Discipline) => d.semester)?.semester || (meta.semesters && meta.semesters.length > 0 ? meta.semesters[meta.semesters.length - 1] : '2026.1');
+          setScheduleSemester(currentSemester);
           if (activeMode === 'schedule') setExtractionReport(data.scheduleExtraction || null);
-          setScheduleTitle(`${meta.name} - Horário 2026.1`);
+          setScheduleTitle(`${meta.name} - Horário ${currentSemester}`);
         } else {
           setDisciplines([]);
           setScheduleTitle('');
@@ -845,7 +846,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
 
     const filename = isCurr 
       ? `curriculo_${selectedCourseId || 'curso'}.json`
-      : `horario_${selectedCourseId || 'curso'}_2026_1.json`;
+      : `horario_${selectedCourseId || 'curso'}_${(scheduleSemester || '2026.1').replace(/\./g, '_')}.json`;
 
     const blob = new Blob([content], { type: 'application/json' });
     const url = URL.createObjectURL(blob);

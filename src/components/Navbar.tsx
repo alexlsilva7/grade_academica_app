@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { ArrowLeft, Sun, Moon, Monitor, Download, Upload } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { ArrowLeft, Sun, Moon, Monitor, Download, Upload, MoreVertical } from 'lucide-react';
 import { exportAllUserData, importAllUserData } from '../utils/backupHelper';
 import { ThemeMode } from '../hooks/useSchedule';
 
@@ -7,22 +7,46 @@ interface NavbarProps {
   setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines') => void;
   title: string;
   course: string | null;
+  courseName?: string;
   darkMode: boolean;
   themePreference: ThemeMode;
   cycleTheme: () => void;
   showAcademicPeriod?: boolean;
+  semesters?: string[];
+  selectedSemester?: string;
+  onSemesterChange?: (sem: string) => void;
 }
 
 export function Navbar({
   setView,
   title,
   course,
+  courseName,
   darkMode,
   themePreference,
   cycleTheme,
-  showAcademicPeriod
+  showAcademicPeriod,
+  semesters,
+  selectedSemester,
+  onSemesterChange
 }: NavbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   const handleImportChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -34,11 +58,14 @@ export function Navbar({
   };
 
   const getCourseName = () => {
-    if (course === 'bcc') return 'Bacharelado em Ciência da Computação';
-    if (course === 'eal' || course === 'engenharia-de-alimentos') return 'Engenharia de Alimentos';
-    if (course === 'adm') return 'Administração';
-    if (course === 'medicina-veterinaria' || course === 'mvet') return 'Medicina Veterinária';
-    return '';
+    if (courseName && courseName.trim().length > 0) return courseName;
+    if (!course) return '';
+    const c = course.toLowerCase();
+    if (c === 'bcc' || c.includes('computacao') || c.includes('computação')) return 'Ciência da Computação';
+    if (c === 'eal' || c === 'engenharia-de-alimentos' || c.includes('alimento')) return 'Engenharia de Alimentos';
+    if (c === 'adm' || c === 'administracao' || c.includes('administra')) return 'Administração';
+    if (c === 'mvet' || c === 'vet' || c === 'medicina-veterinaria' || c.includes('veterin')) return 'Medicina Veterinária';
+    return course;
   };
 
   return (
@@ -71,9 +98,14 @@ export function Navbar({
           </div>
           
           <div className="sm:hidden block truncate">
-            <h1 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+            <h1 className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate leading-tight">
               {title}
             </h1>
+            {getCourseName() && (
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                {getCourseName()}
+              </p>
+            )}
           </div>
         </div>
 
@@ -81,8 +113,16 @@ export function Navbar({
         <div className="flex items-center gap-2">
           
           {showAcademicPeriod && (
-            <select className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 cursor-pointer transition-colors outline-none font-bold h-9">
-              <option value="2026.1" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">2026.1</option>
+            <select 
+              value={selectedSemester || "2026.1"}
+              onChange={(e) => onSemesterChange?.(e.target.value)}
+              className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 cursor-pointer transition-colors outline-none font-bold h-9"
+            >
+              {(semesters && semesters.length > 0 ? semesters : ["2026.1", "2026.2"]).map(s => (
+                <option key={s} value={s} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+                  {s}
+                </option>
+              ))}
             </select>
           )}
           
@@ -101,24 +141,44 @@ export function Navbar({
             )}
           </button>
 
-          {/* Export Button */}
-          <button
-            onClick={exportAllUserData}
-            className="flex items-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold rounded-lg border border-transparent dark:border-slate-700 transition-all cursor-pointer shadow-xs"
-            title="Exportar backup completo"
-          >
-            <Download className="h-4 w-4" />
-            <span className="hidden md:inline">Exportar</span>
-          </button>
+          {/* Menu Mais Opções (Exportar / Importar) */}
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setIsMenuOpen(prev => !prev)}
+              className="p-2 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-200 rounded-lg transition-all cursor-pointer"
+              title="Mais opções"
+              aria-label="Mais opções"
+              aria-expanded={isMenuOpen}
+            >
+              <MoreVertical className="w-4 h-4" />
+            </button>
 
-          {/* Import Button */}
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg transition-all cursor-pointer shadow-xs"
-            title="Importar backup completo"
-          >
-            <Upload className="h-4 w-4" />
-            <span className="hidden md:inline">Importar</span>
+            {isMenuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg py-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    exportAllUserData();
+                  }}
+                  className="w-full px-4 py-2.5 text-left text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center gap-2.5 transition-colors cursor-pointer"
+                >
+                  <Download className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                  <span>Exportar Dados</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    fileInputRef.current?.click();
+                  }}
+                  className="w-full px-4 py-2.5 text-left text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center gap-2.5 transition-colors cursor-pointer"
+                >
+                  <Upload className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                  <span>Importar Dados</span>
+                </button>
+              </div>
+            )}
+
             <input
               type="file"
               ref={fileInputRef}
@@ -126,7 +186,7 @@ export function Navbar({
               onChange={handleImportChange}
               className="hidden"
             />
-          </button>
+          </div>
 
         </div>
 
