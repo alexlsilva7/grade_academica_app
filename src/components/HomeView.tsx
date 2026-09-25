@@ -24,15 +24,6 @@ const DEFAULT_COURSES: CourseMeta[] = [
   { id: 'medicina-veterinaria', name: 'Medicina Veterinária', shortName: 'MVET', hasCurriculum: true, hasSchedule: true, profiles: ['MVET03', 'MVET02'] },
 ];
 
-const PLANNED_COURSES = [
-  { id: 'agro', name: 'Agronomia' },
-  { id: 'cont', name: 'Ciências Contábeis' },
-  { id: 'let', name: 'Letras' },
-  { id: 'vet', name: 'Medicina Veterinária' },
-  { id: 'ped', name: 'Pedagogia' },
-  { id: 'zoo', name: 'Zootecnia' }
-];
-
 export function HomeView({ 
   loadPredefinedGrade, 
   setView, 
@@ -317,17 +308,11 @@ export function HomeView({
                   </button>
                 ))}
 
-                {/* Planned Courses that are not yet active */}
-                {PLANNED_COURSES.filter(p => !courses.some(c => c.id === p.id)).map(planned => (
-                  <button 
-                    key={planned.id}
-                    disabled 
-                    className="w-full px-4 py-3 border border-slate-200 dark:border-slate-800 rounded-xl text-left opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900/50"
-                  >
-                    <div className="font-medium text-slate-700 dark:text-slate-200 text-sm">{planned.name}</div>
-                    <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Em breve</div>
-                  </button>
-                ))}
+                {visibleCourses.length === 0 && (
+                  <div className="col-span-full p-6 text-center text-slate-400 dark:text-slate-500 text-sm">
+                    Nenhum curso disponível no momento.
+                  </div>
+                )}
               </div>
 
               {canAccessAdmin() && (
