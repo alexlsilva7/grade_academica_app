@@ -54,6 +54,10 @@
     "profiles": [
       "EAL03"
     ],
-    "showDisciplines": true
+    "showDisciplines": true,
+    "visibleSemesters": [
+      "2026.2",
+      "2026.1"
+    ]
   }
 ]

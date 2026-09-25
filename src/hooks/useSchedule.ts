@@ -241,10 +241,13 @@ export function useSchedule() {
     fetch(`/api/courses/${course}`)
       .then(res => res.ok ? res.json() : null)
       .then(data => {
-        if (data?.course?.semesters && Array.isArray(data.course.semesters) && data.course.semesters.length > 0) {
-          setAvailableSemesters(data.course.semesters);
-          if (!data.course.semesters.includes(selectedSemester)) {
-            const defaultSem = data.course.semesters[0] || '2026.1';
+        const activeSemesters = (data?.course?.visibleSemesters && Array.isArray(data.course.visibleSemesters) && data.course.visibleSemesters.length > 0)
+          ? data.course.visibleSemesters
+          : (data?.course?.semesters && Array.isArray(data.course.semesters) && data.course.semesters.length > 0 ? data.course.semesters : null);
+        if (activeSemesters && activeSemesters.length > 0) {
+          setAvailableSemesters(activeSemesters);
+          if (!activeSemesters.includes(selectedSemester)) {
+            const defaultSem = activeSemesters[0] || '2026.1';
             setSelectedSemester(defaultSem);
             lastLoadedSemesterRef.current = defaultSem;
             try {
@@ -264,8 +267,11 @@ export function useSchedule() {
       fetch(`/api/courses/${selectedCourse}?semester=${selectedSemester}`)
         .then(res => res.ok ? res.json() : null)
         .then(data => {
-          if (data?.course?.semesters && Array.isArray(data.course.semesters) && data.course.semesters.length > 0) {
-            setAvailableSemesters(data.course.semesters);
+          const activeSemesters = (data?.course?.visibleSemesters && Array.isArray(data.course.visibleSemesters) && data.course.visibleSemesters.length > 0)
+            ? data.course.visibleSemesters
+            : (data?.course?.semesters && Array.isArray(data.course.semesters) && data.course.semesters.length > 0 ? data.course.semesters : null);
+          if (activeSemesters && activeSemesters.length > 0) {
+            setAvailableSemesters(activeSemesters);
           }
         })
         .catch(() => {});
@@ -524,8 +530,11 @@ export function useSchedule() {
       const res = await fetch(`/api/courses/${courseId}?semester=${semester}`);
       if (res.ok) {
         const data = await res.json();
-        if (data.course?.semesters && Array.isArray(data.course.semesters) && data.course.semesters.length > 0) {
-          setAvailableSemesters(data.course.semesters);
+        const activeSemesters = (data.course?.visibleSemesters && Array.isArray(data.course.visibleSemesters) && data.course.visibleSemesters.length > 0)
+          ? data.course.visibleSemesters
+          : (data.course?.semesters && Array.isArray(data.course.semesters) && data.course.semesters.length > 0 ? data.course.semesters : null);
+        if (activeSemesters && activeSemesters.length > 0) {
+          setAvailableSemesters(activeSemesters);
         }
         let availableOfferings: Discipline[] = [];
         if (Array.isArray(data.schedule)) {

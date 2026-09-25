@@ -122,7 +122,8 @@ export interface CourseMeta {
   shortName: string;
   hasCurriculum: boolean;
   hasSchedule: boolean;
-  semesters?: string[];
+  semesters?: string[];         // Todos os semestres que existem nos arquivos (ex: ["2026.1", "2026.2"])
+  visibleSemesters?: string[];  // Semestres ativos e ordenados. O 1º é o padrão aberto no app!
   profiles?: string[];
   // Controles de visibilidade:
   hidden?: boolean;          // Oculta o curso por completo da tela inicial

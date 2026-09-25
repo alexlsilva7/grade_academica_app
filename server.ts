@@ -267,6 +267,14 @@ app.get("/api/courses/:id", (req, res) => {
         targetSchedFile = files.find(f => f === `horario_${courseMeta.id}_${semClean}.json` || (f.startsWith('horario_') && f.endsWith(`_${semClean}.json`)));
       }
       if (!targetSchedFile) {
+        // Pega o padrão definido pelo admin (primeiro de visibleSemesters) ou o primeiro de semesters
+        const defaultSem = courseMeta.visibleSemesters?.[0] || courseMeta.semesters?.[0];
+        if (defaultSem) {
+          const semClean = defaultSem.replace(/\./g, '_');
+          targetSchedFile = files.find(f => f === `horario_${courseMeta.id}_${semClean}.json` || (f.startsWith('horario_') && f.endsWith(`_${semClean}.json`)));
+        }
+      }
+      if (!targetSchedFile) {
         // Pega o mais recente ou o primeiro
         const schedFiles = files.filter(f => f.startsWith("horario_") && f.endsWith(".json")).sort().reverse();
         targetSchedFile = schedFiles[0];
@@ -469,11 +477,11 @@ app.delete("/api/courses/:id", localhostOnly, (req, res) => {
   }
 });
 
-// PATCH /api/courses/:id/visibility - Atualiza visibilidade do curso e de seus módulos
+// PATCH /api/courses/:id/visibility - Atualiza visibilidade do curso, módulos e semestres
 app.patch("/api/courses/:id/visibility", localhostOnly, (req, res) => {
   try {
     const { id } = req.params;
-    const { hidden, showSchedule, showDisciplines, showMatriz } = req.body;
+    const { hidden, showSchedule, showDisciplines, showMatriz, visibleSemesters } = req.body;
     
     const registry = getRegistry();
     const cleanId = id.toLowerCase().replace(/[^a-z0-9_-]/g, "");
@@ -489,14 +497,15 @@ app.patch("/api/courses/:id/visibility", localhostOnly, (req, res) => {
       ...(hidden !== undefined ? { hidden: Boolean(hidden) } : {}),
       ...(showSchedule !== undefined ? { showSchedule: Boolean(showSchedule) } : {}),
       ...(showDisciplines !== undefined ? { showDisciplines: Boolean(showDisciplines) } : {}),
-      ...(showMatriz !== undefined ? { showMatriz: Boolean(showMatriz) } : {})
+      ...(showMatriz !== undefined ? { showMatriz: Boolean(showMatriz) } : {}),
+      ...(Array.isArray(visibleSemesters) ? { visibleSemesters } : {})
     };
 
     saveRegistry(registry);
 
     res.json({
       success: true,
-      message: "Visibilidade atualizada com sucesso.",
+      message: "Configurações de visibilidade salvas.",
       course: registry[courseIndex]
     });
   } catch (error: any) {

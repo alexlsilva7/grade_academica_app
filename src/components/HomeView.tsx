@@ -6,7 +6,7 @@ import { CourseMeta } from '../types';
 import { CoursesVisibilityModal } from './CoursesVisibilityModal';
 
 interface HomeViewProps {
-  loadPredefinedGrade: (type: string) => void;
+  loadPredefinedGrade: (type: string, semesterToLoad?: string) => void;
   setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines' | 'admin') => void;
   themePreference: 'light' | 'dark' | 'system';
   cycleTheme: () => void;
@@ -414,7 +414,11 @@ export function HomeView({
                 {/* Card: Horário Letivo */}
                 {showSchedule && (
                   <button 
-                    onClick={() => loadPredefinedGrade(selectedCourse)}
+                    onClick={() => {
+                      if (!selectedCourse) return;
+                      const defaultSemester = currentCourseMeta?.visibleSemesters?.[0] || '2026.1';
+                      loadPredefinedGrade(selectedCourse, defaultSemester);
+                    }}
                     className="w-full p-6 text-left border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/20 dark:hover:bg-indigo-950/10 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between h-full bg-white dark:bg-slate-900 cursor-pointer"
                   >
                     <div>

@@ -27,7 +27,9 @@ test('Course and module visibility logic', () => {
       hasSchedule: true,
       showSchedule: false,
       showDisciplines: true,
-      showMatriz: false
+      showMatriz: false,
+      semesters: ['2026.1', '2026.2'],
+      visibleSemesters: ['2026.2', '2026.1']
     }
   ];
 
@@ -57,15 +59,56 @@ test('Course and module visibility logic', () => {
 
   const patchBody = {
     hidden: true,
-    showSchedule: false
+    showSchedule: false,
+    visibleSemesters: ['2026.2']
   };
 
   registry[courseIndex] = {
     ...registry[courseIndex],
-    ...(patchBody.hidden !== undefined ? { hidden: Boolean(patchBody.hidden) } : {})
+    ...(patchBody.hidden !== undefined ? { hidden: Boolean(patchBody.hidden) } : {}),
+    ...(Array.isArray(patchBody.visibleSemesters) ? { visibleSemesters: patchBody.visibleSemesters } : {})
   };
 
   assert.equal(registry[courseIndex].hidden, true);
   assert.equal(registry[courseIndex].name, 'Ciência da Computação', 'Course name is preserved');
   assert.equal(registry[courseIndex].hasCurriculum, true, 'hasCurriculum is preserved');
+  assert.deepEqual(registry[courseIndex].visibleSemesters, ['2026.2'], 'visibleSemesters updated');
+});
+
+test('Semester visibility and ordering logic', () => {
+  const course: CourseMeta = {
+    id: 'eal',
+    name: 'Engenharia de Alimentos',
+    shortName: 'EAL',
+    hasCurriculum: true,
+    hasSchedule: true,
+    semesters: ['2026.1', '2026.2'],
+    visibleSemesters: ['2026.2', '2026.1']
+  };
+
+  // 1. Default semester is the first item in visibleSemesters
+  const defaultSemester = course.visibleSemesters?.[0] || course.semesters?.[0] || '2026.1';
+  assert.equal(defaultSemester, '2026.2', '2026.2 is the default semester');
+
+  // 2. Reordering: moving 2026.1 to the top makes it default
+  const reordered = [...course.visibleSemesters!].reverse();
+  assert.deepEqual(reordered, ['2026.1', '2026.2']);
+  assert.equal(reordered[0], '2026.1', 'New default is 2026.1 after moving to top');
+
+  // 3. Hiding a semester removes it from visibleSemesters but keeps it in semesters
+  const hiddenOne = course.visibleSemesters!.filter(s => s !== '2026.1');
+  assert.deepEqual(hiddenOne, ['2026.2'], 'Only 2026.2 remains visible');
+  assert.equal(course.semesters!.includes('2026.1'), true, '2026.1 is still registered in disk semesters');
+
+  // 4. Default fallback when visibleSemesters is undefined
+  const fallbackCourse: CourseMeta = {
+    id: 'bcc',
+    name: 'Ciência da Computação',
+    shortName: 'BCC',
+    hasCurriculum: true,
+    hasSchedule: true,
+    semesters: ['2026.1']
+  };
+  const resolvedDefault = fallbackCourse.visibleSemesters?.[0] || fallbackCourse.semesters?.[0] || '2026.1';
+  assert.equal(resolvedDefault, '2026.1');
 });
