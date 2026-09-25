@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { bcc2026_1, eal2026_1, adm2026_1 } from '../data';
+import { bcc2026_1, eal2026_1, eal2026_2, adm2026_1, mvet2026_1 } from '../data';
+import initialCoursesRegistry from '../data/courses_registry.json';
 import { Discipline, TimeSlot } from '../types';
 import { TIMESLOTS } from '../constants';
 import { canAccessAdmin } from '../utils/domain';
@@ -238,6 +239,21 @@ export function useSchedule() {
     }
 
     // Buscar os semestres disponíveis do curso
+    const applyFallbackSemesters = (courseId: string) => {
+      const meta = (initialCoursesRegistry as any[]).find(c => c.id === courseId);
+      const activeSemesters = (meta?.visibleSemesters && Array.isArray(meta.visibleSemesters) && meta.visibleSemesters.length > 0)
+        ? meta.visibleSemesters
+        : (meta?.semesters && Array.isArray(meta.semesters) && meta.semesters.length > 0 ? meta.semesters : ['2026.1']);
+      if (activeSemesters && activeSemesters.length > 0) {
+        setAvailableSemesters(activeSemesters);
+        if (!activeSemesters.includes(selectedSemester)) {
+          const defaultSem = activeSemesters[0] || '2026.1';
+          setSelectedSemester(defaultSem);
+          lastLoadedSemesterRef.current = defaultSem;
+        }
+      }
+    };
+
     fetch(`/api/courses/${course}`)
       .then(res => res.ok ? res.json() : null)
       .then(data => {
@@ -257,9 +273,13 @@ export function useSchedule() {
               setSchedule([]);
             }
           }
+        } else {
+          applyFallbackSemesters(course);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        applyFallbackSemesters(course);
+      });
   };
 
   useEffect(() => {
@@ -272,9 +292,17 @@ export function useSchedule() {
             : (data?.course?.semesters && Array.isArray(data.course.semesters) && data.course.semesters.length > 0 ? data.course.semesters : null);
           if (activeSemesters && activeSemesters.length > 0) {
             setAvailableSemesters(activeSemesters);
+          } else {
+            const meta = (initialCoursesRegistry as any[]).find(c => c.id === selectedCourse);
+            const fallback = meta?.visibleSemesters || meta?.semesters;
+            if (fallback?.length) setAvailableSemesters(fallback);
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          const meta = (initialCoursesRegistry as any[]).find(c => c.id === selectedCourse);
+          const fallback = meta?.visibleSemesters || meta?.semesters;
+          if (fallback?.length) setAvailableSemesters(fallback);
+        });
     }
   }, [selectedCourse]);
 
@@ -584,7 +612,7 @@ export function useSchedule() {
     if (!loaded) {
       let fallbackList: Discipline[] = [];
       if (type === 'eal' || type === 'engenharia-de-alimentos') {
-        fallbackList = eal2026_1.map(sanitizeDiscipline);
+        fallbackList = (sem === '2026.2' ? eal2026_2 : eal2026_1).map(sanitizeDiscipline);
         setDisciplinesList(fallbackList);
         setGradeTitle(`EAL - Engenharia de Alimentos - Período ${sem}`);
       } else if (type === 'adm') {
@@ -595,7 +623,18 @@ export function useSchedule() {
         fallbackList = bcc2026_1.map(sanitizeDiscipline);
         setDisciplinesList(fallbackList);
         setGradeTitle(`BCC - Bacharelado em Ciência da Computação - Período ${sem}`);
+      } else if (type === 'medicina-veterinaria' || type === 'mvet') {
+        fallbackList = mvet2026_1.map(sanitizeDiscipline);
+        setDisciplinesList(fallbackList);
+        setGradeTitle(`MVET - Medicina Veterinária - Período ${sem}`);
       }
+
+      const meta = (initialCoursesRegistry as any[]).find(c => c.id === type);
+      const activeSemesters = (meta?.visibleSemesters && meta.visibleSemesters.length > 0)
+        ? meta.visibleSemesters
+        : (meta?.semesters && meta.semesters.length > 0 ? meta.semesters : ['2026.1']);
+      setAvailableSemesters(activeSemesters);
+
       const stored = localStorage.getItem(`schedule_${type}_${sem}`) || (sem === '2026.1' ? localStorage.getItem(`schedule_${type}`) : null);
       let parsedSchedule: Discipline[] = stored ? JSON.parse(stored).map(sanitizeDiscipline) : [];
 

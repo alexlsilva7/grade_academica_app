@@ -17,12 +17,9 @@ interface HomeViewProps {
   setSelectedProfile?: (p: string) => void;
 }
 
-const DEFAULT_COURSES: CourseMeta[] = [
-  { id: 'adm', name: 'Administração', shortName: 'ADM', hasCurriculum: true, hasSchedule: true },
-  { id: 'bcc', name: 'Ciência da Computação', shortName: 'BCC', hasCurriculum: true, hasSchedule: true, profiles: ['BCC03', 'BCC02'] },
-  { id: 'eal', name: 'Engenharia de Alimentos', shortName: 'EAL', hasCurriculum: true, hasSchedule: true, profiles: ['EAL03'] },
-  { id: 'medicina-veterinaria', name: 'Medicina Veterinária', shortName: 'MVET', hasCurriculum: true, hasSchedule: true, profiles: ['MVET03', 'MVET02'] },
-];
+import initialCoursesRegistry from '../data/courses_registry.json';
+
+const DEFAULT_COURSES: CourseMeta[] = initialCoursesRegistry as CourseMeta[];
 
 export function HomeView({ 
   loadPredefinedGrade, 
@@ -87,6 +84,11 @@ export function HomeView({
               }
             });
           }
+        } else {
+          const fallbackMeta = (initialCoursesRegistry as CourseMeta[]).find(c => c.id === selectedCourse);
+          if (fallbackMeta?.profiles) {
+            fallbackMeta.profiles.forEach(p => set.add(p.trim()));
+          }
         }
         const profilesList = Array.from(set).sort();
         setCourseProfiles(profilesList);
@@ -102,7 +104,9 @@ export function HomeView({
         } catch {}
       })
       .catch(() => {
-        if (isMounted) setCourseProfiles([]);
+        if (!isMounted) return;
+        const fallbackMeta = (initialCoursesRegistry as CourseMeta[]).find(c => c.id === selectedCourse);
+        setCourseProfiles(fallbackMeta?.profiles || []);
       });
 
     return () => {
