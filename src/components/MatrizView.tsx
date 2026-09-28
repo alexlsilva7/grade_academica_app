@@ -320,9 +320,9 @@ export function MatrizView({
             const singleProfile: CurriculumProfile = {
               id: data.course?.shortName || 'GERAL',
               name: data.course?.name || 'Matriz Curricular',
-              totalHours: null,
-              acexHours: null,
-              accHours: null,
+              totalHours: data.curriculum.requisitos?.total ?? null,
+              acexHours: data.curriculum.requisitos?.acex_extensao ?? null,
+              accHours: data.curriculum.requisitos?.acc_complementar ?? null,
               optativeHours: null,
               subjects: mappedSubjects
             };

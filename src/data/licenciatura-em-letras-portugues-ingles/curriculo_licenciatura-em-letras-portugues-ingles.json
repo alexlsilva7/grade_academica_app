@@ -1,0 +1,2163 @@
+{
+  "export_date": "2026-09-25T15:03:18.049Z",
+  "courseName": "Licenciatura em Letras (Português/Inglês)",
+  "courseShortName": "LTR01",
+  "requisitos": {
+    "total": 3960,
+    "acex_extensao": 360,
+    "acc_complementar": 150
+  },
+  "treeSubjects": [
+    {
+      "id": "no_0001",
+      "code": "LET00008",
+      "name": "Habilidades Integradas em Língua Inglesa I",
+      "period": 1,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0002",
+      "code": "UAG00172",
+      "name": "Fundamentos da Educação",
+      "period": 1,
+      "hours": 60,
+      "credits": 4,
+      "type": "Básico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0003",
+      "code": "LET00034",
+      "name": "Introdução aos Estudos Literários L",
+      "period": 1,
+      "hours": 60,
+      "credits": 4,
+      "type": "Básico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0004",
+      "code": "LET00007",
+      "name": "Introdução aos Estudos Linguísticos I",
+      "period": 1,
+      "hours": 60,
+      "credits": 4,
+      "type": "Básico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0005",
+      "code": "LET00035",
+      "name": "Leitura e Produção de Textos L",
+      "period": 1,
+      "hours": 60,
+      "credits": 4,
+      "type": "Básico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0006",
+      "code": "LET00010",
+      "name": "Habilidades Integradas em Língua Inglesa II",
+      "period": 2,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0001"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0007",
+      "code": "LET00036",
+      "name": "Fonética e Fonologia da Língua Portuguesa L",
+      "period": 2,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0008",
+      "code": "LETR3024",
+      "name": "Teoria Literária",
+      "period": 2,
+      "hours": 60,
+      "credits": 4,
+      "type": "Básico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0003"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0009",
+      "code": "LET00009",
+      "name": "Introdução aos Estudos Linguísticos II",
+      "period": 2,
+      "hours": 60,
+      "credits": 4,
+      "type": "Básico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0010",
+      "code": "LET00037",
+      "name": "Gêneros Acadêmicos L",
+      "period": 2,
+      "hours": 60,
+      "credits": 4,
+      "type": "Básico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0011",
+      "code": "LET00011",
+      "name": "Habilidades Integradas em Língua Inglesa III",
+      "period": 3,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0006"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0012",
+      "code": "UAG00179",
+      "name": "Morfologia da Língua Portuguesa",
+      "period": 3,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0013",
+      "code": "LET00038",
+      "name": "Literatura Brasileira I L",
+      "period": 3,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0003"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0014",
+      "code": "UAG00177",
+      "name": "Educação Brasileira: Legislação e Organização Política",
+      "period": 3,
+      "hours": 90,
+      "credits": 6,
+      "type": "Básico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0015",
+      "code": "LET00039",
+      "name": "Educação das Relações Étnico-Raciais L",
+      "period": 3,
+      "hours": 60,
+      "credits": 4,
+      "type": "Básico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0016",
+      "code": "LET00012",
+      "name": "Fonética e Fonologia da Língua Inglesa",
+      "period": 4,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0011"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0017",
+      "code": "UAG00182",
+      "name": "Sintaxe da Língua Portuguesa",
+      "period": 4,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0018",
+      "code": "LET00041",
+      "name": "Literatura Brasileira II L",
+      "period": 4,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0003"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0019",
+      "code": "LET00040",
+      "name": "Didática L",
+      "period": 4,
+      "hours": 90,
+      "credits": 6,
+      "type": "Básico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0014"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0020",
+      "code": "LET00013",
+      "name": "Gramática e Variação Linguística",
+      "period": 4,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0021",
+      "code": "LET00014",
+      "name": "Morfossintaxe da Língua Inglesa",
+      "period": 5,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0011"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0022",
+      "code": "UAG00183",
+      "name": "Semântica da Língua Portuguesa",
+      "period": 5,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0023",
+      "code": "LET00042",
+      "name": "Literatura Brasileira III L",
+      "period": 5,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0003"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0024",
+      "code": "LET00015",
+      "name": "Estágio Obrigatório I",
+      "period": 5,
+      "hours": 135,
+      "credits": 9,
+      "type": "Profissionalizante",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0019"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0025",
+      "code": "LET00043",
+      "name": "Metodologia do Ensino de Língua Portuguesa L",
+      "period": 5,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0019"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0026",
+      "code": "LET00018",
+      "name": "Libras",
+      "period": 6,
+      "hours": 60,
+      "credits": 4,
+      "type": "Básico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0027",
+      "code": "LETR5059",
+      "name": "História da Língua Portuguesa",
+      "period": 6,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0028",
+      "code": "UAG00190",
+      "name": "Literatura Brasileira IV",
+      "period": 6,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0003"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0029",
+      "code": "LET00017",
+      "name": "Estágio Obrigatório II",
+      "period": 6,
+      "hours": 135,
+      "credits": 9,
+      "type": "Profissionalizante",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0025"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0030",
+      "code": "LET00016",
+      "name": "Estudos da Enunciação e do Discurso",
+      "period": 6,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0031",
+      "code": "LET00044",
+      "name": "Práticas de Pesquisa em Linguagens L",
+      "period": 7,
+      "hours": 60,
+      "credits": 4,
+      "type": "Profissionalizante",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0032",
+      "code": "UAG00185",
+      "name": "Metodologia do Ensino de Língua Inglesa",
+      "period": 7,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0021"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0033",
+      "code": "LET00019",
+      "name": "Estágio Obrigatório III",
+      "period": 7,
+      "hours": 135,
+      "credits": 9,
+      "type": "Profissionalizante",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0025"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0034",
+      "code": "LET00020",
+      "name": "Estudos Textuais e Teorias de Gêneros",
+      "period": 7,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0035",
+      "code": "LET00021",
+      "name": "Literaturas de Expressão em Língua Inglesa I",
+      "period": 7,
+      "hours": 75,
+      "credits": 5,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0036",
+      "code": "UAG00196",
+      "name": "Trabalho de Conclusão de Curso I – Letras (TCC 1)",
+      "period": 8,
+      "hours": 120,
+      "credits": 8,
+      "type": "Profissionalizante",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0031"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0037",
+      "code": "LET00024",
+      "name": "Estágio Obrigatório IV",
+      "period": 8,
+      "hours": 135,
+      "credits": 9,
+      "type": "Profissionalizante",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0032"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0038",
+      "code": "LETR3010",
+      "name": "Literatura Portuguesa I",
+      "period": 8,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0003"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0039",
+      "code": "LET00022",
+      "name": "Fundamentos Psicológicos da Educação",
+      "period": 8,
+      "hours": 90,
+      "credits": 6,
+      "type": "Básico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0040",
+      "code": "LET00023",
+      "name": "Literaturas de Expressão em Língua Inglesa II",
+      "period": 8,
+      "hours": 75,
+      "credits": 5,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0041",
+      "code": "OPT0001",
+      "name": "Optativa I",
+      "period": 8,
+      "hours": 60,
+      "credits": 4,
+      "type": "Optativos",
+      "academicType": "Optativa",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0042",
+      "code": "UAG00197",
+      "name": "Trabalho de Conclusão de Curso II – Letras (TCC 2)",
+      "period": 9,
+      "hours": 120,
+      "credits": 8,
+      "type": "Profissionalizante",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0036"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0043",
+      "code": "LET00025",
+      "name": "Estágio Obrigatório V",
+      "period": 9,
+      "hours": 135,
+      "credits": 9,
+      "type": "Profissionalizante",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0032",
+        "no_0037"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0044",
+      "code": "LET00045",
+      "name": "Literatura Portuguesa II L",
+      "period": 9,
+      "hours": 60,
+      "credits": 4,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [
+        "no_0003"
+      ],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0045",
+      "code": "LET00026",
+      "name": "Literaturas de Expressão em Língua Inglesa III",
+      "period": 9,
+      "hours": 75,
+      "credits": 5,
+      "type": "Específico",
+      "academicType": "Obrigatória",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0046",
+      "code": "OPT0002",
+      "name": "Optativa II",
+      "period": 9,
+      "hours": 60,
+      "credits": 4,
+      "type": "Optativos",
+      "academicType": "Optativa",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    },
+    {
+      "id": "no_0047",
+      "code": "OPT0003",
+      "name": "Optativa III",
+      "period": 9,
+      "hours": 60,
+      "credits": 4,
+      "type": "Optativos",
+      "academicType": "Optativa",
+      "profile": "Perfil 4/2024",
+      "prereqs": [],
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": null
+      },
+      "corequisites": [],
+      "equivalences": [],
+      "desc": null
+    }
+  ],
+  "extraction": null,
+  "subjects": [
+    {
+      "id": "no_0001",
+      "code": "LET00008",
+      "name": "Habilidades Integradas em Língua Inglesa I",
+      "type": "Obrigatória",
+      "period": "1",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0002",
+      "code": "UAG00172",
+      "name": "Fundamentos da Educação",
+      "type": "Obrigatória",
+      "period": "1",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0003",
+      "code": "LET00034",
+      "name": "Introdução aos Estudos Literários L",
+      "type": "Obrigatória",
+      "period": "1",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0004",
+      "code": "LET00007",
+      "name": "Introdução aos Estudos Linguísticos I",
+      "type": "Obrigatória",
+      "period": "1",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0005",
+      "code": "LET00035",
+      "name": "Leitura e Produção de Textos L",
+      "type": "Obrigatória",
+      "period": "1",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0006",
+      "code": "LET00010",
+      "name": "Habilidades Integradas em Língua Inglesa II",
+      "type": "Obrigatória",
+      "period": "2",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "LET00008",
+          "name": "Habilidades Integradas em Língua Inglesa I",
+          "id": "no_0001"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0007",
+      "code": "LET00036",
+      "name": "Fonética e Fonologia da Língua Portuguesa L",
+      "type": "Obrigatória",
+      "period": "2",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0008",
+      "code": "LETR3024",
+      "name": "Teoria Literária",
+      "type": "Obrigatória",
+      "period": "2",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "LET00034",
+          "name": "Introdução aos Estudos Literários L",
+          "id": "no_0003"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0009",
+      "code": "LET00009",
+      "name": "Introdução aos Estudos Linguísticos II",
+      "type": "Obrigatória",
+      "period": "2",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0010",
+      "code": "LET00037",
+      "name": "Gêneros Acadêmicos L",
+      "type": "Obrigatória",
+      "period": "2",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0011",
+      "code": "LET00011",
+      "name": "Habilidades Integradas em Língua Inglesa III",
+      "type": "Obrigatória",
+      "period": "3",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "LET00010",
+          "name": "Habilidades Integradas em Língua Inglesa II",
+          "id": "no_0006"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0012",
+      "code": "UAG00179",
+      "name": "Morfologia da Língua Portuguesa",
+      "type": "Obrigatória",
+      "period": "3",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0013",
+      "code": "LET00038",
+      "name": "Literatura Brasileira I L",
+      "type": "Obrigatória",
+      "period": "3",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "LET00034",
+          "name": "Introdução aos Estudos Literários L",
+          "id": "no_0003"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0014",
+      "code": "UAG00177",
+      "name": "Educação Brasileira: Legislação e Organização Política",
+      "type": "Obrigatória",
+      "period": "3",
+      "profile": "Perfil 4/2024",
+      "credits": 6,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 90
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0015",
+      "code": "LET00039",
+      "name": "Educação das Relações Étnico-Raciais L",
+      "type": "Obrigatória",
+      "period": "3",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0016",
+      "code": "LET00012",
+      "name": "Fonética e Fonologia da Língua Inglesa",
+      "type": "Obrigatória",
+      "period": "4",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "LET00011",
+          "name": "Habilidades Integradas em Língua Inglesa III",
+          "id": "no_0011"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0017",
+      "code": "UAG00182",
+      "name": "Sintaxe da Língua Portuguesa",
+      "type": "Obrigatória",
+      "period": "4",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0018",
+      "code": "LET00041",
+      "name": "Literatura Brasileira II L",
+      "type": "Obrigatória",
+      "period": "4",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "LET00034",
+          "name": "Introdução aos Estudos Literários L",
+          "id": "no_0003"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0019",
+      "code": "LET00040",
+      "name": "Didática L",
+      "type": "Obrigatória",
+      "period": "4",
+      "profile": "Perfil 4/2024",
+      "credits": 6,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 90
+      },
+      "prerequisites": [
+        {
+          "code": "UAG00177",
+          "name": "Educação Brasileira: Legislação e Organização Política",
+          "id": "no_0014"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0020",
+      "code": "LET00013",
+      "name": "Gramática e Variação Linguística",
+      "type": "Obrigatória",
+      "period": "4",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0021",
+      "code": "LET00014",
+      "name": "Morfossintaxe da Língua Inglesa",
+      "type": "Obrigatória",
+      "period": "5",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "LET00011",
+          "name": "Habilidades Integradas em Língua Inglesa III",
+          "id": "no_0011"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0022",
+      "code": "UAG00183",
+      "name": "Semântica da Língua Portuguesa",
+      "type": "Obrigatória",
+      "period": "5",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0023",
+      "code": "LET00042",
+      "name": "Literatura Brasileira III L",
+      "type": "Obrigatória",
+      "period": "5",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "LET00034",
+          "name": "Introdução aos Estudos Literários L",
+          "id": "no_0003"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0024",
+      "code": "LET00015",
+      "name": "Estágio Obrigatório I",
+      "type": "Obrigatória",
+      "period": "5",
+      "profile": "Perfil 4/2024",
+      "credits": 9,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 135
+      },
+      "prerequisites": [
+        {
+          "code": "LET00040",
+          "name": "Didática L",
+          "id": "no_0019"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0025",
+      "code": "LET00043",
+      "name": "Metodologia do Ensino de Língua Portuguesa L",
+      "type": "Obrigatória",
+      "period": "5",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "LET00040",
+          "name": "Didática L",
+          "id": "no_0019"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0026",
+      "code": "LET00018",
+      "name": "Libras",
+      "type": "Obrigatória",
+      "period": "6",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0027",
+      "code": "LETR5059",
+      "name": "História da Língua Portuguesa",
+      "type": "Obrigatória",
+      "period": "6",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0028",
+      "code": "UAG00190",
+      "name": "Literatura Brasileira IV",
+      "type": "Obrigatória",
+      "period": "6",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "LET00034",
+          "name": "Introdução aos Estudos Literários L",
+          "id": "no_0003"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0029",
+      "code": "LET00017",
+      "name": "Estágio Obrigatório II",
+      "type": "Obrigatória",
+      "period": "6",
+      "profile": "Perfil 4/2024",
+      "credits": 9,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 135
+      },
+      "prerequisites": [
+        {
+          "code": "LET00043",
+          "name": "Metodologia do Ensino de Língua Portuguesa L",
+          "id": "no_0025"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0030",
+      "code": "LET00016",
+      "name": "Estudos da Enunciação e do Discurso",
+      "type": "Obrigatória",
+      "period": "6",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0031",
+      "code": "LET00044",
+      "name": "Práticas de Pesquisa em Linguagens L",
+      "type": "Obrigatória",
+      "period": "7",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0032",
+      "code": "UAG00185",
+      "name": "Metodologia do Ensino de Língua Inglesa",
+      "type": "Obrigatória",
+      "period": "7",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "LET00014",
+          "name": "Morfossintaxe da Língua Inglesa",
+          "id": "no_0021"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0033",
+      "code": "LET00019",
+      "name": "Estágio Obrigatório III",
+      "type": "Obrigatória",
+      "period": "7",
+      "profile": "Perfil 4/2024",
+      "credits": 9,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 135
+      },
+      "prerequisites": [
+        {
+          "code": "LET00043",
+          "name": "Metodologia do Ensino de Língua Portuguesa L",
+          "id": "no_0025"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0034",
+      "code": "LET00020",
+      "name": "Estudos Textuais e Teorias de Gêneros",
+      "type": "Obrigatória",
+      "period": "7",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0035",
+      "code": "LET00021",
+      "name": "Literaturas de Expressão em Língua Inglesa I",
+      "type": "Obrigatória",
+      "period": "7",
+      "profile": "Perfil 4/2024",
+      "credits": 5,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 75
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0036",
+      "code": "UAG00196",
+      "name": "Trabalho de Conclusão de Curso I – Letras (TCC 1)",
+      "type": "Obrigatória",
+      "period": "8",
+      "profile": "Perfil 4/2024",
+      "credits": 8,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 120
+      },
+      "prerequisites": [
+        {
+          "code": "LET00044",
+          "name": "Práticas de Pesquisa em Linguagens L",
+          "id": "no_0031"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0037",
+      "code": "LET00024",
+      "name": "Estágio Obrigatório IV",
+      "type": "Obrigatória",
+      "period": "8",
+      "profile": "Perfil 4/2024",
+      "credits": 9,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 135
+      },
+      "prerequisites": [
+        {
+          "code": "UAG00185",
+          "name": "Metodologia do Ensino de Língua Inglesa",
+          "id": "no_0032"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0038",
+      "code": "LETR3010",
+      "name": "Literatura Portuguesa I",
+      "type": "Obrigatória",
+      "period": "8",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "LET00034",
+          "name": "Introdução aos Estudos Literários L",
+          "id": "no_0003"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0039",
+      "code": "LET00022",
+      "name": "Fundamentos Psicológicos da Educação",
+      "type": "Obrigatória",
+      "period": "8",
+      "profile": "Perfil 4/2024",
+      "credits": 6,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 90
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0040",
+      "code": "LET00023",
+      "name": "Literaturas de Expressão em Língua Inglesa II",
+      "type": "Obrigatória",
+      "period": "8",
+      "profile": "Perfil 4/2024",
+      "credits": 5,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 75
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0041",
+      "code": "OPT0001",
+      "name": "Optativa I",
+      "type": "Optativa",
+      "period": "8",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0042",
+      "code": "UAG00197",
+      "name": "Trabalho de Conclusão de Curso II – Letras (TCC 2)",
+      "type": "Obrigatória",
+      "period": "9",
+      "profile": "Perfil 4/2024",
+      "credits": 8,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 120
+      },
+      "prerequisites": [
+        {
+          "code": "UAG00196",
+          "name": "Trabalho de Conclusão de Curso I – Letras (TCC 1)",
+          "id": "no_0036"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0043",
+      "code": "LET00025",
+      "name": "Estágio Obrigatório V",
+      "type": "Obrigatória",
+      "period": "9",
+      "profile": "Perfil 4/2024",
+      "credits": 9,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 135
+      },
+      "prerequisites": [
+        {
+          "code": "UAG00185",
+          "name": "Metodologia do Ensino de Língua Inglesa",
+          "id": "no_0032"
+        },
+        {
+          "code": "LET00024",
+          "name": "Estágio Obrigatório IV",
+          "id": "no_0037"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0044",
+      "code": "LET00045",
+      "name": "Literatura Portuguesa II L",
+      "type": "Obrigatória",
+      "period": "9",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [
+        {
+          "code": "LET00034",
+          "name": "Introdução aos Estudos Literários L",
+          "id": "no_0003"
+        }
+      ],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0045",
+      "code": "LET00026",
+      "name": "Literaturas de Expressão em Língua Inglesa III",
+      "type": "Obrigatória",
+      "period": "9",
+      "profile": "Perfil 4/2024",
+      "credits": 5,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 75
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0046",
+      "code": "OPT0002",
+      "name": "Optativa II",
+      "type": "Optativa",
+      "period": "9",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    },
+    {
+      "id": "no_0047",
+      "code": "OPT0003",
+      "name": "Optativa III",
+      "type": "Optativa",
+      "period": "9",
+      "profile": "Perfil 4/2024",
+      "credits": 4,
+      "workload": {
+        "teorica": null,
+        "pratica": null,
+        "extensao": null,
+        "semipresencialEad": null,
+        "total": 60
+      },
+      "prerequisites": [],
+      "corequisites": [],
+      "equivalences": [],
+      "ementa": null
+    }
+  ]
+}

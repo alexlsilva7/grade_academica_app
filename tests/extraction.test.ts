@@ -3,7 +3,10 @@ import assert from 'node:assert/strict';
 import { PDFDocument } from 'pdf-lib';
 import { Type } from '@google/genai';
 import { assertSchema, extractAcademicData, mergeRecords, readSources, slicePdf } from '../extractionPipeline';
-import { treeToCurriculum, validateExtraction } from '../src/utils/extraction';
+import {
+  mergeCurriculumList, mergeScheduleList, mergeTreeNodesList, mergeCourseHours,
+  treeToCurriculum, validateExtraction
+} from '../src/utils/extraction';
 
 const record = (extra: any = {}) => ({ id: 'a', code: 'ABC-001', name: 'Álgebra', courseName: 'Curso',
   profile: 'P1', semester: '2026.1', classGroup: 'A', period: 1, ...extra });
@@ -33,6 +36,88 @@ test('session validation detects bad days, times and duplicate sessions', () => 
   assert.ok(issues.some(i => i.message.includes('Dia')));
   assert.ok(issues.some(i => i.message.includes('Horário')));
   assert.ok(issues.some(i => i.message.includes('repetida')));
+});
+
+test('mergeScheduleList unifies weekly sessions and fills the professor', () => {
+  const existing = [{
+    id: 't1', code: 'CCMP3057', name: 'Introdução à Programação (T1)', professor: '-', period: 1,
+    sessions: [{ day: 1 as const, time: '18:30 - 20:10' }]
+  }];
+  const incoming = [
+    {
+      id: 't1_batch2', code: 'CCMP3057', name: 'Introdução à Programação (T1)', professor: 'Prof. Renê', period: 1,
+      sessions: [
+        { day: 1 as const, time: '18:30 - 20:10' },
+        { day: 3 as const, time: '18:30 - 20:10' }
+      ]
+    },
+    {
+      id: 't2', code: 'MATM3008', name: 'Lógica Matemática', professor: 'Prof. Marcius', period: 1,
+      sessions: [{ day: 2 as const, time: '20:10 - 21:50' }]
+    }
+  ];
+
+  const { result, added, updated } = mergeScheduleList(existing, incoming);
+  assert.equal(added, 1);
+  assert.equal(updated, 1);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].sessions.length, 2);
+  assert.equal(result[0].professor, 'Prof. Renê');
+});
+
+test('mergeCurriculumList enriches a structural subject with an ementa batch', () => {
+  const existing = [{
+    id: 'disciplina_1', code: 'CCMP3006', name: 'Algoritmos e Estrutura de Dados I', type: 'Obrigatória', period: '2', credits: 4,
+    workload: { teorica: 60, pratica: 0, extensao: 0, semipresencialEad: null, total: 60 },
+    prerequisites: [], corequisites: [], equivalences: [], ementa: null
+  }];
+  const incoming = [{
+    id: 'disciplina_1', code: 'CCMP3006', name: 'Algoritmos e Estruturas de Dados I', type: null, period: null, credits: null,
+    workload: { teorica: null, pratica: null, extensao: null, semipresencialEad: null, total: null },
+    prerequisites: [], corequisites: [], equivalences: [], ementa: 'Resolução de problemas, modularização, filas e pilhas.'
+  }];
+
+  const { result, added, updated } = mergeCurriculumList(existing, incoming);
+  assert.equal(added, 0);
+  assert.equal(updated, 1);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].workload.total, 60);
+  assert.equal(result[0].credits, 4);
+  assert.equal(result[0].ementa, 'Resolução de problemas, modularização, filas e pilhas.');
+});
+
+test('course hours merge preserves subjects and existing values when a later batch omits them', () => {
+  const subjects = [{ id: 'no_1', code: 'A1', name: 'Matéria 1', period: 1, hours: 60, type: 'basico', prereqs: [] }];
+  const profile = {
+    id: 'BCC03', name: 'Matriz 2024', subjects,
+    totalHours: 3200, acexHours: 320, accHours: 90, optativeHours: 480,
+    requisitos: { total: 3200, acex_extensao: 320, acc_complementar: 90, optativas: 480 }
+  };
+  const merged = mergeCourseHours(profile, { totalHours: null, acexHours: 0 });
+  assert.equal(merged.totalHours, 3200);
+  assert.equal(merged.acexHours, 0);
+  assert.equal(merged.accHours, 90);
+  assert.equal(merged.optativeHours, 480);
+  assert.deepEqual(merged.requisitos, { total: 3200, acex_extensao: 0, acc_complementar: 90, optativas: 480 });
+  assert.deepEqual(merged.subjects, subjects);
+  assert.equal(profile.acexHours, 320);
+});
+
+test('mergeTreeNodesList remaps batch IDs and prerequisite codes without duplicate IDs', () => {
+  const existing = [{ id: 'no_1', code: 'A1', name: 'Matéria 1', period: 1, hours: 60, type: 'basico', prereqs: [] }];
+  const incoming = [
+    { id: 'no_1', code: 'A2', name: 'Matéria 2', period: 2, hours: 60, type: 'computacao', prereqs: ['A1'] },
+    { id: 'no_2', code: 'A3', name: 'Matéria 3', period: 3, hours: 60, type: 'computacao', prereqs: ['no_1'] }
+  ];
+
+  const { result, added, updated } = mergeTreeNodesList(existing, incoming);
+  assert.equal(added, 2);
+  assert.equal(updated, 0);
+  assert.equal(result.length, 3);
+  assert.equal(new Set(result.map(node => node.id)).size, 3);
+  assert.deepEqual(result.find(node => node.code === 'A2')?.prereqs, ['no_1']);
+  assert.deepEqual(result.find(node => node.code === 'A3')?.prereqs, ['no_2']);
+  assert.equal(validateExtraction(result, 'tree').some(issue => issue.severity === 'error'), false);
 });
 
 test('graph validation finds cycles and missing references', () => {

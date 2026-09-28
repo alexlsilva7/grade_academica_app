@@ -10,7 +10,7 @@ import { createAcademicAIClient, type AcademicAIClient } from './aiProvider';
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT || 3000);
 
 // Maximum payload size for PDF uploads and large curriculums
 app.use(express.json({ limit: "50mb" }));
@@ -26,7 +26,7 @@ function getAIClient(): AcademicAIClient {
 }
 
 // Ensure data directories and central registry exist
-const DATA_DIR = path.join(process.cwd(), "src", "data");
+const DATA_DIR = process.env.ACADEMIC_DATA_DIR ? path.resolve(process.env.ACADEMIC_DATA_DIR) : path.join(process.cwd(), "src", "data");
 const REGISTRY_PATH = path.join(DATA_DIR, "courses_registry.json");
 
 if (!fs.existsSync(DATA_DIR)) {
@@ -225,6 +225,7 @@ app.get("/api/courses/:id", (req, res) => {
         courseDir = path.join(DATA_DIR, 'mvet');
       }
     }
+    let resolvedSemester: string | null = null;
     let curriculum: any = null;
     let schedule: any = null;
     let scheduleExtraction: any = null;
@@ -266,7 +267,7 @@ app.get("/api/courses/:id", (req, res) => {
         const semClean = requestedSemester.replace(/\./g, '_');
         targetSchedFile = files.find(f => f === `horario_${courseMeta.id}_${semClean}.json` || (f.startsWith('horario_') && f.endsWith(`_${semClean}.json`)));
       }
-      if (!targetSchedFile) {
+      if (!targetSchedFile && !(requestedSemester && req.query.strict === 'true')) {
         // Pega o padrão definido pelo admin (primeiro de visibleSemesters) ou o primeiro de semesters
         const defaultSem = courseMeta.visibleSemesters?.[0] || courseMeta.semesters?.[0];
         if (defaultSem) {
@@ -274,13 +275,14 @@ app.get("/api/courses/:id", (req, res) => {
           targetSchedFile = files.find(f => f === `horario_${courseMeta.id}_${semClean}.json` || (f.startsWith('horario_') && f.endsWith(`_${semClean}.json`)));
         }
       }
-      if (!targetSchedFile) {
+      if (!targetSchedFile && !(requestedSemester && req.query.strict === 'true')) {
         // Pega o mais recente ou o primeiro
         const schedFiles = files.filter(f => f.startsWith("horario_") && f.endsWith(".json")).sort().reverse();
         targetSchedFile = schedFiles[0];
       }
 
       if (targetSchedFile) {
+        resolvedSemester = targetSchedFile.match(/_(\d{4})_(\d)\.json$/)?.slice(1).join('.') || null;
         try {
           schedule = JSON.parse(fs.readFileSync(path.join(courseDir, targetSchedFile), "utf-8"));
           const reportPath = path.join(courseDir, `extracao_${targetSchedFile}`);
@@ -300,6 +302,7 @@ app.get("/api/courses/:id", (req, res) => {
     }
 
     res.json({
+      resolvedSemester: typeof schedule !== 'undefined' && schedule !== null ? (requestedSemester && req.query.strict === 'true' ? requestedSemester : resolvedSemester) : null,
       course: courseMeta,
       curriculum,
       schedule,
@@ -310,6 +313,25 @@ app.get("/api/courses/:id", (req, res) => {
   }
 });
 
+// Metadata writes never create curriculum or semester files.
+app.patch('/api/courses/:id/metadata', localhostOnly, (req, res) => {
+  try {
+    const { name, shortName } = req.body;
+    if (typeof name !== 'string' || !name.trim() || typeof shortName !== 'string' || !shortName.trim()) {
+      return res.status(400).json({ error: 'Informe nome e sigla do curso.' });
+    }
+    const registry = getRegistry();
+    const course = registry.find((item: any) => item.id === req.params.id);
+    if (!course) return res.status(404).json({ error: 'Curso não encontrado.' });
+    course.name = name.trim();
+    course.shortName = shortName.trim();
+    saveRegistry(registry);
+    res.json({ course });
+  } catch (error) {
+    res.status(500).json({ error: 'Não foi possível salvar os dados do curso.' });
+  }
+});
+
 // POST save or update a course with its curriculum and/or schedule
 app.post("/api/courses", localhostOnly, (req, res) => {
   try {
@@ -317,6 +339,8 @@ app.post("/api/courses", localhostOnly, (req, res) => {
     if (!id || !name) {
       return res.status(400).json({ error: "Campos obrigatórios ausentes: 'id' e 'name'." });
     }
+
+    if (Array.isArray(schedule) && !/^\d{4}\.[12]$/.test(semester || '')) return res.status(400).json({ error: 'Informe um semestre válido (AAAA.1 ou AAAA.2).' });
 
     // Reject invalid academic values before creating directories or writing any data.
     const validation = [
@@ -350,6 +374,7 @@ app.post("/api/courses", localhostOnly, (req, res) => {
           export_date: curriculum.export_date || new Date().toISOString(),
           courseName: curriculum.courseName || name,
           courseShortName: curriculum.courseShortName || shortName,
+          requisitos: curriculum.requisitos,
           activeProfileId: curriculum.activeProfileId,
           profiles: curriculum.profiles,
           treeSubjects: curriculum.treeSubjects,
@@ -409,7 +434,7 @@ app.post("/api/courses", localhostOnly, (req, res) => {
       }
     });
     const formattedSem = sem.replace(/_/g, ".");
-    const mergedSemesters = Array.from(new Set([...existingSemesters, ...diskSemesters, formattedSem])).sort();
+    const mergedSemesters = Array.from(new Set([...existingSemesters, ...diskSemesters, ...(Array.isArray(schedule) ? [formattedSem] : [])])).sort();
 
     const updatedMeta: any = {
       id: cleanId,
