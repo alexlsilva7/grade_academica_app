@@ -5,6 +5,7 @@ import { canManageHomeCourses, isLocalhost } from '../utils/domain';
 import { CourseMeta } from '../types';
 import { CoursesVisibilityModal } from './CoursesVisibilityModal';
 import { apiFetch } from '../utils/api';
+import { getCurricularProfileIds } from '../utils/curriculumProfiles';
 
 interface HomeViewProps {
   loadPredefinedGrade: (type: string, semesterToLoad?: string) => void;
@@ -53,47 +54,32 @@ export function HomeView({
     }
 
     let isMounted = true;
-    apiFetch(`/api/courses/${selectedCourse}?include=curriculum,schedule`)
+    apiFetch(`/api/courses/${selectedCourse}?include=curriculum`)
       .then(res => res.ok ? res.json() : null)
       .then(data => {
         if (!isMounted) return;
-        const set = new Set<string>();
-        if (data) {
-          if (Array.isArray(data.course?.profiles)) {
-            data.course.profiles.forEach((p: string) => {
-              if (p && p.trim() && p.trim().toLowerCase() !== 'optativa' && p.trim().toLowerCase() !== 'sem perfil') {
-                set.add(p.trim());
-              }
-            });
-          }
-          if (Array.isArray(data.schedule)) {
-            data.schedule.forEach((d: any) => {
-              if (d.profile && typeof d.profile === 'string' && d.profile.trim() && d.profile.trim().toLowerCase() !== 'optativa' && d.profile.trim().toLowerCase() !== 'sem perfil') {
-                set.add(d.profile.trim());
-              }
-            });
-          }
-          const curr = Array.isArray(data.curriculum) ? data.curriculum : (data.curriculum?.subjects || []);
-          if (Array.isArray(curr)) {
-            curr.forEach((s: any) => {
-              if (s.profile && typeof s.profile === 'string' && s.profile.trim() && s.profile.trim().toLowerCase() !== 'optativa' && s.profile.trim().toLowerCase() !== 'sem perfil') {
-                set.add(s.profile.trim());
-              }
-            });
-          }
+        if (!data?.curriculum) {
+          setCourseProfiles([]);
+          return;
         }
-        const profilesList = Array.from(set).sort();
+        const profilesList = getCurricularProfileIds(data?.curriculum);
         setCourseProfiles(profilesList);
 
-        // Pre-select saved profile if present in localStorage
+        let storedProf: string | null = null;
         try {
-          const storedProf = localStorage.getItem(`selected_profile_${selectedCourse}`);
-          if (storedProf && storedProf !== 'todos') {
-            if (setSelectedProfile && (storedProf === 'all' || profilesList.includes(storedProf))) {
-              setSelectedProfile(storedProf);
+          storedProf = localStorage.getItem(`selected_profile_${selectedCourse}`);
+          if (storedProf && storedProf !== 'all' && !profilesList.includes(storedProf)) {
+            localStorage.setItem(`selected_profile_${selectedCourse}`, 'all');
+            if (localStorage.getItem('saved_selectedProfile') === storedProf) {
+              localStorage.setItem('saved_selectedProfile', 'all');
             }
+            storedProf = null;
           }
         } catch {}
+        if (storedProf && setSelectedProfile) setSelectedProfile(storedProf);
+        else if (selectedProfile && selectedProfile !== 'all' && !profilesList.includes(selectedProfile)) {
+          setSelectedProfile?.('all');
+        }
       })
       .catch(() => {
         if (!isMounted) return;
@@ -373,7 +359,7 @@ export function HomeView({
                     <div className="relative w-full sm:w-auto">
                       <select
                         id="course-profile-select"
-                        value={selectedProfile || 'all'}
+                        value={selectedProfile && courseProfiles.includes(selectedProfile) ? selectedProfile : 'all'}
                         onChange={(e) => handleProfileChange(e.target.value)}
                         className="w-full sm:w-auto min-w-[210px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 font-bold text-sm rounded-lg py-2 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-xs transition-colors appearance-none"
                       >
