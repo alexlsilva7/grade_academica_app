@@ -54,6 +54,30 @@ npm run cleanup:extraction -- --older-than-days=30 --apply
 
 O procedimento remove o diretório inteiro do trabalho, incluindo documento, checkpoints e resultado. Trabalhos ativos, dados recentes e pastas malformadas são preservados. Defina `EXTRACTION_STATE_DIR` para apontar a rotina ao mesmo diretório usado pelo servidor.
 
+## Publicação na Vercel
+
+Publique o repositório completo, com a raiz do projeto como **Root Directory**. O
+`vercel.json` configura o build estático do Vite e encaminha `/api/*` à função
+`api/index.ts`, que compartilha a API Express com o servidor local. As demais
+rotas, como `/schedule` e `/matriz`, abrem a SPA. Enviar somente `dist/` não
+publica a API e faz a seleção de cursos ficar sem dados.
+
+Nas variáveis de ambiente da Vercel, configure `ACADEMIC_DATA_SOURCE=supabase`,
+`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` e `SUPABASE_SECRET_KEY`.
+Para o painel administrativo, configure também `ADMIN_USER_IDS`. Aplique as
+variáveis aos ambientes usados (Production e/ou Preview) e faça um novo deploy;
+o arquivo `.env` local não é enviado. A chave secreta deve permanecer sem o
+prefixo `VITE_`.
+
+Após publicar, `/api/health` deve retornar JSON com `status: "ok"` e
+`/api/courses` deve retornar a lista de cursos. O comando `build:vercel` gera
+somente os arquivos públicos; o backend é empacotado como função pela Vercel.
+
+As extrações com checkpoints locais exigem um servidor com armazenamento
+persistente. O sistema de arquivos das funções da Vercel não oferece essa
+persistência; use o servidor local para esse fluxo. Consulta e edição dos dados
+acadêmicos no Supabase usam a API publicada normalmente.
+
 ## Desenvolvimento
 
 Requer Node.js 18 ou superior e npm.
@@ -91,5 +115,7 @@ supabase/
 tests/              Testes automatizados TypeScript
 extractionJobs.ts   Persistência local e retomada de extrações
 extractionRoutes.ts API autenticada de extração
-server.ts           API Express e fallback da SPA
+app.ts              API Express compartilhada
+api/index.ts        Entrada da função na Vercel
+server.ts           Servidor local e fallback da SPA
 ```
