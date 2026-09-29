@@ -1,125 +1,95 @@
-# 🎓 My UFAPE
+# My UFAPE
 
-> Aplicativo web moderno e intuitivo para planejamento de grade horária, consulta de disciplinas e acompanhamento da matriz curricular na **Universidade Federal do Agreste de Pernambuco (UFAPE)**.
+Aplicação web da UFAPE para consultar disciplinas e matrizes curriculares, planejar horários e acompanhar o progresso acadêmico. A interface usa React e TypeScript; o servidor Express oferece a API acadêmica e os fluxos administrativos.
 
----
+## Funcionalidades
 
-## 🌟 Funcionalidades
+- Planejamento de turmas por curso e semestre, com detecção de conflitos.
+- Catálogo de disciplinas e matriz curricular com perfis, pré-requisitos e progresso local.
+- Backup e restauração das preferências e do progresso do navegador.
+- Painel administrativo autenticado pelo Supabase Auth para editar os dados publicados e revisar extrações.
+- Extração assistida por IA com revisão humana obrigatória antes de publicar os dados.
 
-- **📅 Planejamento de Horário Letivo**:
-  - Seleção interativa de turmas e disciplinas ofertadas no semestre.
-  - Detecção visual e automática de **conflitos de horário (choques)**.
-  - Quadro de horários semanal com divisões por dias e faixas de horários.
-  - Resumo dinâmico da carga horária e total de créditos/disciplinas selecionadas.
+## Dados acadêmicos
 
-- **📖 Catálogo de Disciplinas**:
-  - Busca rápida por nome, código ou professor.
-  - Filtros por período letivo e categoria (Obrigatórias e Optativas).
-  - Modal com detalhes completos: ementa, pré-requisitos, equivalências e turmas.
+Os dados acadêmicos estão no **Supabase**. O servidor seleciona a fonte em `ACADEMIC_DATA_SOURCE`; use `supabase` para a instalação atual. `files` é um adaptador local legado para ambientes de desenvolvimento e não representa a fonte publicada. As migrações de esquema e as políticas SQL estão em `supabase/migrations` e `supabase/tests`.
 
-- **🗂️ Matriz Curricular**:
-  - Estrutura curricular organizada visualmente por períodos acadêmicos.
-  - Consulta do fluxo de pré-requisitos e pré-requisitos diretos de cada matéria.
+Configure `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` e `SUPABASE_SECRET_KEY` no ambiente apropriado. A chave secreta é exclusiva do servidor; não use o prefixo `VITE_` nela. O acesso administrativo também requer os UUIDs permitidos em `ADMIN_USER_IDS`. Consulte `.env.example` para a lista de variáveis. Não é necessário repetir a migração dos dados acadêmicos.
 
-- **💾 Backup e Sincronização Local**:
-  - Persistência automática das escolhas no navegador (`localStorage`).
-  - Exportação e importação da grade e configurações em formato JSON.
+O servidor expõe `/api/courses` para metadados leves e `/api/courses/:id` para os detalhes solicitados. A listagem não baixa currículos nem horários completos. O parâmetro `include` permite pedir só `curriculum`, `schedule` e/ou `contents` necessários à tela; sem ele, o endpoint mantém o retorno completo para compatibilidade. A consulta de horário seleciona o semestre pedido ou resolve uma alternativa disponível.
 
-- **🌓 Tema Claro / Escuro / Sistema**:
-  - Suporte completo ao modo claro e escuro, com transição suave e respeito às preferências do sistema operacional.
+## Rotas da aplicação
 
----
+As telas principais aceitam links diretos e atualizam o histórico do navegador:
 
-## 🏛️ Cursos Suportados
+| Tela | Caminho |
+|---|---|
+| Início | `/` |
+| Planejamento de horário | `/schedule?course=bcc&semester=2026.1&profile=BCC03` |
+| Matriz curricular | `/matriz?course=eal&semester=2026.1&profile=EAL03` |
+| Catálogo de disciplinas | `/disciplinas?course=eal&semester=2026.1` |
+| Administração | `/admin` |
 
-Os dados de horários e currículos estão organizados de forma modular:
+Curso, semestre e perfil são validados. Um semestre não publicado é substituído por uma opção disponível; curso ou caminho desconhecido retorna ao início. O servidor mantém a autenticação administrativa nas APIs mesmo que alguém abra `/admin` diretamente. Em produção, o Express serve `index.html` como fallback para as rotas da SPA.
 
-- **BCC** — Bacharelado em Ciência da Computação
-- **ADM** — Bacharelado em Administração
-- **EAL** — Bacharelado em Engenharia de Alimentos
-- Suporte a inclusão e gerenciamento de novos cursos e semestres.
+## Progresso e backups
 
----
+Preferências, horário montado e progresso acadêmico ficam no `localStorage` do navegador. O progresso de matriz, horas de ACEX/ACC e disciplinas concluídas é separado por curso e perfil. O backup inclui essas chaves da aplicação e a restauração ignora credenciais e outras chaves que não pertencem ao My UFAPE. Os dados acadêmicos publicados continuam no Supabase.
 
-## 🛠️ Tecnologias Utilizadas
+## Extração e retenção
 
-- **Frontend**:
-  - [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
-  - [Vite](https://vitejs.dev/) para empacotamento rápido
-  - [Tailwind CSS v4](https://tailwindcss.com/) para estilização moderna e responsiva
-  - [Lucide React](https://lucide.dev/) para ícones consistentes
-  - [Motion](https://motion.dev/) para microinterações fluidas
-- **Backend**:
-  - [Node.js](https://nodejs.org/) & [Express](https://expressjs.com/)
-  - [@google/genai](https://www.npmjs.com/package/@google/genai) para utilitários de IA no painel administrativo
+As rotas de extração exigem sessão administrativa. Cada trabalho pertence ao UUID do administrador que o iniciou; tokens de outro administrador não permitem consultar ou retomar esse trabalho. Os documentos, checkpoints e resultados ficam em `.extraction-state` (ou em `EXTRACTION_STATE_DIR`) para permitir retomada após desconexão ou reinício. O servidor limita a duas extrações simultâneas por diretório e usa locks em arquivo para coordenar processos no mesmo host. Resultados extraídos voltam ao painel para revisão; a extração não publica dados automaticamente.
 
----
+O armazenamento local é adequado para uma instância ou várias instâncias no mesmo host e com o mesmo diretório. Uma implantação em múltiplos hosts precisa de armazenamento e locks distribuídos; locks cujo host não pode ser verificado são preservados e falham de forma fechada. Documentos não são apagados automaticamente. Para revisar trabalhos parados há mais de 30 dias, execute primeiro a simulação:
 
-## 📁 Estrutura de Pastas
-
-```text
-├── src/
-│   ├── components/         # Componentes da interface (Home, Grade, Disciplinas, Matriz, etc.)
-│   ├── data/               # Dados dos cursos e semestres (JSONs estruturados)
-│   │   ├── adm/            # Currículo e horários de Administração
-│   │   ├── bcc/            # Currículo, ementas e horários de Ciência da Computação
-│   │   └── eal/            # Horários de Engenharia de Alimentos
-│   ├── hooks/              # Hooks customizados (gerenciamento de grade, tema, etc.)
-│   ├── utils/              # Funções utilitárias (cálculo de choque, backup, etc.)
-│   ├── types.ts            # Definições de tipos TypeScript
-│   ├── main.tsx            # Ponto de entrada do React
-│   └── App.tsx             # Componente raiz da aplicação
-├── server.ts               # Servidor Express com integração Vite
-├── metadata.json           # Metadados e permissões da aplicação
-└── package.json            # Dependências e scripts do projeto
+```bash
+npm run cleanup:extraction
 ```
 
----
+Após revisar as contagens, a remoção explícita exige `--apply`:
 
-## 🚀 Como Executar Localmente
+```bash
+npm run cleanup:extraction -- --older-than-days=30 --apply
+```
 
-### Pré-requisitos
+O procedimento remove o diretório inteiro do trabalho, incluindo documento, checkpoints e resultado. Trabalhos ativos, dados recentes e pastas malformadas são preservados. Defina `EXTRACTION_STATE_DIR` para apontar a rotina ao mesmo diretório usado pelo servidor.
 
-- **Node.js** (versão 18 ou superior)
-- Gerenciador de pacotes **npm** (ou **pnpm** / **yarn**)
+## Desenvolvimento
 
-### Instalação
+Requer Node.js 18 ou superior e npm.
 
-1. Clone o repositório ou faça o download dos arquivos:
-   ```bash
-   git clone <URL_DO_REPOSITORIO>
-   cd my-ufape
-   ```
+```bash
+npm install
+cp .env.example .env
+npm run dev
+```
 
-2. Instale as dependências:
-   ```bash
-   npm install
-   ```
+O servidor de desenvolvimento inicia em `http://localhost:3000`. Preencha as variáveis Supabase para consultar os dados atuais. Não use dados ou credenciais de produção em testes locais.
 
-3. Configure as variáveis de ambiente (opcional, para recursos com IA no painel administrativo):
-   ```bash
-   cp .env.example .env
-   ```
-
-4. Inicie o ambiente de desenvolvimento:
-   ```bash
-   npm run dev
-   ```
-   Acesse a aplicação no navegador em `http://localhost:3000`.
-
----
-
-## 📦 Scripts Disponíveis
+### Comandos
 
 | Comando | Descrição |
 |---|---|
-| `npm run dev` | Inicia o servidor de desenvolvimento com TypeScript (`tsx`) na porta 3000 |
-| `npm run build` | Compila o bundle do frontend (`vite build`) e empacota o backend (`esbuild`) |
-| `npm start` | Executa o servidor de produção compilado em `dist/server.cjs` |
-| `npm run lint` | Valida a tipagem e erros no código com `tsc --noEmit` |
+| `npm run dev` | Servidor Express e Vite em modo de desenvolvimento |
+| `npm test` | Suíte automatizada |
+| `npm run lint` | Checagem de tipos TypeScript |
+| `npm run build` | Bundle do frontend e do servidor em `dist/` |
+| `npm start` | Servidor de produção compilado |
+| `npm run cleanup:extraction` | Simulação de limpeza de trabalhos expirados |
 
----
+## Organização
 
-## 📄 Licença
-
-Este projeto é desenvolvido para a comunidade acadêmica da **UFAPE**. Sinta-se à vontade para contribuir com melhorias, novos cursos ou correções nos horários e ementas!
+```text
+src/
+  components/       Telas e componentes React
+  hooks/            Estado da aplicação e fluxos de edição
+  server/           Repositório acadêmico, autenticação e migração
+  utils/            Rotas, progresso, backup e regras de domínio
+supabase/
+  migrations/       Esquema e migrações SQL
+  tests/            Testes SQL de segurança dos dados
+tests/              Testes automatizados TypeScript
+extractionJobs.ts   Persistência local e retomada de extrações
+extractionRoutes.ts API autenticada de extração
+server.ts           API Express e fallback da SPA
+```
