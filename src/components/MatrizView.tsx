@@ -18,7 +18,8 @@ import {
   Sun,
   Moon,
   Monitor,
-  BarChart2
+  BarChart2,
+  Loader2
 } from 'lucide-react';
 import { ThemeMode } from '../hooks/useSchedule';
 import { Navbar } from './Navbar';
@@ -130,6 +131,7 @@ export function MatrizView({
   const [loadedCourseName, setLoadedCourseName] = useState<string>('');
   const [dataSources, setDataSources] = useState<string[]>([]);
   const [dataUpdatedAt, setDataUpdatedAt] = useState<string | null>(null);
+  const [loadStatus, setLoadStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [activeProfileId, setActiveProfileId] = useState<string>(() => {
     if (selectedProfile && selectedProfile !== 'all') return selectedProfile;
     const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
@@ -143,6 +145,7 @@ export function MatrizView({
     setLoadedCourseName('');
     setDataSources([]);
     setDataUpdatedAt(null);
+    setLoadStatus('loading');
     async function loadCourseData() {
       try {
         const res = await apiFetch(`/api/courses/${course || 'bcc'}?include=curriculum`);
@@ -156,6 +159,7 @@ export function MatrizView({
         setDataUpdatedAt(typeof data.curriculum?.export_date === 'string' ? data.curriculum.export_date : null);
         const profiles = mapCurriculumProfiles(data.curriculum, course, courseName);
         setAvailableProfiles(profiles);
+        setLoadStatus('ready');
         const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
         const stored = localStorage.getItem(key);
         const preferred = selectedProfile && selectedProfile !== 'all' ? selectedProfile : stored;
@@ -174,6 +178,7 @@ export function MatrizView({
           setActiveProfileId('');
           setDataSources([]);
           setDataUpdatedAt(null);
+          setLoadStatus('error');
           console.error('Erro ao carregar currículo para MatrizView:', error);
         }
       }
@@ -659,6 +664,24 @@ export function MatrizView({
     }
     return s.status;
   };
+
+  const isRestoringProgress = loadStatus === 'ready' && availableProfiles.length > 0
+    && hydratedProgressKey !== currentProgressKey;
+  if (loadStatus !== 'ready' || availableProfiles.length === 0 || isRestoringProgress) {
+    return (
+      <div className="min-h-[100dvh] bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100">
+        <Navbar setView={setView} title="Matriz Curricular" course={course} courseName={loadedCourseName}
+          darkMode={darkMode} themePreference={themePreference} cycleTheme={cycleTheme} />
+        <div role={loadStatus === 'loading' || isRestoringProgress ? 'status' : loadStatus === 'error' ? 'alert' : undefined}
+          className="mx-auto flex min-h-[50vh] max-w-xl flex-col items-center justify-center gap-3 px-6 text-center text-sm text-slate-500 dark:text-slate-400">
+          {(loadStatus === 'loading' || isRestoringProgress) && <Loader2 className="h-9 w-9 animate-spin text-indigo-500" />}
+          <p>{loadStatus === 'loading' || isRestoringProgress ? 'Carregando matriz curricular…'
+            : loadStatus === 'error' ? 'Não foi possível carregar a matriz curricular. Atualize a página para tentar novamente.'
+              : 'Nenhuma matriz curricular disponível para este curso.'}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[100dvh] bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col antialiased transition-colors duration-300">
