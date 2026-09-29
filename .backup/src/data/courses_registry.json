@@ -58,5 +58,18 @@
     "visibleSemesters": [
       "2026.2"
     ]
+  },
+  {
+    "id": "licenciatura-em-letras-portugues-ingles",
+    "name": "Letras",
+    "shortName": "LTR01",
+    "hasCurriculum": true,
+    "hasSchedule": false,
+    "semesters": [
+      "2026.1"
+    ],
+    "profiles": [
+      "Perfil 4/2024"
+    ]
   }
 ]

@@ -20,6 +20,8 @@ interface ScheduleGridProps {
   onShowDetails?: (disc: Discipline) => void;
   onOpenTour?: () => void;
   onExportImage?: () => void;
+  curriculum: any;
+  contents: any;
 }
 
 export type GridCell = 
@@ -34,7 +36,9 @@ export function ScheduleGrid({
   removeFromSchedule,
   onShowDetails,
   onOpenTour,
-  onExportImage
+  onExportImage,
+  curriculum,
+  contents
 }: ScheduleGridProps) {
   const [shiftFilter, setShiftFilter] = useState<ShiftFilter>('auto');
   
@@ -194,7 +198,7 @@ export function ScheduleGrid({
                         </div>
                       </div>
                       <div className="absolute top-2 right-2 flex items-center opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity gap-1">
-                        {hasDisciplineDetails(disc) && (
+                        {hasDisciplineDetails(disc, curriculum, contents) && (
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -300,7 +304,7 @@ export function ScheduleGrid({
                                 </div>
 
                                 <div className="absolute top-1 right-1 flex items-center opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity gap-0.5">
-                                  {hasDisciplineDetails(scheduledDisc) && (
+                                  {hasDisciplineDetails(scheduledDisc, curriculum, contents) && (
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();

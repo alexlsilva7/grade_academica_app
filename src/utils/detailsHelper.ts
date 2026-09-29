@@ -1,43 +1,35 @@
-import { Discipline } from '../types';
-import bccData from '../data/bcc/curriculo_bcc.json';
-import conteudosData from '../data/bcc/conteudos_bcc.json';
+import type { Discipline } from '../types';
 
-import ealData from '../data/eal/curriculo_eal.json';
-import mvetData from '../data/medicina-veterinaria/curriculo_medicina-veterinaria.json';
-import admData from '../data/adm/curriculo_adm.json';
+function subjectsFromCurriculum(curriculum: any): any[] {
+  if (Array.isArray(curriculum)) return curriculum;
+  if (Array.isArray(curriculum?.subjects)) return curriculum.subjects;
+  if (Array.isArray(curriculum?.profiles)) return curriculum.profiles.flatMap((profile: any) => profile.subjects || []);
+  return [];
+}
 
-// Normalize codes to match variations like BCC00022 and BCC0022
-const normalizeCode = (c?: string) => c?.toUpperCase().replace(/([A-Z]+)0+([0-9]+)/, '$1$2') || '';
+function normalizeCode(code?: string): string {
+  return code?.toUpperCase().replace(/([A-Z]+)0+([0-9]+)/, '$1$2') || '';
+}
 
-const allSubjectsList: any[] = [
-  ...(bccData.subjects || []),
-  ...((ealData as any).profiles || []).flatMap((p: any) => p.subjects || []),
-  ...((mvetData as any).profiles || []).flatMap((p: any) => p.subjects || []),
-  ...(Array.isArray(admData) ? admData : [])
-];
+export function getDisciplineDetails(discipline: Discipline, curriculum: any, contents: any): { subjectDetails: any | null; contentDetails: any | null } {
+  if (!discipline) return { subjectDetails: null, contentDetails: null };
+  const subjects = subjectsFromCurriculum(curriculum);
+  const subjectDetails = discipline.code
+    ? subjects.find(subject => subject.code === discipline.code || subject.equivalences?.some((item: any) => item.code === discipline.code))
+    : subjects.find(subject => (subject.name || '').toLowerCase() === (discipline.name || '').toLowerCase());
+  const codes = [discipline.code, subjectDetails?.code, ...(subjectDetails?.equivalences || []).map((item: any) => item.code)]
+    .filter((code): code is string => typeof code === 'string')
+    .map(normalizeCode);
+  const contentList = Array.isArray(contents?.disciplinas) ? contents.disciplinas : [];
+  const contentDetails = contentList.find((item: any) => codes.includes(normalizeCode(item.codigo)))
+    || contentList.find((item: any) => (item.nome || '').toLowerCase() === (discipline.name || '').toLowerCase())
+    || null;
+  return { subjectDetails: subjectDetails || null, contentDetails };
+}
 
-export function hasDisciplineDetails(discipline: Discipline): boolean {
+export function hasDisciplineDetails(discipline: Discipline, curriculum: any, contents: any): boolean {
   if (!discipline) return false;
   if ((discipline as any).desc || (discipline as any).ementa) return true;
-
-  // Find subject details in JSON by code or name
-  const subjectDetails = discipline.code 
-    ? allSubjectsList.find(s => s.code === discipline.code) 
-    : allSubjectsList.find(s => (s.name || '').toLowerCase() === (discipline.name || '').toLowerCase());
-
-  const possibleCodes = [
-    discipline.code,
-    subjectDetails?.code,
-    ...(subjectDetails?.equivalences?.map(e => e.code) || [])
-  ].filter(Boolean) as string[];
-
-  const normalizedPossibleCodes = possibleCodes.map(normalizeCode);
-
-  const finalConteudoDetails = conteudosData.disciplinas.find(d => 
-    normalizedPossibleCodes.includes(normalizeCode(d.codigo))
-  ) || conteudosData.disciplinas.find(d => 
-    d.nome.toLowerCase() === (discipline.name || '').toLowerCase()
-  );
-
-  return !!(subjectDetails || finalConteudoDetails);
+  const { subjectDetails, contentDetails } = getDisciplineDetails(discipline, curriculum, contents);
+  return !!(subjectDetails || contentDetails);
 }

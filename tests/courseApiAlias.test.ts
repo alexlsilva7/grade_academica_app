@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 test('Server alias resolution logic for courses', () => {
-  const DATA_DIR = path.join(process.cwd(), 'src', 'data');
+  const DATA_DIR = path.join(process.cwd(), '.backup', 'src', 'data');
   const REGISTRY_PATH = path.join(DATA_DIR, 'courses_registry.json');
   const courses = JSON.parse(fs.readFileSync(REGISTRY_PATH, 'utf-8'));
 

@@ -23,200 +23,75 @@ import {
 import { ThemeMode } from '../hooks/useSchedule';
 import { Navbar } from './Navbar';
 import { motion } from 'motion/react';
-import { CurriculumProfile, TreeSubjectNode } from '../types';
-import ealCurriculum from '../data/eal/curriculo_eal.json';
-import mvetCurriculum from '../data/medicina-veterinaria/curriculo_medicina-veterinaria.json';
-import admCurriculum from '../data/adm/curriculo_adm.json';
+import { CurriculumProfile } from '../types';
+import { apiFetch } from '../utils/api';
 import { MatrizTour } from './MatrizTour';
+import { applyMatrixProgressImport, completedDisciplinesKey, matrixProgressKey, readStoredHours, restoreMatrixSubjects } from '../utils/matrixProgress';
 
-// --- ESTRUTURA COMPLETA DA MATRIZ DO CURSO ---
-const INITIAL_SUBJECTS_NEW = [
-  // 1º Período
-  { id: 'log_mat_1', code: 'MATM3008', name: 'Lógica Matemática I', hours: 60, period: 1, type: 'basico', prereqs: [], desc: 'Introdução à lógica proposicional e de primeira ordem, sistemas de dedução natural, semântica e completude.' },
-  { id: 'geo_anal', code: 'MATM3021', name: 'Geometria Analítica', hours: 60, period: 1, type: 'basico', prereqs: [], desc: 'Vetores no plano e no espaço, retas e planos, cónicas, quádricas e transformações de coordenadas.' },
-  { id: 'intro_prog_1', code: 'CCMP3057', name: 'Introdução à Programação I', hours: 90, period: 1, type: 'computacao', prereqs: [], desc: 'Desenvolvimento do pensamento algorítmico, lógica de programação, variáveis, estruturas condicionais/repetição e funções.' },
-  { id: 'intro_comp', code: 'CCMP3056', name: 'Introdução à Computação', hours: 30, period: 1, type: 'computacao', prereqs: [], desc: 'História da computação, arquitetura básica de computadores, sistemas de numeração, representação de dados e ética.' },
-  { id: 'metod_cient', code: 'CIEN3005', name: 'Metodologia Científica para Computação', hours: 60, period: 1, type: 'outros', prereqs: [], desc: 'Método científico, técnicas de pesquisa, leitura e redação de artigos técnicos, normas ABNT e ética científica.' },
-
-  // 2º Período
-  { id: 'alg_lin', code: 'MATM3019', name: 'Álgebra Linear', hours: 60, period: 2, type: 'basico', prereqs: ['geo_anal'], desc: 'Espaços vetoriais, transformações lineares, matrizes, determinantes, autovalores, autovetores e diagonalização.' },
-  { id: 'calc_1', code: 'MATM3031', name: 'Cálculo I', hours: 60, period: 2, type: 'basico', prereqs: ['geo_anal'], desc: 'Limites e continuidade, derivadas de funções de uma variável, aplicações da derivada e introdução à integração.' },
-  { id: 'aed_1', code: 'CCMP3006', name: 'Algoritmos e Estruturas de Dados I', hours: 60, period: 2, type: 'computacao', prereqs: ['intro_prog_1'], desc: 'Ponteiros, alocação dinâmica de memória, estruturas lineares (listas, pilhas, filas) e algoritmos de pesquisa/ordenação.' },
-  { id: 'poo', code: 'CCMP3017', name: 'Programação Orientada ao Objeto', hours: 60, period: 2, type: 'computacao', prereqs: ['intro_prog_1'], desc: 'Conceitos de objetos, classes, encapsulamento, herança, polimorfismo, interfaces, tratamento de exceções e padrões de projeto básicos.' },
-  { id: 'sist_dig', code: 'CCMP3058', name: 'Sistemas Digitais', hours: 60, period: 2, type: 'computacao', prereqs: ['intro_comp'], desc: 'Álgebra de Boole, minimização de funções lógicas, circuitos combinacionais e sequenciais, flip-flops, contadores e registradores.' },
-
-  // 3º Período
-  { id: 'mat_disc', code: 'CCMP3059', name: 'Matemática Discreta', hours: 60, period: 3, type: 'basico', prereqs: ['log_mat_1'], desc: 'Teoria dos conjuntos, relações, funções, indução matemática, análise combinatória e teoria dos grafos.' },
-  { id: 'calc_2', code: 'MATM3032', name: 'Cálculo II', hours: 60, period: 3, type: 'basico', prereqs: ['calc_1'], desc: 'Técnicas de integração, sequências e séries numéricas, funções de várias variáveis, derivadas parciais e integrais múltiplas.' },
-  { id: 'aed_2', code: 'CCMP3016', name: 'Algoritmos e Estruturas de Dados II', hours: 60, period: 3, type: 'computacao', prereqs: ['aed_1'], desc: 'Árvores binárias de pesquisa, árvores balanceadas (AVL, Rubro-Negra), árvores B, tabelas Hash e manipulação de arquivos.' },
-  { id: 'comp_graf', code: 'CCMP3019', name: 'Computação Gráfica', hours: 60, period: 3, type: 'computacao', prereqs: ['aed_1', 'alg_lin'], desc: 'Transformações geométricas 2D/3D, projeções, pipeline gráfico, modelos de iluminação, texturização e rasterização.' },
-  { id: 'arq_comp', code: 'CCMP3010', name: 'Arquitetura de Computadores', hours: 60, period: 3, type: 'computacao', prereqs: ['sist_dig'], desc: 'Conjunto de instruções (ISA), organização da CPU, barramentos, hierarquia de memória (cache/virtual) e sistemas de E/S.' },
-
-  // 4º Período
-  { id: 'banco_dados', code: 'CCMP3066', name: 'Banco de Dados', hours: 60, period: 4, type: 'computacao', prereqs: ['aed_2'], desc: 'Modelagem de dados (Entidade-Relacionamento), modelo relacional, álgebra relacional, linguagem SQL e normalização.' },
-  { id: 'prob_est', code: 'PRBE3006', name: 'Probabilidade e Estatística', hours: 60, period: 4, type: 'basico', prereqs: ['calc_2'], desc: 'Análise exploratória de dados, probabilidade, variáveis aleatórias, distribuições, amostragem e testes de hipóteses.' },
-  { id: 'paradigmas', code: 'CCMP3065', name: 'Paradigmas de Linguagens de Programação I', hours: 60, period: 4, type: 'computacao', prereqs: ['aed_2'], desc: 'Estudo comparativo dos paradigmas de programação: funcional, lógico, imperativo e orientado a objetos.' },
-  { id: 'paa', code: 'CCMP3064', name: 'Projeto e Análise de Algoritmos I', hours: 60, period: 4, type: 'computacao', prereqs: ['aed_2', 'mat_disc'], desc: 'Análise assintótica (notação Big-O), recorrências, algoritmos gulosos, divisão e conquista, e programação dinâmica.' },
-  { id: 'eng_soft_1', code: 'CCMP3018', name: 'Engenharia de Software I', hours: 60, period: 4, type: 'computacao', prereqs: ['poo'], desc: 'Ciclo de vida do software, processos de desenvolvimento (Ágeis/Tradicionais), elicitação de requisitos e modelagem UML.' },
-
-  // 5º Período
-  { id: 'ihc', code: 'CCMP3070', name: 'Interação Humano-Computador I', hours: 60, period: 5, type: 'computacao', prereqs: ['eng_soft_1'], desc: 'Design de interface de utilizador, avaliação de usabilidade, acessibilidade, prototipagem e fatores humanos.' },
-  { id: 'teoria_comp', code: 'CCMP3068', name: 'Teoria da Computação', hours: 60, period: 5, type: 'computacao', prereqs: ['mat_disc'], desc: 'Linguagens regulares, autômatos finitos, gramáticas livres de contexto, máquinas de Turing e decidibilidade.' },
-  { id: 'ia_1', code: 'CCMP3014', name: 'Inteligência Artificial I', hours: 60, period: 5, type: 'computacao', prereqs: ['paa'], desc: 'Algoritmos de busca (cega e heurística), jogos, representação do conhecimento, sistemas especialistas e introdução ao ML.' },
-  { id: 'sist_oper', code: 'CCMP3009', name: 'Sistemas Operacionais', hours: 60, period: 5, type: 'computacao', prereqs: ['arq_comp'], desc: 'Estrutura do SO, gerência de processos (escalonamento/sincronização), gerência de memória e sistemas de arquivos.' },
-  { id: 'redes', code: 'CCMP3023', name: 'Redes de Computadores', hours: 60, period: 5, type: 'computacao', prereqs: ['arq_comp'], desc: 'Arquitetura em camadas, protocolos de aplicação, camada de transporte (TCP/UDP), IP, roteamento e enlace.' },
-
-  // 6º Período
-  { id: 'empreendedorismo', code: 'BCC00003', name: 'Empreendedorismo I', hours: 60, period: 6, type: 'outros', prereqs: [], desc: 'Criação de novos empreendimentos, planos de negócios, inovação tecnológica, marketing e captação de recursos.' },
-  { id: 'compiladores', code: 'CCMP3020', name: 'Compiladores', hours: 60, period: 6, type: 'computacao', prereqs: ['teoria_comp'], desc: 'Fases do compilador: análise léxica, análise sintática, análise semântica, geração de código intermédio e otimização.' },
-  { id: 'reconhecimento_padroes', code: 'CCMP3043', name: 'Reconhecimento de Padrão I', hours: 60, period: 6, type: 'computacao', prereqs: ['ia_1', 'prob_est'], desc: 'Pré-processamento de dados, extração de características, classificadores estatísticos, redes neuronais e agrupamento (clustering).' },
-  { id: 'sist_info', code: 'CCMP3067', name: 'Sistemas de Informação e Tecnologias I', hours: 60, period: 6, type: 'computacao', prereqs: ['banco_dados'], desc: 'Sistemas de informação organizacionais, segurança, auditoria de TI, governança de TI (COBIT/ITIL) e tendências.' },
-  { id: 'sist_distrib', code: 'CCMP3021', name: 'Sistemas Distribuídos I', hours: 60, period: 6, type: 'computacao', prereqs: ['redes', 'sist_oper'], desc: 'Modelos de sistemas distribuídos, comunicação RPC/RMI, sincronização de relógios, replicação de dados e tolerância a falhas.' },
-
-  // 7º Período
-  { id: 'proj_soft', code: 'CCMP3069', name: 'Projeto de Desenvolvimento de Software', hours: 60, period: 7, type: 'computacao', prereqs: ['eng_soft_1'], desc: 'Desenvolvimento integrado de um sistema real, aplicando engenharia de requisitos, testes, arquitetura de software e gestão ágil.' },
-  { id: 'opt_7_1', name: 'Optativa I', hours: 60, period: 7, type: 'optativa', prereqs: [], desc: 'Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento.' },
-  { id: 'opt_7_2', name: 'Optativa II', hours: 60, period: 7, type: 'optativa', prereqs: [], desc: 'Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento.' },
-  { id: 'opt_7_3', name: 'Optativa III', hours: 60, period: 7, type: 'optativa', prereqs: [], desc: 'Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento.' },
-  { id: 'opt_7_4', name: 'Optativa IV', hours: 60, period: 7, type: 'optativa', prereqs: [], desc: 'Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento.' },
-
-  // 8º Período
-  { id: 'seg_info', code: 'BCC00045', name: 'Segurança de Informação', hours: 60, period: 8, type: 'computacao', prereqs: ['redes'], desc: 'Ameaças comuns, criptografia simétrica/assimétrica, protocolos seguros (SSL/TLS), firewalls e políticas corporativas de segurança.' },
-  { id: 'opt_8_1', name: 'Optativa V', hours: 60, period: 8, type: 'optativa', prereqs: [], desc: 'Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento.' },
-  { id: 'opt_8_2', name: 'Optativa VI', hours: 60, period: 8, type: 'optativa', prereqs: [], desc: 'Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento.' },
-  { id: 'opt_8_3', name: 'Optativa VII', hours: 60, period: 8, type: 'optativa', prereqs: [], desc: 'Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento.' },
-  { id: 'opt_8_4', name: 'Optativa VIII', hours: 60, period: 8, type: 'optativa', prereqs: [], desc: 'Unidade curricular de escolha livre dentro das áreas científicas de computação oferecidas pelo departamento.' },
-
-  // 9º Período
-  { id: 'tcc', code: 'CCMP3063', name: 'Trabalho de Conclusão de Curso de BCC', hours: 60, period: 9, type: 'computacao', prereqs: ['proj_soft', 'metod_cient'], desc: 'Pesquisa, desenvolvimento, escrita e defesa pública de uma monografia original ou projeto de fim de curso sob supervisão docente.' },
-  { id: 'comp_sociedade', code: 'CCMP3071', name: 'Computadores e Sociedade', hours: 30, period: 9, type: 'computacao', prereqs: [], desc: 'Impactos éticos, profissionais, sociais e legais da computação na sociedade contemporânea e privacidade de dados.' },
-  { id: 'estagio', code: 'CCMP3061', name: 'Estágio Obrigatório', hours: 300, period: 9, type: 'estagio', prereqs: ['proj_soft'], desc: 'Atividade supervisionada profissional realizada em ambiente empresarial ou laboratorial externo de TI.' },
-];
-
-const INITIAL_SUBJECTS_OLD = [
-  // 1º Período
-  { id: 'old_calc_1', name: 'Cálculo p/ Computação I', hours: 60, period: 1, type: 'basico', prereqs: [], desc: 'Cálculo Diferencial e Integral' },
-  { id: 'old_geo_anal', name: 'Geometria Analítica', hours: 60, period: 1, type: 'basico', prereqs: [], desc: 'Vetores, retas e planos' },
-  { id: 'old_log_mat', name: 'Lógica Matemática', hours: 60, period: 1, type: 'basico', prereqs: [], desc: 'Lógica proposicional' },
-  { id: 'old_intro_prog', name: 'Introdução à Programação', hours: 90, period: 1, type: 'computacao', prereqs: [], desc: 'Lógica de programação e algoritmos' },
-  { id: 'old_intro_comp', name: 'Introdução à Computação', hours: 30, period: 1, type: 'computacao', prereqs: [], desc: 'Fundamentos de computação' },
-
-  // 2º Período
-  { id: 'old_calc_2', name: 'Cálculo p/ Computação II', hours: 60, period: 2, type: 'basico', prereqs: ['old_calc_1'], desc: 'Integrais parciais e sequências' },
-  { id: 'old_fisica', name: 'Física p/ Computação', hours: 60, period: 2, type: 'basico', prereqs: ['old_calc_1', 'old_geo_anal'], desc: 'Física aplicada' },
-  { id: 'old_alg_lin', name: 'Álgebra Linear', hours: 60, period: 2, type: 'basico', prereqs: ['old_geo_anal'], desc: 'Espaços vetoriais e matrizes' },
-  { id: 'old_aed_1', name: 'Algoritmos e Estruturas de Dados I', hours: 60, period: 2, type: 'computacao', prereqs: ['old_intro_prog'], desc: 'Estruturas de dados básicas' },
-  { id: 'old_poo', name: 'Programação Orientada à Objetos', hours: 60, period: 2, type: 'computacao', prereqs: ['old_intro_prog'], desc: 'Paradigma orientado a objetos' },
-
-  // 3º Período
-  { id: 'old_prob_est', name: 'Probabilidade e Estatística', hours: 60, period: 3, type: 'basico', prereqs: ['old_calc_1'], desc: 'Probabilidade estatística' },
-  { id: 'old_sist_dig', name: 'Sistemas Digitais', hours: 60, period: 3, type: 'computacao', prereqs: ['old_fisica', 'old_log_mat'], desc: 'Circuitos digitais' },
-  { id: 'old_metod_cient', name: 'Metodologia Científica', hours: 30, period: 3, type: 'outros', prereqs: [], desc: 'Metodologia de pesquisa científica' },
-  { id: 'old_mat_disc', name: 'Matemática Discreta', hours: 60, period: 3, type: 'basico', prereqs: ['old_log_mat'], desc: 'Matemática finita' },
-  { id: 'old_aed_2', name: 'Algoritmos e Estruturas de Dados II', hours: 60, period: 3, type: 'computacao', prereqs: ['old_aed_1'], desc: 'Árvores e grafos' },
-  { id: 'old_ingles', name: 'Inglês', hours: 30, period: 3, type: 'outros', prereqs: [], desc: 'Inglês instrumental' },
-
-  // 4º Período
-  { id: 'old_arq_comp', name: 'Arquitetura de Computadores', hours: 60, period: 4, type: 'computacao', prereqs: ['old_sist_dig'], desc: 'Organização de computadores' },
-  { id: 'old_paa', name: 'Projeto e Análise de Algoritmos', hours: 60, period: 4, type: 'computacao', prereqs: ['old_mat_disc', 'old_aed_2'], desc: 'Complexidade de algoritmos' },
-  { id: 'old_eng_soft', name: 'Engenharia de Software', hours: 60, period: 4, type: 'computacao', prereqs: ['old_poo', 'old_aed_2'], desc: 'Processo de desenvolvimento' },
-  { id: 'old_paradigmas', name: 'Paradigmas de Linguagens de Programação', hours: 60, period: 4, type: 'computacao', prereqs: ['old_aed_2'], desc: 'Paradigmas convencionais e novos' },
-  { id: 'old_bd', name: 'Bancos de Dados', hours: 60, period: 4, type: 'computacao', prereqs: ['old_aed_2'], desc: 'Modelagem e SQL' },
-
-  // 5º Período
-  { id: 'old_sist_info', name: 'Sistemas de Informação e Tecnologias', hours: 60, period: 5, type: 'computacao', prereqs: ['old_bd'], desc: 'Sistemas corporativos' },
-  { id: 'old_sist_oper', name: 'Sistemas Operacionais', hours: 60, period: 5, type: 'computacao', prereqs: ['old_arq_comp'], desc: 'Gerenciamento de recursos' },
-  { id: 'old_ia', name: 'Inteligência Artificial', hours: 60, period: 5, type: 'computacao', prereqs: ['old_prob_est', 'old_paa'], desc: 'IA clássica e busca' },
-  { id: 'old_teoria_comp', name: 'Teoria da Computação', hours: 60, period: 5, type: 'computacao', prereqs: ['old_mat_disc'], desc: 'Autômatos e computabilidade' },
-  { id: 'old_redes', name: 'Redes de Computadores', hours: 60, period: 5, type: 'computacao', prereqs: ['old_arq_comp'], desc: 'Protocolos e arquitetura de redes' },
-
-  // 6º Período
-  { id: 'old_comp_graf', name: 'Computação Gráfica', hours: 60, period: 6, type: 'computacao', prereqs: ['old_alg_lin', 'old_aed_2'], desc: 'Rasterização e visualização 3D' },
-  { id: 'old_compiladores', name: 'Compiladores', hours: 60, period: 6, type: 'computacao', prereqs: ['old_teoria_comp'], desc: 'Design de compiladores' },
-  { id: 'old_rec_padroes', name: 'Reconhecimento de Padrões', hours: 60, period: 6, type: 'computacao', prereqs: ['old_alg_lin', 'old_prob_est', 'old_ia'], desc: 'ML e padrões' },
-  { id: 'old_emp_tic', name: 'Empreendimentos em TIC', hours: 60, period: 6, type: 'outros', prereqs: [], desc: 'Empreendedorismo' },
-  { id: 'old_sist_distr', name: 'Sistemas Distribuídos', hours: 60, period: 6, type: 'computacao', prereqs: ['old_redes', 'old_sist_oper'], desc: 'Sistemas tolerantes a falhas' },
-
-  // 7º Período
-  { id: 'old_proj_desenv', name: 'Projeto de Desenvolvimento', hours: 90, period: 7, type: 'computacao', prereqs: ['old_eng_soft'], desc: 'Projeto prático de software' },
-  { id: 'old_ihc', name: 'Interação Humano-Computador', hours: 60, period: 7, type: 'computacao', prereqs: ['old_eng_soft'], desc: 'Design de interfaces' },
-  { id: 'old_comp_soc', name: 'Computadores e Sociedade', hours: 30, period: 7, type: 'outros', prereqs: [], desc: 'Impactos éticos e sociais' },
-  { id: 'old_opt_1', name: 'Optativa 1', hours: 60, period: 7, type: 'optativa', prereqs: [], desc: 'Eletiva' },
-  { id: 'old_opt_2', name: 'Optativa 2', hours: 60, period: 7, type: 'optativa', prereqs: [], desc: 'Eletiva' },
-
-  // 8º Período
-  { id: 'old_opt_3', name: 'Optativa 3', hours: 60, period: 8, type: 'optativa', prereqs: [], desc: 'Eletiva' },
-  { id: 'old_opt_4', name: 'Optativa 4', hours: 60, period: 8, type: 'optativa', prereqs: [], desc: 'Eletiva' },
-  { id: 'old_opt_5', name: 'Optativa 5', hours: 60, period: 8, type: 'optativa', prereqs: [], desc: 'Eletiva' },
-  { id: 'old_opt_6', name: 'Optativa 6', hours: 60, period: 8, type: 'optativa', prereqs: [], desc: 'Eletiva' },
-  { id: 'old_opt_7', name: 'Optativa 7', hours: 60, period: 8, type: 'optativa', prereqs: [], desc: 'Eletiva' },
-
-  // 9º Período
-  { id: 'old_estagio', name: 'Estágio', hours: 300, period: 9, type: 'estagio', prereqs: [], desc: 'Estágio supervisionado' },
-  { id: 'old_tcc', name: 'TCC', hours: 180, period: 9, type: 'computacao', prereqs: [], desc: 'Trabalho de conclusão de curso' },
-];
-
-const DEFAULT_BCC_PROFILES: CurriculumProfile[] = [
-  {
-    id: 'BCC03',
-    name: 'Grade Nova (Perfil 3/2024)',
-    description: 'Perfil vigente a partir de 2024.2',
-    validFromSemester: '2024.2',
-    totalHours: 3200,
-    acexHours: 320,
-    accHours: 90,
-    optativeHours: 480,
-    mandatoryHours: 2310,
-    subjects: INITIAL_SUBJECTS_NEW
-  },
-  {
-    id: 'BCC02',
-    name: 'Grade Antiga (Perfil 2/2011)',
-    description: 'Perfil vigente entre 2011 e 2024.1',
-    validFromSemester: '2011.1',
-    totalHours: 3200,
-    acexHours: 0,
-    accHours: 90,
-    optativeHours: 480,
-    mandatoryHours: 2630,
-    subjects: INITIAL_SUBJECTS_OLD
-  }
-];
-
-const DEFAULT_ADM_PROFILES: CurriculumProfile[] = [
-  {
-    id: 'ADM01',
-    name: 'Matriz Curricular de Administração',
-    totalHours: null,
-    acexHours: null,
-    accHours: null,
-    optativeHours: null,
-    subjects: (admCurriculum as any[]).map((s, idx) => ({
-      id: s.id || `adm_${idx}`,
-      code: s.code,
-      name: s.name,
-      period: s.period == null ? null : s.period === 'Optativa' ? 0 : Number(s.period),
-      hours: s.workload?.total ?? null,
-      type: s.type?.toLowerCase().includes('opt') ? 'optativa' : 'basico',
-      prereqs: (s.prerequisites || []).map((p: any) => p.code || p.name),
-      desc: s.ementa || ''
-    }))
-  }
-];
-
-function getDefaultProfilesForCourse(course: string | null): CurriculumProfile[] {
-  if (course === 'eal' || course === 'engenharia-de-alimentos') {
-    return (ealCurriculum as any).profiles || [];
-  }
-  if (course === 'medicina-veterinaria' || course === 'mvet') {
-    return (mvetCurriculum as any).profiles || [];
-  }
-  if (course === 'adm') {
-    return DEFAULT_ADM_PROFILES;
-  }
-  return DEFAULT_BCC_PROFILES;
+function prerequisiteValues(source: any): unknown {
+  if (Object.prototype.hasOwnProperty.call(source, 'prereqs')) return source.prereqs;
+  if (Object.prototype.hasOwnProperty.call(source, 'prerequisites')) return source.prerequisites;
+  return null;
 }
 
+function mapSubject(source: any, index: number): any {
+  const requirements = prerequisiteValues(source);
+  return {
+    id: source.id || source.code || `subject_${index}`,
+    code: source.code,
+    name: source.name || source.nome || `Disciplina ${index + 1}`,
+    hours: source.hours ?? source.workload?.total ?? source.workload?.total_hours ?? null,
+    period: source.period == null ? 0 : source.period === 'Optativa' ? 0 : Number(source.period),
+    type: source.type?.toLowerCase().includes('opt') ? 'optativa' : (source.type || 'computacao'),
+    prereqs: Array.isArray(requirements) ? requirements.map((item: any) => typeof item === 'string' ? item : item.id || item.code || item.name).filter(Boolean) : null,
+    desc: source.desc || source.ementa || '',
+  };
+}
+
+function mapProfileSubjects(sources: any[]): any[] {
+  const mapped = sources.map(mapSubject);
+  const ids = new Map<string, string>();
+  sources.forEach((source, index) => {
+    for (const value of [source.id, source.code, source.name]) {
+      if (typeof value === 'string' && value.trim()) ids.set(value.trim().toLowerCase(), mapped[index].id);
+    }
+  });
+  return mapped.map((subject, index) => {
+    const requirements = prerequisiteValues(sources[index]);
+    return {
+      ...subject,
+      prereqs: Array.isArray(requirements) ? requirements.map((item: any) => {
+        const ref = typeof item === 'string' ? item : item.id || item.code || item.name;
+        return typeof ref === 'string' ? ids.get(ref.trim().toLowerCase()) || ref : null;
+      }).filter(Boolean) : null
+    };
+  });
+}
+
+function mapCurriculumProfiles(curriculum: any, course: string | null, courseName: string): CurriculumProfile[] {
+  const rawProfiles = Array.isArray(curriculum?.profiles) ? curriculum.profiles : null;
+  if (rawProfiles?.length) {
+    return rawProfiles.map((profile: any, index: number) => ({
+      ...profile,
+      id: profile.id || profile.code || `perfil_${index + 1}`,
+      name: profile.name || profile.description || profile.id || `Perfil ${index + 1}`,
+      subjects: mapProfileSubjects(Array.isArray(profile.subjects) ? profile.subjects : []),
+    }));
+  }
+  const rawSubjects = Array.isArray(curriculum) ? curriculum
+    : Array.isArray(curriculum?.subjects) ? curriculum.subjects
+      : Array.isArray(curriculum?.treeSubjects) ? curriculum.treeSubjects : [];
+  if (!rawSubjects.length) return [];
+  return [{
+    id: course || 'curso',
+    name: courseName || curriculum?.courseName || 'Matriz curricular',
+    totalHours: curriculum?.requisitos?.total ?? null,
+    acexHours: curriculum?.requisitos?.acex_extensao ?? null,
+    accHours: curriculum?.requisitos?.acc_complementar ?? null,
+    optativeHours: null,
+    subjects: mapProfileSubjects(rawSubjects),
+  } as CurriculumProfile];
+}
 interface Subject {
   id: string;
   code?: string;
@@ -224,7 +99,7 @@ interface Subject {
   hours: number | null;
   period: number;
   type: string;
-  prereqs: string[];
+  prereqs: string[] | null;
   desc: string;
   status: 'pendente' | 'cursando' | 'concluido';
   grade: string;
@@ -251,189 +126,136 @@ export function MatrizView({
   selectedProfile, 
   setSelectedProfile 
 }: MatrizViewProps) {
-  // --- PERFIS CURRICULARES (DINÂMICOS OU PADRÃO DO CURSO) ---
-  const initialProfiles = useMemo(() => getDefaultProfilesForCourse(course), [course]);
-  const [availableProfiles, setAvailableProfiles] = useState<CurriculumProfile[]>(initialProfiles);
+  const [availableProfiles, setAvailableProfiles] = useState<CurriculumProfile[]>([]);
   const [loadedCourseName, setLoadedCourseName] = useState<string>('');
-
+  const [dataSources, setDataSources] = useState<string[]>([]);
+  const [dataUpdatedAt, setDataUpdatedAt] = useState<string | null>(null);
   const [activeProfileId, setActiveProfileId] = useState<string>(() => {
     if (selectedProfile && selectedProfile !== 'all') return selectedProfile;
     const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
-    const legacyKey = course ? `matrix_version_${course}` : 'bcc_matrix_version';
     const stored = localStorage.getItem(key);
-    if (stored && stored !== 'all' && initialProfiles.some(p => p.id === stored)) return stored;
-    if (course === 'bcc' || !course) {
-      const legacy = localStorage.getItem(legacyKey);
-      if (legacy === 'antiga') return 'BCC02';
-      return 'BCC03';
-    }
-    return initialProfiles[0]?.id || '';
+    return stored && stored !== 'all' && stored !== 'todos' ? stored : '';
   });
 
-  // Atualizar perfis caso a prop course mude
-  useEffect(() => {
-    const profs = getDefaultProfilesForCourse(course);
-    setAvailableProfiles(profs);
-    const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
-    const stored = localStorage.getItem(key);
-    if (stored && stored !== 'all' && profs.some(p => p.id === stored)) {
-      setActiveProfileId(stored);
-    } else {
-      setActiveProfileId(profs[0]?.id || '');
-    }
-  }, [course]);
-
-  // Carregar perfis do curso dinamicamente da API se disponível
   useEffect(() => {
     let isCancelled = false;
+    setAvailableProfiles([]);
+    setLoadedCourseName('');
+    setDataSources([]);
+    setDataUpdatedAt(null);
     async function loadCourseData() {
       try {
-        const res = await fetch(`/api/courses/${course || 'bcc'}`);
-        if (res.ok && !isCancelled) {
-          const data = await res.json();
-          if (data.course?.name) {
-            setLoadedCourseName(data.course.name);
-          } else if (data.curriculum?.courseName) {
-            setLoadedCourseName(data.curriculum.courseName);
-          }
-          if (data.curriculum?.profiles && Array.isArray(data.curriculum.profiles) && data.curriculum.profiles.length > 0) {
-            setAvailableProfiles(data.curriculum.profiles);
-            const found = data.curriculum.profiles.some((p: CurriculumProfile) => p.id === activeProfileId);
-            if (!found) {
-              const defaultId = data.curriculum.activeProfileId || data.curriculum.profiles[0].id;
-              setActiveProfileId(defaultId);
-            }
-          } else if (data.curriculum?.subjects && Array.isArray(data.curriculum.subjects)) {
-            const mappedSubjects: TreeSubjectNode[] = data.curriculum.treeSubjects?.length ? data.curriculum.treeSubjects : data.curriculum.subjects.map((s: any, idx: number) => ({
-              id: s.id || `sub_${idx}`,
-              code: s.code,
-              name: s.name,
-              period: s.period == null ? null : s.period === 'Optativa' ? 0 : Number(s.period),
-              hours: s.workload?.total ?? null,
-              type: s.type?.toLowerCase().includes('opt') ? 'optativa' : 'computacao',
-              prereqs: s.prerequisites == null ? null : s.prerequisites.map((p: any) => {
-                const index = data.curriculum.subjects.findIndex((n: any) => n.profile === s.profile && ((p.code && n.code === p.code) || (p.name && n.name === p.name)));
-                return index < 0 ? p.code || p.name : data.curriculum.subjects[index].id || 'sub_' + index;
-              }),
-              desc: s.ementa || ''
-            }));
-            const singleProfile: CurriculumProfile = {
-              id: data.course?.shortName || 'GERAL',
-              name: data.course?.name || 'Matriz Curricular',
-              totalHours: null,
-              acexHours: null,
-              accHours: null,
-              optativeHours: null,
-              subjects: mappedSubjects
-            };
-            setAvailableProfiles([singleProfile]);
-            setActiveProfileId(singleProfile.id);
-          }
+        const res = await apiFetch(`/api/courses/${course || 'bcc'}?include=curriculum`);
+        if (!res.ok) throw new Error('Não foi possível carregar o currículo do curso.');
+        const data = await res.json();
+        if (isCancelled) return;
+        const courseName = data.course?.name || data.curriculum?.courseName || '';
+        setLoadedCourseName(courseName);
+        const sources = data.curriculum?.extraction?.sources;
+        setDataSources(Array.isArray(sources) ? sources.filter((source: unknown): source is string => typeof source === 'string') : []);
+        setDataUpdatedAt(typeof data.curriculum?.export_date === 'string' ? data.curriculum.export_date : null);
+        const profiles = mapCurriculumProfiles(data.curriculum, course, courseName);
+        setAvailableProfiles(profiles);
+        const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
+        const stored = localStorage.getItem(key);
+        const preferred = selectedProfile && selectedProfile !== 'all' ? selectedProfile : stored;
+        const legacyVersion = localStorage.getItem(course ? `matrix_version_${course}` : 'bcc_matrix_version');
+        const legacyProfile = legacyVersion === 'antiga' ? 'BCC02' : legacyVersion ? 'BCC03' : '';
+        const selected = profiles.find(profile => profile.id === preferred)?.id
+          || profiles.find(profile => profile.id === legacyProfile)?.id
+          || profiles.find(profile => profile.id === data.curriculum?.activeProfileId)?.id
+          || profiles[0]?.id
+          || '';
+        setActiveProfileId(selected);
+        if (selectedProfile === 'all' && selected) setSelectedProfile?.(selected);
+      } catch (error) {
+        if (!isCancelled) {
+          setAvailableProfiles([]);
+          setActiveProfileId('');
+          setDataSources([]);
+          setDataUpdatedAt(null);
+          console.error('Erro ao carregar currículo para MatrizView:', error);
         }
-      } catch (e) {
-        console.error("Erro ao carregar currículo para MatrizView:", e);
       }
     }
-
-    loadCourseData();
+    void loadCourseData();
     return () => { isCancelled = true; };
   }, [course]);
 
-  // Atualizar quando prop selectedProfile mudar externamente
   useEffect(() => {
-    if (selectedProfile && selectedProfile !== 'all') {
+    if (selectedProfile && selectedProfile !== 'all' && availableProfiles.some(profile => profile.id === selectedProfile)) {
       setActiveProfileId(selectedProfile);
     }
-  }, [selectedProfile]);
+  }, [selectedProfile, availableProfiles]);
 
-  const activeProfile = useMemo(() => {
-    return availableProfiles.find(p => p.id === activeProfileId) || availableProfiles[0] || initialProfiles[0];
-  }, [availableProfiles, activeProfileId, initialProfiles]);
-
+  const activeProfile = useMemo<CurriculumProfile>(() => {
+    return availableProfiles.find(profile => profile.id === activeProfileId) || availableProfiles[0] || {
+      id: activeProfileId || 'curriculum', name: loadedCourseName || 'Currículo', subjects: [],
+      totalHours: null, acexHours: null, accHours: null, optativeHours: null
+    };
+  }, [availableProfiles, activeProfileId, loadedCourseName]);
   // Carregar disciplinas com estado a partir do perfil ativo e localStorage
-  const [subjects, setSubjects] = useState<Subject[]>(() => {
-    const key = `${course || 'bcc'}_matriz_progress_${activeProfileId}`;
-    const legacyKey = activeProfileId === 'BCC02' ? 'bcc_matriz_progress_antiga' : 'bcc_matriz_progress';
-    const saved = localStorage.getItem(key) || (course === 'bcc' || !course ? localStorage.getItem(legacyKey) : null);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
-      } catch {}
-    }
-    const initialList = activeProfile?.subjects || [];
-    return initialList.map(s => ({ ...s, status: 'pendente', grade: '' }));
-  });
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const currentProgressKey = matrixProgressKey(course, activeProfile.id);
+  const [hydratedProgressKey, setHydratedProgressKey] = useState('');
 
   // Recarregar disciplinas e progresso quando perfil ativo mudar
   useEffect(() => {
-    if (!activeProfile || !activeProfile.subjects) return;
-    const key = `${course || 'bcc'}_matriz_progress_${activeProfile.id}`;
-    const legacyKey = activeProfile.id === 'BCC02' ? 'bcc_matriz_progress_antiga' : 'bcc_matriz_progress';
+    if (!availableProfiles.some(profile => profile.id === activeProfile.id) || !activeProfile.subjects) return;
+    const key = matrixProgressKey(course, activeProfile.id);
+    const legacyKey = activeProfile.id === 'BCC02' || activeProfile.id === 'antiga' ? 'bcc_matriz_progress_antiga' : 'bcc_matriz_progress';
     const saved = localStorage.getItem(key) || ((course === 'bcc' || !course) ? localStorage.getItem(legacyKey) : null);
-    
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const merged = activeProfile.subjects.map(s => {
-            const existing = parsed.find((p: any) => p.id === s.id || (p.code && p.code === s.code));
-            return {
-              ...s,
-              status: existing ? existing.status : 'pendente',
-              grade: existing ? existing.grade : ''
-            };
-          });
-          setSubjects(merged);
-          return;
-        }
-      } catch {}
-    }
-
-    setSubjects(activeProfile.subjects.map(s => ({ ...s, status: 'pendente', grade: '' })));
-  }, [activeProfile, course]);
+    setSubjects(restoreMatrixSubjects(activeProfile.subjects as Subject[], saved));
+    setHydratedProgressKey(key);
+  }, [activeProfile, availableProfiles, course]);
 
   // Persistir progresso do perfil ativo no localStorage
   useEffect(() => {
-    if (!activeProfile) return;
-    const key = `${course || 'bcc'}_matriz_progress_${activeProfile.id}`;
+    if (!availableProfiles.some(profile => profile.id === activeProfile.id)) return;
+    const key = currentProgressKey;
+    if (hydratedProgressKey !== key) return;
     try {
       localStorage.setItem(key, JSON.stringify(subjects));
-      
-      if (course === 'bcc' || !course) {
-        if (activeProfile.id === 'BCC03' || activeProfile.id === 'nova') {
-          localStorage.setItem('bcc_matriz_progress', JSON.stringify(subjects));
-          const completedList = subjects
-            .filter(s => s.status === 'concluido')
-            .map(s => s.code || s.id);
-          localStorage.setItem('completedDisciplines', JSON.stringify(completedList));
-        } else if (activeProfile.id === 'BCC02' || activeProfile.id === 'antiga') {
-          localStorage.setItem('bcc_matriz_progress_antiga', JSON.stringify(subjects));
-        }
+      const completedList = subjects.filter(subject => subject.status === 'concluido').map(subject => subject.code || subject.id);
+      localStorage.setItem(completedDisciplinesKey(course, activeProfile.id), JSON.stringify(completedList));
+      if ((course === 'bcc' || !course) && (activeProfile.id === 'BCC03' || activeProfile.id === 'nova')) {
+        localStorage.setItem('bcc_matriz_progress', JSON.stringify(subjects));
+        localStorage.setItem('completedDisciplines', JSON.stringify(completedList));
+      } else if ((course === 'bcc' || !course) && (activeProfile.id === 'BCC02' || activeProfile.id === 'antiga')) {
+        localStorage.setItem('bcc_matriz_progress_antiga', JSON.stringify(subjects));
       }
     } catch (e) {
       console.error('Falha ao salvar progresso da matriz', e);
     }
-  }, [subjects, activeProfile.id, course]);
+  }, [subjects, activeProfile, availableProfiles, course, hydratedProgressKey]);
 
-  const [acexHours, setAcexHours] = useState(() => {
-    return Number(localStorage.getItem(`${course || 'bcc'}_acex_hours_${activeProfileId}`)) || Number(localStorage.getItem('bcc_acex_hours')) || 0;
-  });
-  const [accHours, setAccHours] = useState(() => {
-    return Number(localStorage.getItem(`${course || 'bcc'}_acc_hours_${activeProfileId}`)) || Number(localStorage.getItem('bcc_acc_hours')) || 0;
-  });
+  const [acexHours, setAcexHours] = useState(0);
+  const [accHours, setAccHours] = useState(0);
+  const [hydratedHoursKey, setHydratedHoursKey] = useState('');
 
   useEffect(() => {
+    if (!availableProfiles.some(profile => profile.id === activeProfile.id)) return;
+    const key = `${course || 'bcc'}_${activeProfile.id}`;
+    const legacyAcex = (course === 'bcc' || !course) && (activeProfile.id === 'BCC03' || activeProfile.id === 'nova') ? 'bcc_acex_hours' : undefined;
+    const legacyAcc = (course === 'bcc' || !course) && (activeProfile.id === 'BCC03' || activeProfile.id === 'nova') ? 'bcc_acc_hours' : undefined;
+    setAcexHours(readStoredHours(localStorage, `${course || 'bcc'}_acex_hours_${activeProfile.id}`, legacyAcex));
+    setAccHours(readStoredHours(localStorage, `${course || 'bcc'}_acc_hours_${activeProfile.id}`, legacyAcc));
+    setHydratedHoursKey(key);
+  }, [course, activeProfile.id, availableProfiles]);
+
+  useEffect(() => {
+    if (!availableProfiles.some(profile => profile.id === activeProfile.id)) return;
+    if (hydratedHoursKey !== `${course || 'bcc'}_${activeProfile.id}`) return;
     localStorage.setItem(`${course || 'bcc'}_acex_hours_${activeProfile.id}`, acexHours.toString());
-    if (activeProfile.id === 'BCC03') localStorage.setItem('bcc_acex_hours', acexHours.toString());
-  }, [acexHours, activeProfile.id, course]);
+    if ((course === 'bcc' || !course) && (activeProfile.id === 'BCC03' || activeProfile.id === 'nova')) localStorage.setItem('bcc_acex_hours', acexHours.toString());
+  }, [acexHours, activeProfile, availableProfiles, course, hydratedHoursKey]);
 
   useEffect(() => {
+    if (!availableProfiles.some(profile => profile.id === activeProfile.id)) return;
+    if (hydratedHoursKey !== `${course || 'bcc'}_${activeProfile.id}`) return;
     localStorage.setItem(`${course || 'bcc'}_acc_hours_${activeProfile.id}`, accHours.toString());
-    if (activeProfile.id === 'BCC03') localStorage.setItem('bcc_acc_hours', accHours.toString());
-  }, [accHours, activeProfile.id, course]);
+    if ((course === 'bcc' || !course) && (activeProfile.id === 'BCC03' || activeProfile.id === 'nova')) localStorage.setItem('bcc_acc_hours', accHours.toString());
+  }, [accHours, activeProfile, availableProfiles, course, hydratedHoursKey]);
 
   const handleSelectProfile = (profileId: string) => {
     setActiveProfileId(profileId);
@@ -469,18 +291,6 @@ export function MatrizView({
       return () => clearTimeout(timer);
     }
   }, []);
-
-  useEffect(() => {
-    if (course === 'bcc' || !course) {
-      localStorage.setItem('bcc_acex_hours', acexHours.toString());
-    }
-  }, [acexHours, course]);
-
-  useEffect(() => {
-    if (course === 'bcc' || !course) {
-      localStorage.setItem('bcc_acc_hours', accHours.toString());
-    }
-  }, [accHours, course]);
 
   // --- CÁLCULO DE RELAÇÕES ---
   const dependentsMap = useMemo(() => {
@@ -700,15 +510,16 @@ export function MatrizView({
     fileReader.readAsText(e.target.files[0], "UTF-8");
     fileReader.onload = (event) => {
       try {
-        const parsed = JSON.parse(event.target?.result as string);
-        if (parsed.subjects && Array.isArray(parsed.subjects)) {
-          setSubjects(parsed.subjects);
-          if (parsed.acexHours !== undefined) setAcexHours(parsed.acexHours);
-          if (parsed.accHours !== undefined) setAccHours(parsed.accHours);
-          alert("Progresso importado com sucesso!");
-        } else {
-          alert("Formato de ficheiro inválido.");
+        const parsed: unknown = JSON.parse(event.target?.result as string);
+        const restored = applyMatrixProgressImport(parsed, course || 'bcc', activeProfile.id, subjects);
+        if (!restored) {
+          alert("Este arquivo não corresponde ao curso e perfil abertos, ou tem um formato inválido.");
+          return;
         }
+        setSubjects(restored.subjects);
+        if (restored.acexHours !== undefined) setAcexHours(restored.acexHours);
+        if (restored.accHours !== undefined) setAccHours(restored.accHours);
+        alert("Progresso importado com sucesso!");
       } catch (err) {
         alert("Erro ao ler o ficheiro.");
       }
@@ -860,6 +671,9 @@ export function MatrizView({
         darkMode={darkMode}
         themePreference={themePreference}
         cycleTheme={cycleTheme}
+        dataSources={dataSources}
+        dataUpdatedAt={dataUpdatedAt}
+        dataSemester={activeProfile.validFromSemester}
       />
 
 

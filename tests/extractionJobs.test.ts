@@ -25,13 +25,16 @@ const respond = (args: any) => {
   return result;
 };
 const response = (value: any) => ({ text: JSON.stringify(value), candidates: [{ finishReason: 'STOP' }] });
+const ownerId = 'admin-1';
 function temporaryStore(t: any) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'academic-resume-test-'));
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
   return directory;
 }
 async function serve(store: ExtractionJobStore, ai: AcademicAIClient) {
-  const app = express(); app.use(express.json()); app.use('/api', extractionRoutes(() => ai, store));
+  let adminUserId = ownerId;
+  const app = express(); app.use(express.json());
+  app.use('/api', (req, _res, next) => { req.adminUserId = adminUserId; next(); }, extractionRoutes(() => ai, store));
   const server = app.listen(0, '127.0.0.1'); await once(server, 'listening');
   const address = server.address() as { port: number };
   const base = `http://127.0.0.1:${address.port}/api`;
@@ -40,6 +43,7 @@ async function serve(store: ExtractionJobStore, ai: AcademicAIClient) {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal
     }),
     get: (endpoint: string) => fetch(`${base}/${endpoint}`),
+    setAdminUserId: (id: string) => { adminUserId = id; },
     close: () => new Promise<void>(resolve => { server.close(() => resolve()); server.closeAllConnections(); })
   };
 }
@@ -51,11 +55,11 @@ test('single PDF result survives a fresh store without another AI call', async t
   let calls = 0;
   const ai: AcademicAIClient = { models: { generateContent: async args => { calls++; return response(respond(args)); } } };
   const store = new ExtractionJobStore(directory);
-  const job = store.create('schedule', input);
+  const job = store.create('schedule', input, ownerId);
   await extractAcademicData(ai, input, 'schedule', undefined, undefined, store.checkpoint(job.token));
   assert.equal(store.checkpoint(job.token).results.size, 1);
   const restarted = new ExtractionJobStore(directory);
-  const recovered = restarted.get(job.token);
+  const recovered = restarted.get(job.token, ownerId);
   const result = await extractAcademicData(ai, recovered.input, recovered.mode, undefined, undefined, restarted.checkpoint(job.token));
   assert.equal(calls, 1);
   assert.equal(result._extraction.calls[0].status, 'checkpoint');
@@ -109,7 +113,7 @@ test('disconnect preserves results and competing requests cannot release the own
   } } };
   const service = await serve(store, ai); t.after(() => service.close());
   const job = store.create('schedule', { files: [{ fileName: 'a.png', mimeType: 'image/png', base64Data: 'YQ==' }],
-    model: 'moonshot/kimi-k2.6' });
+    model: 'moonshot/kimi-k2.6' }, ownerId);
   const controller = new AbortController();
   const running = service.post('extract-schedule', { resumeToken: job.token }, controller.signal);
   const rejection = assert.rejects(running, /abort/i);
@@ -122,7 +126,7 @@ test('disconnect preserves results and competing requests cannot release the own
   controller.abort(); await rejection; await aborted;
   const restarted = new ExtractionJobStore(directory);
   assert.equal(restarted.checkpoint(job.token).results.size, 0);
-  assert.equal(restarted.get(job.token).input.files.length, 1);
+  assert.equal(restarted.get(job.token, ownerId).input.files.length, 1);
 });
 
 test('live status exposes real events while AI is pending and persists completion after restart', async t => {
@@ -141,7 +145,7 @@ test('live status exposes real events while AI is pending and persists completio
   } } };
   const store = new ExtractionJobStore(directory);
   const service = await serve(store, ai); t.after(() => service.close());
-  const job = store.create('schedule', { model: 'moonshot/kimi-k2.6', files: [{ fileName: 'a.png', mimeType: 'image/png', base64Data: 'YQ==' }] });
+  const job = store.create('schedule', { model: 'moonshot/kimi-k2.6', files: [{ fileName: 'a.png', mimeType: 'image/png', base64Data: 'YQ==' }] }, ownerId);
   const pending = service.post('extract-schedule', { resumeToken: job.token });
   await ready;
   const statusResponse = await service.get(`extraction-jobs/${job.token}`);
@@ -165,28 +169,35 @@ test('live status exposes real events while AI is pending and persists completio
   assert.ok(stages.indexOf('validation') > stages.indexOf('extraction'));
   assert.ok(stages.indexOf('saving') > stages.indexOf('validation'));
   assert.equal(stages.at(-1), 'complete');
-  assert.deepEqual(new ExtractionJobStore(directory).describeToken(job.token).activity, completed.activity);
+  assert.deepEqual(new ExtractionJobStore(directory).describeToken(job.token, ownerId).activity, completed.activity);
 });
 
 test('failed and interrupted executions are distinct and a new run resets its timing', async t => {
   const directory = temporaryStore(t);
   const store = new ExtractionJobStore(directory);
-  const job = store.create('linear', { textContent: 'Álgebra' });
-  const release = store.acquire(job.token);
+  const job = store.create('linear', { textContent: 'Álgebra' }, ownerId);
+  const release = store.acquire(job.token, ownerId);
   store.begin(job.token, 'model-a');
   store.record(job.token, 'extraction', 'Aguardando resposta.', { attempt: 2 });
+  // Simulate a process restart by marking the durable job and concurrency locks dead.
+  const jobLockPath = path.join(directory, job.token, 'worker.lock');
+  const slotLockPath = path.join(directory, '.locks', 'slot-0.lock');
+  for (const lockPath of [jobLockPath, slotLockPath]) {
+    const lock = JSON.parse(fs.readFileSync(lockPath, 'utf8'));
+    fs.writeFileSync(lockPath, JSON.stringify({ ...lock, pid: 2147483647, host: os.hostname() }));
+  }
   const restarted = new ExtractionJobStore(directory);
-  assert.equal(restarted.describeToken(job.token).status, 'interrupted');
+  assert.equal(restarted.describeToken(job.token, ownerId).status, 'interrupted');
   store.stop(job.token, false, 'Provider failed: Bearer secret-value api_key=another-secret');
   release();
-  const failed = restarted.describeToken(job.token);
+  const failed = restarted.describeToken(job.token, ownerId);
   assert.equal(failed.status, 'failed');
   assert.equal(failed.activity.stage, 'extraction');
   assert.ok(failed.activity.finishedAt);
   assert.ok(!failed.activity.events.at(-1)!.message.includes('secret'));
-  const resumedRelease = restarted.acquire(job.token);
+  const resumedRelease = restarted.acquire(job.token, ownerId);
   restarted.begin(job.token, 'model-b');
-  const resumed = restarted.describeToken(job.token);
+  const resumed = restarted.describeToken(job.token, ownerId);
   assert.equal(resumed.status, 'running');
   assert.equal(resumed.activity.finishedAt, undefined);
   assert.equal(resumed.activity.attempt, undefined);
@@ -194,19 +205,50 @@ test('failed and interrupted executions are distinct and a new run resets its ti
   assert.ok(resumed.activity.events.some(event => event.level === 'error'), 'Keep prior failure in the history');
   restarted.stop(job.token, true, 'Cancelada pelo usuário.');
   resumedRelease();
-  assert.equal(restarted.describeToken(job.token).status, 'cancelled');
+  assert.equal(restarted.describeToken(job.token, ownerId).status, 'cancelled');
 });
 
 test('operational logs are bounded, ordered and redact credential-shaped values', async t => {
   const store = new ExtractionJobStore(temporaryStore(t));
-  const job = store.create('linear', { textContent: 'Álgebra' });
-  const release = store.acquire(job.token);
+  const job = store.create('linear', { textContent: 'Álgebra' }, ownerId);
+  const release = store.acquire(job.token, ownerId);
   store.begin(job.token);
   for (let i = 0; i < 210; i++) store.record(job.token, 'extraction', `Evento ${i}`);
   release();
-  const events = store.describeToken(job.token).activity.events;
+  const events = store.describeToken(job.token, ownerId).activity.events;
   assert.equal(events.length, 200);
   assert.equal(new Set(events.map(event => event.id)).size, 200);
   assert.equal(events.at(-1)!.message, 'Evento 209');
   assert.equal(safeLogMessage('sk-test-secret token=secret'), '[chave oculta] token=[oculto]');
+});
+
+test('extraction jobs are private to their creating administrator', async t => {
+  const directory = temporaryStore(t);
+  const service = await serve(new ExtractionJobStore(directory), { models: { generateContent: async () => { throw new Error('must not run'); } } });
+  t.after(() => service.close());
+  const token = randomUUID();
+  const input = { textContent: 'Álgebra' };
+  assert.equal((await service.post('extraction-jobs', { token, mode: 'linear', input })).status, 200);
+
+  service.setAdminUserId('admin-2');
+  assert.equal((await service.get(`extraction-jobs/${token}`)).status, 404);
+  assert.equal((await service.post('extract-curriculum', { resumeToken: token })).status, 404);
+  assert.equal((await service.post('extraction-jobs', { token, mode: 'linear', input })).status, 404);
+
+  service.setAdminUserId(ownerId);
+  assert.equal((await service.get(`extraction-jobs/${token}`)).status, 200);
+});
+
+test('file locks coordinate stores and enforce a shared concurrency cap', async t => {
+  const directory = temporaryStore(t);
+  const first = new ExtractionJobStore(directory, 1);
+  const second = new ExtractionJobStore(directory, 1);
+  const jobA = first.create('linear', { textContent: 'Álgebra' }, ownerId);
+  const jobB = first.create('linear', { textContent: 'Geometria' }, ownerId);
+  const releaseA = first.acquire(jobA.token, ownerId);
+  assert.throws(() => second.acquire(jobA.token, ownerId), (error: any) => error.status === 409);
+  assert.throws(() => second.acquire(jobB.token, ownerId), (error: any) => error.status === 429);
+  releaseA();
+  const releaseB = second.acquire(jobB.token, ownerId);
+  releaseB();
 });

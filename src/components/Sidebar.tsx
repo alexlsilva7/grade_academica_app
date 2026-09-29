@@ -30,6 +30,8 @@ interface SidebarProps {
   themePreference: 'light' | 'dark' | 'system';
   cycleTheme: () => void;
   onOpenTour?: () => void;
+  curriculum: any;
+  contents: any;
 }
 
 export function Sidebar({
@@ -56,7 +58,9 @@ export function Sidebar({
   darkMode,
   themePreference,
   cycleTheme,
-  onOpenTour
+  onOpenTour,
+  curriculum,
+  contents
 }: SidebarProps) {
   const getCleanDisciplineName = (name: string) => {
     return name
@@ -231,7 +235,7 @@ export function Sidebar({
                     >
                       <CheckSquare className="w-5 h-5" />
                     </button>
-                    {hasDisciplineDetails(disc) && (
+                    {hasDisciplineDetails(disc, curriculum, contents) && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();

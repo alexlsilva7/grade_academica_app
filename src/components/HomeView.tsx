@@ -1,9 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { BookOpen, Sun, Moon, Monitor, Download, Upload, BrainCircuit, CalendarDays, Layers, ArrowRight, ChevronDown, Trash2, Loader2, AlertCircle, Sliders } from 'lucide-react';
 import { exportAllUserData, importAllUserData } from '../utils/backupHelper';
-import { canAccessAdmin } from '../utils/domain';
+import { canAccessAdmin, canManageHomeCourses } from '../utils/domain';
 import { CourseMeta } from '../types';
 import { CoursesVisibilityModal } from './CoursesVisibilityModal';
+import { apiFetch } from '../utils/api';
 
 interface HomeViewProps {
   loadPredefinedGrade: (type: string, semesterToLoad?: string) => void;
@@ -17,10 +18,6 @@ interface HomeViewProps {
   setSelectedProfile?: (p: string) => void;
 }
 
-import initialCoursesRegistry from '../data/courses_registry.json';
-
-const DEFAULT_COURSES: CourseMeta[] = initialCoursesRegistry as CourseMeta[];
-
 export function HomeView({ 
   loadPredefinedGrade, 
   setView, 
@@ -33,12 +30,12 @@ export function HomeView({
   setSelectedProfile
 }: HomeViewProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [courses, setCourses] = useState<CourseMeta[]>(DEFAULT_COURSES);
+  const [courses, setCourses] = useState<CourseMeta[]>([]);
   const [courseProfiles, setCourseProfiles] = useState<string[]>([]);
   const [isVisibilityModalOpen, setIsVisibilityModalOpen] = useState(false);
 
   useEffect(() => {
-    fetch('/api/courses')
+    apiFetch('/api/courses')
       .then(res => res.json())
       .then(data => {
         if (data.courses && Array.isArray(data.courses) && data.courses.length > 0) {
@@ -56,7 +53,7 @@ export function HomeView({
     }
 
     let isMounted = true;
-    fetch(`/api/courses/${selectedCourse}`)
+    apiFetch(`/api/courses/${selectedCourse}?include=curriculum,schedule`)
       .then(res => res.ok ? res.json() : null)
       .then(data => {
         if (!isMounted) return;
@@ -84,11 +81,6 @@ export function HomeView({
               }
             });
           }
-        } else {
-          const fallbackMeta = (initialCoursesRegistry as CourseMeta[]).find(c => c.id === selectedCourse);
-          if (fallbackMeta?.profiles) {
-            fallbackMeta.profiles.forEach(p => set.add(p.trim()));
-          }
         }
         const profilesList = Array.from(set).sort();
         setCourseProfiles(profilesList);
@@ -105,8 +97,7 @@ export function HomeView({
       })
       .catch(() => {
         if (!isMounted) return;
-        const fallbackMeta = (initialCoursesRegistry as CourseMeta[]).find(c => c.id === selectedCourse);
-        setCourseProfiles(fallbackMeta?.profiles || []);
+        setCourseProfiles([]);
       });
 
     return () => {
@@ -135,7 +126,7 @@ export function HomeView({
     if (!selectedCourse) return;
     setIsDeletingCourse(true);
     try {
-      const res = await fetch(`/api/courses/${selectedCourse}`, {
+      const res = await apiFetch(`/api/courses/${selectedCourse}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -161,7 +152,7 @@ export function HomeView({
         changeCourse(null);
 
         // Refresh courses list
-        fetch('/api/courses')
+        apiFetch('/api/courses')
           .then(r => r.json())
           .then(data => {
             if (data.courses && Array.isArray(data.courses)) {
@@ -218,7 +209,7 @@ export function HomeView({
       <div className="absolute top-6 right-6 flex items-center gap-2 z-10 animate-in fade-in duration-500">
         
         {/* Visibility Manager Button */}
-        {canAccessAdmin() && (
+        {canManageHomeCourses() && (
           <button
             onClick={() => setIsVisibilityModalOpen(true)}
             className="flex items-center justify-center w-10 h-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full transition-all cursor-pointer"
@@ -354,7 +345,7 @@ export function HomeView({
                       <button onClick={() => changeCourse(null)} className="text-sm text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline text-left cursor-pointer">
                         Alterar curso
                       </button>
-                      {canAccessAdmin() && (
+                      {canManageHomeCourses() && (
                         <>
                           <span className="text-slate-300 dark:text-slate-700">•</span>
                           <button

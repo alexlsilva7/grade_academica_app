@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 test('EAL data files and registry consistency', () => {
-  const dataDir = path.join(process.cwd(), 'src', 'data');
+  const dataDir = path.join(process.cwd(), '.backup', 'src', 'data');
   const registryPath = path.join(dataDir, 'courses_registry.json');
   
   assert.ok(fs.existsSync(registryPath), 'courses_registry.json exists');
@@ -18,10 +18,10 @@ test('EAL data files and registry consistency', () => {
   assert.deepEqual(ealCourse.profiles, ['EAL03']);
 
   const ealDir = path.join(dataDir, 'eal');
-  assert.ok(fs.existsSync(ealDir), 'src/data/eal exists');
+  assert.ok(fs.existsSync(ealDir), '.backup/src/data/eal exists');
 
   const currPath = path.join(ealDir, 'curriculo_eal.json');
-  assert.ok(fs.existsSync(currPath), 'src/data/eal/curriculo_eal.json exists');
+  assert.ok(fs.existsSync(currPath), '.backup/src/data/eal/curriculo_eal.json exists');
 
   const curriculum = JSON.parse(fs.readFileSync(currPath, 'utf-8'));
   assert.ok(Array.isArray(curriculum.profiles), 'profiles is an array');
