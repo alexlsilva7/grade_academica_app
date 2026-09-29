@@ -2,9 +2,9 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { validateExtraction } from '../utils/extraction';
-import type { CourseMeta } from '../types';
-import { FileAcademicRepository, RepositoryError } from './academicRepository';
+import { validateExtraction } from '../utils/extraction.js';
+import type { CourseMeta } from '../types.js';
+import { FileAcademicRepository, RepositoryError } from './academicRepository.js';
 
 export type MigrationKind = 'course' | 'curriculum' | 'contents' | 'schedule';
 export type MigrationSourceItem = {

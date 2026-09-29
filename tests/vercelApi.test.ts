@@ -5,6 +5,30 @@ import os from 'node:os';
 import path from 'node:path';
 import { once } from 'node:events';
 import type { AddressInfo } from 'node:net';
+import { spawnSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
+
+test('Compiled Vercel entry loads in native Node ESM without the tsx resolver', { timeout: 60000 }, async () => {
+  const output = await fs.mkdtemp(path.join(process.cwd(), '.vercel-api-test-'));
+  try {
+    const compile = spawnSync(process.execPath, [
+      'node_modules/typescript/bin/tsc', 'api/index.ts',
+      '--outDir', output, '--module', 'ESNext', '--moduleResolution', 'bundler',
+      '--target', 'ES2022', '--esModuleInterop', '--skipLibCheck'
+    ], { encoding: 'utf8', windowsHide: true, timeout: 40000 });
+    assert.equal(compile.status, 0, compile.stdout + compile.stderr);
+    const entry = pathToFileURL(path.join(output, 'api/index.js')).href;
+    const runtime = spawnSync(process.execPath, ['--input-type=module', '-e',
+      `import app from ${JSON.stringify(entry)}; if (typeof app !== 'function') throw new Error('Missing Express handler');`
+    ], {
+      encoding: 'utf8', windowsHide: true, timeout: 15000,
+      env: { ...process.env, NODE_OPTIONS: '', ACADEMIC_DATA_SOURCE: 'files', ACADEMIC_DATA_DIR: path.resolve('.backup/src/data') }
+    });
+    assert.equal(runtime.status, 0, runtime.stdout + runtime.stderr);
+  } finally {
+    await fs.rm(output, { recursive: true, force: true });
+  }
+});
 
 test('Vercel entry serves public course routes and protects administrative writes', async () => {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'vercel-api-test-'));

@@ -2,9 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { createHash, randomUUID } from 'node:crypto';
-import { readSources, type ExtractionCheckpoint } from './extractionPipeline';
-import { parsePipelineConfig } from './src/utils/pipelineConfig';
-import { safeLogMessage, type ExtractionActivity, type ExtractionEvent, type ExtractionMetrics, type ExtractionStage } from './src/utils/extractionActivity';
+import { readSources, type ExtractionCheckpoint } from './extractionPipeline.js';
+import { parsePipelineConfig } from './src/utils/pipelineConfig.js';
+import { safeLogMessage, type ExtractionActivity, type ExtractionEvent, type ExtractionMetrics, type ExtractionStage } from './src/utils/extractionActivity.js';
 
 export type ExtractionMode = 'schedule' | 'linear' | 'tree';
 export type ExtractionJob = {

@@ -1,10 +1,10 @@
 import { GoogleGenAI, Type } from '@google/genai';
 import { createHash } from 'node:crypto';
 import { PDFDocument } from 'pdf-lib';
-import { normalizeAcademicName, normalizeAcademicType, relationKey, validateExtraction, type Evidence, type ExtractionIssue } from './src/utils/extraction';
-import type { AcademicAIClient } from './aiProvider';
-import { canReadFiles } from './src/utils/pipelineConfig';
-import type { ExtractionStage, ExtractionMetrics } from './src/utils/extractionActivity';
+import { normalizeAcademicName, normalizeAcademicType, relationKey, validateExtraction, type Evidence, type ExtractionIssue } from './src/utils/extraction.js';
+import type { AcademicAIClient } from './aiProvider.js';
+import { canReadFiles } from './src/utils/pipelineConfig.js';
+import type { ExtractionStage, ExtractionMetrics } from './src/utils/extractionActivity.js';
 
 type Mode = 'schedule' | 'linear' | 'tree';
 export type Source = { fileName: string; mimeType?: string; base64Data?: string; text?: string; pageNumbers?: number[]; pageTexts?: Record<number, string>; sourceDigest?: string };

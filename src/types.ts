@@ -12,7 +12,7 @@ export interface Session {
 }
 
 export interface SourceMetadata {
-  evidence?: import('./utils/extraction').Evidence[];
+  evidence?: import('./utils/extraction.js').Evidence[];
   courseName?: string | null;
   semester?: string | null;
   classGroup?: string | null;
@@ -112,7 +112,7 @@ export interface CurriculumData {
   activeProfileId?: string;
   profiles?: CurriculumProfile[];
   treeSubjects?: TreeSubjectNode[];
-  extraction?: import('./utils/extraction').ExtractionReport;
+  extraction?: import('./utils/extraction.js').ExtractionReport;
   subjects: CurriculumSubject[];
 }
 

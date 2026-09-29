@@ -1,5 +1,5 @@
-import type { CurriculumSubject, Discipline, Prerequisite, TreeSubjectNode } from '../types';
-import type { PipelineConfig, PipelineStage } from './pipelineConfig';
+import type { CurriculumSubject, Discipline, Prerequisite, TreeSubjectNode } from '../types.js';
+import type { PipelineConfig, PipelineStage } from './pipelineConfig.js';
 
 export interface Evidence {
   field: string;

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { CourseMeta, Discipline } from '../types';
+import type { CourseMeta, Discipline } from '../types.js';
 
 export type CourseDetails = {
   course: CourseMeta;

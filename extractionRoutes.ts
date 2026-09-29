@@ -1,9 +1,9 @@
 import { Router, type RequestHandler } from 'express';
-import { extractAcademicData } from './extractionPipeline';
-import { ExtractionJobStore, jobError, sourceSignature, type ExtractionJob, type ExtractionMode } from './extractionJobs';
-import type { AcademicAIClient } from './aiProvider';
-import { parsePipelineConfig } from './src/utils/pipelineConfig';
-import { safeLogMessage } from './src/utils/extractionActivity';
+import { extractAcademicData } from './extractionPipeline.js';
+import { ExtractionJobStore, jobError, sourceSignature, type ExtractionJob, type ExtractionMode } from './extractionJobs.js';
+import type { AcademicAIClient } from './aiProvider.js';
+import { parsePipelineConfig } from './src/utils/pipelineConfig.js';
+import { safeLogMessage } from './src/utils/extractionActivity.js';
 
 export function extractionRoutes(getAIClient: () => AcademicAIClient, store = new ExtractionJobStore()) {
   const router = Router();
