@@ -25,4 +25,5 @@ export function canAccessAdmin(): boolean {
 export function canManageHomeCourses(): boolean {
   return isLocalhost() && !hasSupabaseBrowserConfig;
 }
-import { hasSupabaseBrowserConfig } from './supabaseClient';
+const browserEnv: Record<string, string | undefined> = (import.meta as any).env || {};
+const hasSupabaseBrowserConfig = Boolean(browserEnv.VITE_SUPABASE_URL?.trim() && browserEnv.VITE_SUPABASE_PUBLISHABLE_KEY?.trim());

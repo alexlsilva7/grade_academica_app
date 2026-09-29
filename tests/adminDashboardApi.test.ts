@@ -39,6 +39,13 @@ test('Public course API preserves semester fallback and rejects unauthenticated 
     assert.equal(strict.schedule, null); assert.equal(strict.resolvedSemester, null);
     const legacy = await (await fetch(`${base}/api/courses/test?semester=2026.2`)).json();
     assert.equal(legacy.schedule[0].id, 'a'); assert.equal(legacy.resolvedSemester, '2025.2');
+    const curriculumOnly = await (await fetch(`${base}/api/courses/test?include=curriculum`)).json();
+    assert.deepEqual(curriculumOnly.curriculum.subjects, []);
+    assert.equal(curriculumOnly.schedule, null);
+    const scheduleOnly = await (await fetch(`${base}/api/courses/test?semester=2025.2&include=schedule`)).json();
+    assert.equal(scheduleOnly.schedule[0].id, 'a');
+    assert.equal(scheduleOnly.curriculum, null);
+    assert.equal(scheduleOnly.contents, null);
     assert.equal((await write('/api/courses/test/metadata', 'PATCH', { name: 'Curso renomeado', shortName: 'NEW' })).status, 401);
     assert.equal((await write('/api/courses', 'POST', { id: 'test', name: 'Curso renomeado', shortName: 'NEW' })).status, 401);
     const repository = new FileAcademicRepository(directory);

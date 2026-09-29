@@ -128,6 +128,8 @@ export function MatrizView({
 }: MatrizViewProps) {
   const [availableProfiles, setAvailableProfiles] = useState<CurriculumProfile[]>([]);
   const [loadedCourseName, setLoadedCourseName] = useState<string>('');
+  const [dataSources, setDataSources] = useState<string[]>([]);
+  const [dataUpdatedAt, setDataUpdatedAt] = useState<string | null>(null);
   const [activeProfileId, setActiveProfileId] = useState<string>(() => {
     if (selectedProfile && selectedProfile !== 'all') return selectedProfile;
     const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
@@ -139,14 +141,19 @@ export function MatrizView({
     let isCancelled = false;
     setAvailableProfiles([]);
     setLoadedCourseName('');
+    setDataSources([]);
+    setDataUpdatedAt(null);
     async function loadCourseData() {
       try {
-        const res = await apiFetch(`/api/courses/${course || 'bcc'}`);
+        const res = await apiFetch(`/api/courses/${course || 'bcc'}?include=curriculum`);
         if (!res.ok) throw new Error('Não foi possível carregar o currículo do curso.');
         const data = await res.json();
         if (isCancelled) return;
         const courseName = data.course?.name || data.curriculum?.courseName || '';
         setLoadedCourseName(courseName);
+        const sources = data.curriculum?.extraction?.sources;
+        setDataSources(Array.isArray(sources) ? sources.filter((source: unknown): source is string => typeof source === 'string') : []);
+        setDataUpdatedAt(typeof data.curriculum?.export_date === 'string' ? data.curriculum.export_date : null);
         const profiles = mapCurriculumProfiles(data.curriculum, course, courseName);
         setAvailableProfiles(profiles);
         const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
@@ -165,6 +172,8 @@ export function MatrizView({
         if (!isCancelled) {
           setAvailableProfiles([]);
           setActiveProfileId('');
+          setDataSources([]);
+          setDataUpdatedAt(null);
           console.error('Erro ao carregar currículo para MatrizView:', error);
         }
       }
@@ -662,6 +671,9 @@ export function MatrizView({
         darkMode={darkMode}
         themePreference={themePreference}
         cycleTheme={cycleTheme}
+        dataSources={dataSources}
+        dataUpdatedAt={dataUpdatedAt}
+        dataSemester={activeProfile.validFromSemester}
       />
 
 

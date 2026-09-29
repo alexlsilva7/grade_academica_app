@@ -37,8 +37,11 @@ export function DisciplinesView({
 
   const [dynamicData, setDynamicData] = useState<any | null>(null);
   const [contentsData, setContentsData] = useState<any | null>(null);
+  const [dataSources, setDataSources] = useState<string[]>([]);
+  const [dataUpdatedAt, setDataUpdatedAt] = useState<string | null>(null);
 
   React.useEffect(() => {
+    let cancelled = false;
     if (course) {
       try {
         const key = `selected_profile_${course}`;
@@ -54,16 +57,28 @@ export function DisciplinesView({
 
       setDynamicData(null);
       setContentsData(null);
-      apiFetch(`/api/courses/${course}`)
-        .then(res => res.json())
+      setDataSources([]);
+      setDataUpdatedAt(null);
+      apiFetch(`/api/courses/${course}?include=curriculum,contents`)
+        .then(res => {
+          if (!res.ok) throw new Error('Não foi possível carregar o catálogo do curso.');
+          return res.json();
+        })
         .then(data => {
+          if (cancelled) return;
           if (data.curriculum) {
             setDynamicData(data.curriculum);
           } else setDynamicData(null);
           setContentsData(data.contents || null);
+          const sources = data.curriculum?.extraction?.sources;
+          setDataSources(Array.isArray(sources) ? sources.filter((source: unknown): source is string => typeof source === 'string') : []);
+          setDataUpdatedAt(typeof data.curriculum?.export_date === 'string' ? data.curriculum.export_date : null);
         })
-        .catch(() => {});
+        .catch(() => {
+          if (!cancelled) { setDynamicData(null); setContentsData(null); setDataSources([]); setDataUpdatedAt(null); }
+        });
     }
+    return () => { cancelled = true; };
   }, [course]);
 
   const activeData: any = dynamicData;
@@ -153,6 +168,8 @@ export function DisciplinesView({
           darkMode={darkMode}
           themePreference={themePreference}
           cycleTheme={cycleTheme}
+          dataSources={dataSources}
+          dataUpdatedAt={dataUpdatedAt}
         />
         
         <div className="flex-1 overflow-y-auto p-4 md:p-8">

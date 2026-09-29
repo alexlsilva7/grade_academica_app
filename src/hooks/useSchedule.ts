@@ -5,6 +5,7 @@ import { canAccessAdmin } from '../utils/domain';
 import { validateExtraction } from '../utils/extraction';
 import { apiFetch } from '../utils/api';
 import { completedDisciplinesKey, matrixProgressKey, setMatrixSubjectCompletion } from '../utils/matrixProgress';
+import { buildAppLocation, parseAppLocation, writeAppLocation, type AppLocation, type AppView } from '../utils/appLocation';
 
 export interface SavedGrade {
   id: string;
@@ -47,12 +48,16 @@ export function sanitizeDiscipline(d: Discipline): Discipline {
 }
 
 export function useSchedule() {
-  const [view, setViewInternal] = useState<'home' | 'schedule' | 'matriz' | 'disciplines' | 'admin'>(() => {
+  const initialRouteRef = useRef<AppLocation | null>(null);
+  if (!initialRouteRef.current) initialRouteRef.current = parseAppLocation(window.location.pathname, window.location.search);
+  const initialRoute = initialRouteRef.current;
+  const routeWriteModeRef = useRef<'push' | 'replace'>('replace');
+  const applyingPopStateRef = useRef(false);
+  const routedProfileRef = useRef(initialRoute.invalid ? null : initialRoute.profile);
+
+  const [view, setViewInternal] = useState<AppView>(() => {
     try {
-      const stored = localStorage.getItem('view_preference');
-      const validView = (stored === 'home' || stored === 'schedule' || stored === 'matriz' || stored === 'disciplines' || stored === 'admin') ? stored : 'home';
-      
-      // Se tentar abrir 'admin' fora do localhost, força o redirecionamento para 'home'
+      const validView = initialRoute.invalid ? 'home' : initialRoute.view;
       if (validView === 'admin' && !canAccessAdmin()) {
         return 'home';
       }
@@ -62,7 +67,7 @@ export function useSchedule() {
     }
   });
 
-  const setView = (newView: 'home' | 'schedule' | 'matriz' | 'disciplines' | 'admin') => {
+  const setView = (newView: AppView) => {
     // Bloqueia qualquer tentativa programática de ir para o admin fora do localhost
     if (newView === 'admin' && !canAccessAdmin()) {
       setViewInternal('home');
@@ -81,6 +86,9 @@ export function useSchedule() {
 
   const initialCourse = (() => {
     try {
+      if (!initialRoute.invalid && initialRoute.view !== 'home' && initialRoute.view !== 'admin' && initialRoute.course) {
+        return initialRoute.course;
+      }
       return localStorage.getItem('selectedCourse') || null;
     } catch {
       return null;
@@ -89,6 +97,7 @@ export function useSchedule() {
 
   const initialSemester = (() => {
     try {
+      if (!initialRoute.invalid && initialRoute.semester) return initialRoute.semester;
       return localStorage.getItem('selectedSemester') || '2026.1';
     } catch {
       return '2026.1';
@@ -96,6 +105,9 @@ export function useSchedule() {
   })();
 
   const [selectedSemester, setSelectedSemester] = useState<string>(initialSemester);
+  const selectedSemesterRef = useRef(initialSemester);
+  const selectedCourseRef = useRef(initialCourse);
+  const scheduleRequestRef = useRef(0);
   const [availableSemesters, setAvailableSemesters] = useState<string[]>(['2026.1', '2026.2']);
 
   useEffect(() => {
@@ -198,8 +210,14 @@ export function useSchedule() {
   const [savedGrades, setSavedGrades] = useState<SavedGrade[]>([]);
   const [completedDisciplines, setCompletedDisciplines] = useState<string[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<string | null>(initialCourse);
+  const [isScheduleLoading, setIsScheduleLoading] = useState(false);
+  const [scheduleLoadError, setScheduleLoadError] = useState<string | null>(null);
+  const [scheduleDataInfo, setScheduleDataInfo] = useState<{ sources: string[]; updatedAt: string | null } | null>(null);
 
   const changeCourse = (course: string | null) => {
+    selectedCourseRef.current = course;
+    routedProfileRef.current = null;
+    scheduleRequestRef.current += 1;
     if (!course) {
       lastLoadedCourseRef.current = null;
       setSelectedCourse(null);
@@ -208,6 +226,10 @@ export function useSchedule() {
       setSchedule([]);
       setDisciplinesList([]);
       setGradeTitle('');
+      setAvailableSemesters([]);
+      setScheduleDataInfo(null);
+      setScheduleLoadError(null);
+      setIsScheduleLoading(false);
       try {
         localStorage.removeItem('selectedCourse');
       } catch {}
@@ -222,7 +244,7 @@ export function useSchedule() {
       localStorage.setItem('selectedCourse', course);
     } catch {}
 
-    const sem = selectedSemester || '2026.1';
+    const sem = selectedSemesterRef.current || '2026.1';
     lastLoadedSemesterRef.current = sem;
 
     // Carregar imediatamente a grade salva para este curso específico e semestre
@@ -243,55 +265,10 @@ export function useSchedule() {
     } catch {
       setSelectedProfile('all');
     }
-
-    // Buscar os semestres e o currículo publicados pela fonte ativa.
-    apiFetch(`/api/courses/${course}`)
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        setCourseCurriculum(data?.curriculum || null);
-        setCourseContents(data?.contents || null);
-        const activeSemesters = (data?.course?.visibleSemesters && Array.isArray(data.course.visibleSemesters) && data.course.visibleSemesters.length > 0)
-          ? data.course.visibleSemesters
-          : (data?.course?.semesters && Array.isArray(data.course.semesters) && data.course.semesters.length > 0 ? data.course.semesters : null);
-        if (activeSemesters && activeSemesters.length > 0) {
-          setAvailableSemesters(activeSemesters);
-          if (!activeSemesters.includes(selectedSemester)) {
-            const defaultSem = activeSemesters[0] || '2026.1';
-            setSelectedSemester(defaultSem);
-            lastLoadedSemesterRef.current = defaultSem;
-            try {
-              const stored = localStorage.getItem(`schedule_${course}_${defaultSem}`) || (defaultSem === '2026.1' ? localStorage.getItem(`schedule_${course}`) : null);
-              setSchedule(stored ? JSON.parse(stored).map(sanitizeDiscipline) : []);
-            } catch {
-              setSchedule([]);
-            }
-          }
-        } else setAvailableSemesters([]);
-      })
-      .catch(() => {
-        setCourseCurriculum(null);
-        setCourseContents(null);
-        setAvailableSemesters([]);
-      });
+    setAvailableSemesters([]);
+    setScheduleLoadError(null);
+    setIsScheduleLoading(false);
   };
-
-  useEffect(() => {
-    if (selectedCourse) {
-      apiFetch(`/api/courses/${selectedCourse}?semester=${selectedSemester}`)
-        .then(res => res.ok ? res.json() : null)
-        .then(data => {
-          setCourseCurriculum(data?.curriculum || null);
-          setCourseContents(data?.contents || null);
-          const activeSemesters = (data?.course?.visibleSemesters && Array.isArray(data.course.visibleSemesters) && data.course.visibleSemesters.length > 0)
-            ? data.course.visibleSemesters
-            : (data?.course?.semesters && Array.isArray(data.course.semesters) && data.course.semesters.length > 0 ? data.course.semesters : null);
-          if (activeSemesters && activeSemesters.length > 0) {
-            setAvailableSemesters(activeSemesters);
-          } else setAvailableSemesters([]);
-        })
-        .catch(() => { setCourseCurriculum(null); setCourseContents(null); setAvailableSemesters([]); });
-    }
-  }, [selectedCourse]);
 
   // State triggers to persist variables
   useEffect(() => {
@@ -433,6 +410,7 @@ export function useSchedule() {
 
   const [selectedProfile, setSelectedProfile] = useState<string>(() => {
     try {
+      if (!initialRoute.invalid && initialRoute.profile) return initialRoute.profile;
       const course = localStorage.getItem('selectedCourse');
       const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
       const stored = course ? localStorage.getItem(key) : localStorage.getItem('saved_selectedProfile');
@@ -489,6 +467,13 @@ export function useSchedule() {
 
   // Synchronize and restore profile selection from localStorage when course or availableProfiles change
   useEffect(() => {
+    if (routedProfileRef.current) {
+      if (availableProfiles.length > 0 && !availableProfiles.includes(routedProfileRef.current)) {
+        routedProfileRef.current = null;
+        setSelectedProfile('all');
+      }
+      return;
+    }
     if (selectedCourse) {
       try {
         const stored = localStorage.getItem(`selected_profile_${selectedCourse}`);
@@ -507,6 +492,87 @@ export function useSchedule() {
       setSelectedProfile('all');
     }
   }, [availableProfiles, selectedCourse]);
+
+  const routeInitializedRef = useRef(false);
+  const [routeRevision, setRouteRevision] = useState(0);
+  const routeHref = buildAppLocation({ view, course: selectedCourse, semester: selectedSemester, profile: selectedProfile });
+  useEffect(() => {
+    if (applyingPopStateRef.current) {
+      applyingPopStateRef.current = false;
+      routeInitializedRef.current = true;
+      routeWriteModeRef.current = 'push';
+      return;
+    }
+    const currentHref = `${window.location.pathname}${window.location.search}`;
+    const mode = routeInitializedRef.current ? routeWriteModeRef.current : 'replace';
+    writeAppLocation(currentHref, { view, course: selectedCourse, semester: selectedSemester, profile: selectedProfile }, window.history, mode);
+    routeInitializedRef.current = true;
+    routeWriteModeRef.current = 'push';
+  }, [routeHref, routeRevision]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const route = parseAppLocation(window.location.pathname, window.location.search);
+      const nextView = route.invalid || (route.view === 'admin' && !canAccessAdmin()) ? 'home' : route.view;
+      if (route.invalid || (route.view === 'admin' && !canAccessAdmin())) window.history.replaceState({}, '', '/');
+      applyingPopStateRef.current = true;
+      routeWriteModeRef.current = 'replace';
+      setRouteRevision(revision => revision + 1);
+      if (route.course && route.course !== selectedCourseRef.current) changeCourse(route.course);
+      if (route.semester) {
+        selectedSemesterRef.current = route.semester;
+        setSelectedSemester(route.semester);
+      }
+      if (route.view !== 'home' && route.view !== 'admin' && !route.invalid) {
+        routedProfileRef.current = route.profile;
+        setSelectedProfile(route.profile || 'all');
+      } else {
+        routedProfileRef.current = null;
+      }
+      setViewInternal(nextView);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [selectedCourse]);
+
+  useEffect(() => {
+    if (!selectedCourse) return;
+    let cancelled = false;
+    apiFetch('/api/courses').then(async response => {
+      if (!response.ok) return null;
+      const data = await response.json();
+      return Array.isArray(data.courses) ? data.courses as Array<{
+        id: string; shortName?: string; semesters?: string[]; visibleSemesters?: string[];
+      }> : [];
+    }).then(courses => {
+      if (cancelled || !courses) return;
+      const matchingCourse = courses.find(course => {
+        const requested = selectedCourse.toLowerCase();
+        const aliases = course.id === 'eal' ? ['eal', 'engenharia-de-alimentos']
+          : course.id === 'medicina-veterinaria' ? ['medicina-veterinaria', 'mvet', 'vet']
+            : [course.id.toLowerCase(), course.shortName?.toLowerCase() || ''];
+        return aliases.includes(requested);
+      });
+      if (!matchingCourse) {
+        routeWriteModeRef.current = 'replace';
+        changeCourse(null);
+        setView('home');
+        return;
+      }
+      const visibleSemesters = matchingCourse.visibleSemesters?.length
+        ? matchingCourse.visibleSemesters
+        : matchingCourse.semesters || [];
+      const requestedSemester = selectedSemesterRef.current;
+      if (visibleSemesters.length > 0 && !visibleSemesters.includes(requestedSemester)) {
+        const fallbackSemester = visibleSemesters[0];
+        routeWriteModeRef.current = 'replace';
+        selectedSemesterRef.current = fallbackSemester;
+        setSelectedSemester(fallbackSemester);
+        try { localStorage.setItem('selectedSemester', fallbackSemester); } catch {}
+      }
+    }).catch(() => {});
+    return () => { cancelled = true; };
+  }, [selectedCourse]);
 
   const isDisciplineOptativaOrCommon = (d: Discipline): boolean => {
     if (d.period === 0) return true;
@@ -557,68 +623,125 @@ export function useSchedule() {
   });
 
   const loadCourseSchedule = async (courseId: string, semester: string) => {
+    const requestId = ++scheduleRequestRef.current;
+    const isCurrent = () => requestId === scheduleRequestRef.current
+      && selectedCourseRef.current === courseId
+      && selectedSemesterRef.current === semester;
+    setIsScheduleLoading(true);
+    setScheduleLoadError(null);
     try {
-      const res = await apiFetch(`/api/courses/${courseId}?semester=${semester}`);
-      if (res.ok) {
-        const data = await res.json();
-        setCourseCurriculum(data?.curriculum || null);
-        setCourseContents(data?.contents || null);
-        const activeSemesters = (data.course?.visibleSemesters && Array.isArray(data.course.visibleSemesters) && data.course.visibleSemesters.length > 0)
-          ? data.course.visibleSemesters
-          : (data.course?.semesters && Array.isArray(data.course.semesters) && data.course.semesters.length > 0 ? data.course.semesters : null);
-        if (activeSemesters && activeSemesters.length > 0) {
-          setAvailableSemesters(activeSemesters);
+      const res = await apiFetch(`/api/courses/${encodeURIComponent(courseId)}?semester=${encodeURIComponent(semester)}&include=curriculum,contents,schedule`);
+      if (!isCurrent()) return false;
+      if (!res.ok) {
+        if (res.status === 404) {
+          routeWriteModeRef.current = 'replace';
+          changeCourse(null);
+          setView('home');
+          return false;
         }
-        let availableOfferings: Discipline[] = [];
-        if (Array.isArray(data.schedule)) {
-          availableOfferings = data.schedule.map(sanitizeDiscipline);
-          setDisciplinesList(availableOfferings);
-          const name = data.course?.shortName || data.course?.name || courseId.toUpperCase();
-          setGradeTitle(`${name} - Período ${semester}`);
-        }
-        // Restaurar turmas que o aluno já havia selecionado para esse semestre específico
-        const savedUserSchedule = localStorage.getItem(`schedule_${courseId}_${semester}`) || (semester === '2026.1' ? localStorage.getItem(`schedule_${courseId}`) : null);
-        let parsedSchedule: Discipline[] = savedUserSchedule ? JSON.parse(savedUserSchedule).map(sanitizeDiscipline) : [];
-
-        // Autocorreção (self-healing): Se houver disciplinas salvas no localStorage que não pertencem
-        // a este curso (ex: contaminação cruzada anterior), purgar imediatamente.
-        if (availableOfferings.length > 0 && parsedSchedule.length > 0) {
-          const validIds = new Set(availableOfferings.map(d => d.id));
-          const validCodes = new Set(availableOfferings.map(d => d.code).filter(Boolean));
-          const cleanSchedule = parsedSchedule.filter(d => validIds.has(d.id) || (d.code && validCodes.has(d.code)));
-          if (cleanSchedule.length !== parsedSchedule.length) {
-            parsedSchedule = cleanSchedule;
-            try {
-              localStorage.setItem(`schedule_${courseId}_${semester}`, JSON.stringify(cleanSchedule));
-              if (semester === '2026.1') {
-                localStorage.setItem(`schedule_${courseId}`, JSON.stringify(cleanSchedule));
-              }
-            } catch {}
-          }
-        }
-
-        lastLoadedCourseRef.current = courseId;
-        lastLoadedSemesterRef.current = semester;
-        setSchedule(parsedSchedule);
-        return true;
+        const error = await res.json().catch(() => null);
+        throw new Error(error?.error || 'Não foi possível carregar o horário do curso.');
       }
+      const data = await res.json();
+      if (!isCurrent()) return false;
+      const course = data?.course;
+      if (!course) {
+        routeWriteModeRef.current = 'replace';
+        changeCourse(null);
+        setView('home');
+        return false;
+      }
+      const resolvedSemester = typeof data.resolvedSemester === 'string' ? data.resolvedSemester : semester;
+      if (resolvedSemester !== semester) {
+        routeWriteModeRef.current = 'replace';
+        selectedSemesterRef.current = resolvedSemester;
+        setSelectedSemester(resolvedSemester);
+        try { localStorage.setItem('selectedSemester', resolvedSemester); } catch {}
+        return false;
+      }
+      const semesters = Array.isArray(course.semesters) ? course.semesters : [];
+      const visible = Array.isArray(course.visibleSemesters) && course.visibleSemesters.length > 0
+        ? course.visibleSemesters
+        : semesters;
+      setAvailableSemesters(visible);
+      if (visible.length && !visible.includes(semester)) {
+        const fallback = visible[0];
+        routeWriteModeRef.current = 'replace';
+        selectedSemesterRef.current = fallback;
+        lastLoadedSemesterRef.current = fallback;
+        setSelectedSemester(fallback);
+        try { localStorage.setItem('selectedSemester', fallback); } catch {}
+        return false;
+      }
+
+      setCourseCurriculum(data.curriculum || null);
+      setCourseContents(data.contents || null);
+      const reportSources = Array.isArray(data.scheduleExtraction?.sources)
+        ? data.scheduleExtraction.sources.filter((source: unknown): source is string => typeof source === 'string')
+        : [];
+      setScheduleDataInfo({
+        sources: reportSources,
+        updatedAt: typeof data.scheduleUpdatedAt === 'string' ? data.scheduleUpdatedAt : null
+      });
+      const availableOfferings: Discipline[] = Array.isArray(data.schedule) ? data.schedule.map(sanitizeDiscipline) : [];
+      setDisciplinesList(availableOfferings);
+      const name = course.shortName || course.name || courseId.toUpperCase();
+      setGradeTitle(`${name} - Período ${data.resolvedSemester || semester}`);
+
+      const savedUserSchedule = localStorage.getItem(`schedule_${courseId}_${semester}`)
+        || (semester === '2026.1' ? localStorage.getItem(`schedule_${courseId}`) : null);
+      let parsedSchedule: Discipline[] = savedUserSchedule ? JSON.parse(savedUserSchedule).map(sanitizeDiscipline) : [];
+      if (availableOfferings.length > 0 && parsedSchedule.length > 0) {
+        const validIds = new Set(availableOfferings.map(d => d.id));
+        const validCodes = new Set(availableOfferings.map(d => d.code).filter(Boolean));
+        const cleanSchedule = parsedSchedule.filter(d => validIds.has(d.id) || (d.code && validCodes.has(d.code)));
+        if (cleanSchedule.length !== parsedSchedule.length) {
+          parsedSchedule = cleanSchedule;
+          try {
+            localStorage.setItem(`schedule_${courseId}_${semester}`, JSON.stringify(cleanSchedule));
+            if (semester === '2026.1') localStorage.setItem(`schedule_${courseId}`, JSON.stringify(cleanSchedule));
+          } catch {}
+        }
+      }
+      if (!isCurrent()) return false;
+      lastLoadedCourseRef.current = courseId;
+      lastLoadedSemesterRef.current = semester;
+      setSchedule(parsedSchedule);
+      return true;
     } catch (err) {
+      if (!isCurrent()) return false;
       console.error(`Erro ao carregar horário do curso ${courseId} para semestre ${semester}:`, err);
+      setSchedule([]);
+      setDisciplinesList([]);
+      setGradeTitle('');
+      setScheduleDataInfo(null);
+      setScheduleLoadError(err instanceof Error ? err.message : 'Não foi possível carregar o horário do curso.');
+      return false;
+    } finally {
+      if (isCurrent()) setIsScheduleLoading(false);
     }
-    return false;
   };
+
+  useEffect(() => {
+    if (view !== 'schedule') return;
+    if (!selectedCourse) {
+      routeWriteModeRef.current = 'replace';
+      setView('home');
+      return;
+    }
+    void loadCourseSchedule(selectedCourse, selectedSemester);
+    // The request identity is represented by these three state values.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [view, selectedCourse, selectedSemester]);
 
   const loadPredefinedGrade = async (type: string, semesterToLoad?: string) => {
     const sem = semesterToLoad || selectedSemester || '2026.1';
+    selectedCourseRef.current = type;
+    selectedSemesterRef.current = sem;
+    scheduleRequestRef.current += 1;
     setSelectedSemester(sem);
     localStorage.setItem('selectedSemester', sem);
-
-    const loaded = await loadCourseSchedule(type, sem);
-    if (!loaded) {
-      setDisciplinesList([]);
-      setGradeTitle('');
-      setSchedule([]);
-    }
+    setScheduleLoadError(null);
 
     setSelectedPeriod(1);
     try {
@@ -631,13 +754,14 @@ export function useSchedule() {
     setView('schedule');
   };
   const handleSemesterChange = async (newSemester: string) => {
+    selectedSemesterRef.current = newSemester;
+    scheduleRequestRef.current += 1;
     setSelectedSemester(newSemester);
     localStorage.setItem('selectedSemester', newSemester);
     if (selectedCourse) {
       lastLoadedSemesterRef.current = newSemester;
       const stored = localStorage.getItem(`schedule_${selectedCourse}_${newSemester}`) || (newSemester === '2026.1' ? localStorage.getItem(`schedule_${selectedCourse}`) : null);
       setSchedule(stored ? JSON.parse(stored).map(sanitizeDiscipline) : []);
-      await loadCourseSchedule(selectedCourse, newSemester);
     }
   };
 
@@ -849,6 +973,9 @@ export function useSchedule() {
     setDisciplinesList,
     conflictMsg,
     isProcessingPdf,
+    isScheduleLoading,
+    scheduleLoadError,
+    scheduleDataInfo,
     fileInputRef,
     mobileTab,
     setMobileTab,

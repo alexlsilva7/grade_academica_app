@@ -71,17 +71,46 @@ test('getCourse fetches only the requested schedule after resolving semester met
     course_contents: [{ course_id: 'bcc', data: { disciplinas: [] } }],
     course_schedules: [
       { course_id: 'bcc', semester: '2026.1', data: [{ id: 'first semester' }], extraction: { source: '1' } },
-      { course_id: 'bcc', semester: '2026.2', data: [{ id: 'requested semester' }], extraction: { source: '2' } }
+      { course_id: 'bcc', semester: '2026.2', data: [{ id: 'requested semester' }], extraction: { source: '2' }, updated_at: '2026-09-28T12:00:00Z' }
     ]
   });
   const details = await new SupabaseAcademicRepository(client).getCourse('BCC', '2026.2');
 
   assert.equal(details?.resolvedSemester, '2026.2');
   assert.equal(details?.schedule?.[0].id, 'requested semester');
+  assert.equal(details?.scheduleUpdatedAt, '2026-09-28T12:00:00Z');
   const scheduleCalls = calls.filter(call => call.table === 'course_schedules');
-  assert.deepEqual(scheduleCalls.map(call => call.columns), ['semester', 'semester,data,extraction']);
+  assert.deepEqual(scheduleCalls.map(call => call.columns), ['semester', 'semester,data,extraction,updated_at']);
   assert.deepEqual(scheduleCalls[0].filters, { course_id: 'bcc' });
   assert.deepEqual(scheduleCalls[1].filters, { course_id: 'bcc', semester: '2026.2' });
+});
+
+test('getCourse includes only the large academic sections requested by each screen', async () => {
+  const tables = {
+    courses: [courseRow],
+    course_curricula: [{ course_id: 'bcc', data: { subjects: [{ name: 'curriculum' }] } }],
+    course_contents: [{ course_id: 'bcc', data: { disciplinas: [{ nome: 'content' }] } }],
+    course_schedules: [{ course_id: 'bcc', semester: '2026.1', data: [{ id: 'schedule' }], extraction: null }]
+  };
+
+  const matrixFixture = fixtureClient(tables);
+  const matrix = await new SupabaseAcademicRepository(matrixFixture.client).getCourse('bcc', undefined, false, ['curriculum']);
+  assert.equal(matrix?.curriculum?.subjects[0].name, 'curriculum');
+  assert.equal(matrix?.contents, null);
+  assert.equal(matrix?.schedule, null);
+  assert.ok(!matrixFixture.calls.some(call => call.table === 'course_contents' || call.table === 'course_schedules'));
+
+  const catalogFixture = fixtureClient(tables);
+  const catalog = await new SupabaseAcademicRepository(catalogFixture.client).getCourse('bcc', undefined, false, ['curriculum', 'contents']);
+  assert.equal(catalog?.contents?.disciplinas[0].nome, 'content');
+  assert.ok(!catalogFixture.calls.some(call => call.table === 'course_schedules'));
+
+  const scheduleFixture = fixtureClient(tables);
+  const schedule = await new SupabaseAcademicRepository(scheduleFixture.client).getCourse('bcc', '2026.1', false, ['schedule']);
+  assert.equal(schedule?.schedule?.[0].id, 'schedule');
+  assert.equal(schedule?.curriculum, null);
+  assert.equal(schedule?.contents, null);
+  assert.ok(!scheduleFixture.calls.some(call => call.table === 'course_curricula' || call.table === 'course_contents'));
 });
 
 test('strict missing semesters return no schedule payload; non-strict requests fall back predictably', async () => {
@@ -98,7 +127,7 @@ test('strict missing semesters return no schedule payload; non-strict requests f
   const strict = await new SupabaseAcademicRepository(strictFixture.client).getCourse('bcc', '2025.2', true);
   assert.equal(strict?.schedule, null);
   assert.equal(strict?.resolvedSemester, null);
-  assert.equal(strictFixture.calls.filter(call => call.columns === 'semester,data,extraction').length, 0);
+  assert.equal(strictFixture.calls.filter(call => call.columns === 'semester,data,extraction,updated_at').length, 0);
 
   const fallbackFixture = fixtureClient(tables);
   const fallback = await new SupabaseAcademicRepository(fallbackFixture.client).getCourse('bcc', '2025.2');

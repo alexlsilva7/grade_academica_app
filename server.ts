@@ -10,6 +10,7 @@ import {
   RepositoryError,
   SupabaseAcademicRepository,
   type AcademicRepository,
+  type CourseInclude,
   type SaveCourseInput
 } from './src/server/academicRepository';
 import {
@@ -109,7 +110,10 @@ app.get('/api/courses/:id', async (req, res) => {
   try {
     const strict = req.query.strict === 'true';
     const semester = typeof req.query.semester === 'string' ? req.query.semester : undefined;
-    const details = await repository.getCourse(req.params.id, semester, strict);
+    const rawIncludes = typeof req.query.include === 'string' ? req.query.include.split(',') : undefined;
+    const allowedIncludes: CourseInclude[] = ['curriculum', 'schedule', 'contents'];
+    const includes = rawIncludes?.filter((value): value is CourseInclude => allowedIncludes.includes(value as CourseInclude));
+    const details = await repository.getCourse(req.params.id, semester, strict, includes);
     if (!details) return res.status(404).json({ error: `Curso '${req.params.id}' não encontrado.` });
     return res.json(details);
   } catch (error) {

@@ -14,6 +14,9 @@ interface NavbarProps {
   showAcademicPeriod?: boolean;
   semesters?: string[];
   selectedSemester?: string;
+  dataSources?: string[];
+  dataUpdatedAt?: string | null;
+  dataSemester?: string;
   onSemesterChange?: (sem: string) => void;
   onExportImage?: () => void;
 }
@@ -29,12 +32,19 @@ export function Navbar({
   showAcademicPeriod,
   semesters,
   selectedSemester,
+  dataSources,
+  dataUpdatedAt,
+  dataSemester,
   onSemesterChange,
   onExportImage
 }: NavbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const formattedDataDate = dataUpdatedAt && Number.isFinite(Date.parse(dataUpdatedAt))
+    ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(dataUpdatedAt))
+    : null;
+  const sourceLabel = dataSources?.length ? dataSources.join(', ') : null;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -209,6 +219,17 @@ export function Navbar({
         </div>
 
       </div>
+      {(showAcademicPeriod || formattedDataDate || sourceLabel || dataSemester) && (
+        <div className="max-w-7xl mx-auto w-full px-4 md:px-6 pb-2 -mt-1 text-[11px] text-slate-500 dark:text-slate-400" title={sourceLabel || undefined}>
+          {showAcademicPeriod && selectedSemester && <span>Semestre {selectedSemester}</span>}
+          {showAcademicPeriod && selectedSemester && (dataSemester || formattedDataDate || sourceLabel) && <span> · </span>}
+          {dataSemester && <span>Vigente desde {dataSemester}</span>}
+          {dataSemester && (formattedDataDate || sourceLabel) && <span> · </span>}
+          {formattedDataDate && <span>Dados atualizados em {formattedDataDate}</span>}
+          {formattedDataDate && sourceLabel && <span> · </span>}
+          {sourceLabel && <span className="break-all">Origem: {sourceLabel}</span>}
+        </div>
+      )}
     </header>
   );
 }

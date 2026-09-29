@@ -53,7 +53,7 @@ export function HomeView({
     }
 
     let isMounted = true;
-    apiFetch(`/api/courses/${selectedCourse}`)
+    apiFetch(`/api/courses/${selectedCourse}?include=curriculum,schedule`)
       .then(res => res.ok ? res.json() : null)
       .then(data => {
         if (!isMounted) return;

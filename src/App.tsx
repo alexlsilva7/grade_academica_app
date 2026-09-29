@@ -1,21 +1,26 @@
-import { useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { useSchedule } from './hooks/useSchedule';
 import { HomeView } from './components/HomeView';
-import { MatrizView } from './components/MatrizView';
-import { DisciplinesView } from './components/DisciplinesView';
-import { AdminView } from './components/AdminView';
-import { Sidebar } from './components/Sidebar';
-import { ScheduleGrid } from './components/ScheduleGrid';
-import { MobileNav } from './components/MobileNav';
-import { DisciplineDetailsModal } from './components/DisciplineDetailsModal';
 import { AnimatePresence } from 'motion/react';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { Analytics } from '@vercel/analytics/react';
 import { Navbar } from './components/Navbar';
 import { canAccessAdmin } from './utils/domain';
-import { ScheduleTour } from './components/ScheduleTour';
-import { ScheduleImageModal } from './components/ScheduleImageModal';
-import { AdminAccess } from './components/admin/AdminAccess';
+
+const MatrizView = lazy(() => import('./components/MatrizView').then(module => ({ default: module.MatrizView })));
+const DisciplinesView = lazy(() => import('./components/DisciplinesView').then(module => ({ default: module.DisciplinesView })));
+const AdminView = lazy(() => import('./components/AdminView').then(module => ({ default: module.AdminView })));
+const Sidebar = lazy(() => import('./components/Sidebar').then(module => ({ default: module.Sidebar })));
+const ScheduleGrid = lazy(() => import('./components/ScheduleGrid').then(module => ({ default: module.ScheduleGrid })));
+const MobileNav = lazy(() => import('./components/MobileNav').then(module => ({ default: module.MobileNav })));
+const DisciplineDetailsModal = lazy(() => import('./components/DisciplineDetailsModal').then(module => ({ default: module.DisciplineDetailsModal })));
+const ScheduleTour = lazy(() => import('./components/ScheduleTour').then(module => ({ default: module.ScheduleTour })));
+const ScheduleImageModal = lazy(() => import('./components/ScheduleImageModal').then(module => ({ default: module.ScheduleImageModal })));
+const AdminAccess = lazy(() => import('./components/admin/AdminAccess').then(module => ({ default: module.AdminAccess })));
+
+function ViewLoading() {
+  return <div className="flex min-h-[50vh] items-center justify-center text-sm text-slate-500" role="status">Carregando tela…</div>;
+}
 
 export default function App() {
   const scheduleProps = useSchedule();
@@ -50,34 +55,41 @@ export default function App() {
           setSelectedProfile={scheduleProps.setSelectedProfile}
         />
       ) : scheduleProps.view === 'matriz' ? (
-        <MatrizView 
-          setView={scheduleProps.setView}
-          course={scheduleProps.selectedCourse}
-          darkMode={scheduleProps.darkMode}
-          themePreference={scheduleProps.themePreference}
-          cycleTheme={scheduleProps.cycleTheme}
-          schedule={scheduleProps.schedule}
-          selectedProfile={scheduleProps.selectedProfile}
-          setSelectedProfile={scheduleProps.setSelectedProfile}
-        />
-      ) : (scheduleProps.view === 'admin' && canAccessAdmin()) ? (
-        <AdminAccess onBack={() => scheduleProps.setView('home')}>
-          <AdminView
+        <Suspense fallback={<ViewLoading />}>
+          <MatrizView
             setView={scheduleProps.setView}
-            setDisciplinesList={scheduleProps.setDisciplinesList}
-            setGradeTitle={scheduleProps.setGradeTitle}
+            course={scheduleProps.selectedCourse}
+            darkMode={scheduleProps.darkMode}
+            themePreference={scheduleProps.themePreference}
+            cycleTheme={scheduleProps.cycleTheme}
+            schedule={scheduleProps.schedule}
+            selectedProfile={scheduleProps.selectedProfile}
+            setSelectedProfile={scheduleProps.setSelectedProfile}
           />
-        </AdminAccess>
+        </Suspense>
+      ) : (scheduleProps.view === 'admin' && canAccessAdmin()) ? (
+        <Suspense fallback={<ViewLoading />}>
+          <AdminAccess onBack={() => scheduleProps.setView('home')}>
+            <AdminView
+              setView={scheduleProps.setView}
+              setDisciplinesList={scheduleProps.setDisciplinesList}
+              setGradeTitle={scheduleProps.setGradeTitle}
+            />
+          </AdminAccess>
+        </Suspense>
       ) : scheduleProps.view === 'disciplines' ? (
-        <DisciplinesView
-          setView={scheduleProps.setView}
-          course={scheduleProps.selectedCourse}
-          darkMode={scheduleProps.darkMode}
-          themePreference={scheduleProps.themePreference}
-          cycleTheme={scheduleProps.cycleTheme}
-        />
+        <Suspense fallback={<ViewLoading />}>
+          <DisciplinesView
+            setView={scheduleProps.setView}
+            course={scheduleProps.selectedCourse}
+            darkMode={scheduleProps.darkMode}
+            themePreference={scheduleProps.themePreference}
+            cycleTheme={scheduleProps.cycleTheme}
+          />
+        </Suspense>
       ) : (
-        <div className="h-[100dvh] bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans flex flex-col overflow-hidden animate-in fade-in duration-500">
+        <Suspense fallback={<ViewLoading />}>
+          <div className="h-[100dvh] bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans flex flex-col overflow-hidden animate-in fade-in duration-500">
           <Navbar 
             setView={scheduleProps.setView}
             title="Grade Horária"
@@ -88,6 +100,8 @@ export default function App() {
             showAcademicPeriod={true}
             semesters={scheduleProps.availableSemesters}
             selectedSemester={scheduleProps.selectedSemester}
+            dataSources={scheduleProps.scheduleDataInfo?.sources}
+            dataUpdatedAt={scheduleProps.scheduleDataInfo?.updatedAt}
             onSemesterChange={scheduleProps.handleSemesterChange}
             onExportImage={() => setIsImageModalOpen(true)}
           />
@@ -134,19 +148,21 @@ export default function App() {
             />
           </div>
           
-          <AnimatePresence>
-            {scheduleProps.detailsDiscipline && (
-              <DisciplineDetailsModal 
-                discipline={scheduleProps.detailsDiscipline}
-                onClose={() => scheduleProps.setDetailsDiscipline(null)}
-                completedDisciplines={scheduleProps.completedDisciplines}
-                toggleCompleted={scheduleProps.toggleCompleted}
-                getDisciplineConflictInstance={scheduleProps.getDisciplineConflictInstance}
-                curriculum={scheduleProps.courseCurriculum}
-                contents={scheduleProps.courseContents}
-              />
-            )}
-          </AnimatePresence>
+            <Suspense fallback={null}>
+              <AnimatePresence>
+                {scheduleProps.detailsDiscipline && (
+                  <DisciplineDetailsModal
+                    discipline={scheduleProps.detailsDiscipline}
+                    onClose={() => scheduleProps.setDetailsDiscipline(null)}
+                    completedDisciplines={scheduleProps.completedDisciplines}
+                    toggleCompleted={scheduleProps.toggleCompleted}
+                    getDisciplineConflictInstance={scheduleProps.getDisciplineConflictInstance}
+                    curriculum={scheduleProps.courseCurriculum}
+                    contents={scheduleProps.courseContents}
+                  />
+                )}
+              </AnimatePresence>
+            </Suspense>
 
           <MobileNav 
             mobileTab={scheduleProps.mobileTab}
@@ -154,20 +170,35 @@ export default function App() {
             schedule={scheduleProps.schedule}
           />
 
-          <ScheduleTour 
-            isOpen={isScheduleTourOpen}
-            onClose={() => setIsScheduleTourOpen(false)}
-            setMobileTab={scheduleProps.setMobileTab}
-          />
+            {isScheduleTourOpen && <ScheduleTour
+              isOpen={isScheduleTourOpen}
+              onClose={() => setIsScheduleTourOpen(false)}
+              setMobileTab={scheduleProps.setMobileTab}
+            />}
 
-          <ScheduleImageModal 
-            isOpen={isImageModalOpen}
-            onClose={() => setIsImageModalOpen(false)}
-            course={scheduleProps.selectedCourse}
-            semester={scheduleProps.selectedSemester || "2026.1"}
-            schedule={scheduleProps.schedule}
-            disciplinesList={scheduleProps.disciplinesList}
-          />
+            {isImageModalOpen && <ScheduleImageModal
+              isOpen={isImageModalOpen}
+              onClose={() => setIsImageModalOpen(false)}
+              course={scheduleProps.selectedCourse}
+              semester={scheduleProps.selectedSemester || "2026.1"}
+              schedule={scheduleProps.schedule}
+              disciplinesList={scheduleProps.disciplinesList}
+            />}
+          </div>
+        </Suspense>
+      )}
+
+      {scheduleProps.view === 'schedule' && scheduleProps.isScheduleLoading && (
+        <div role="status" aria-live="polite" className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[250] rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-lg">
+          Carregando horário…
+        </div>
+      )}
+      {scheduleProps.view === 'schedule' && scheduleProps.scheduleLoadError && (
+        <div role="alert" className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[250] flex max-w-[min(92vw,36rem)] items-center gap-3 rounded-xl bg-rose-700 px-4 py-3 text-sm text-white shadow-xl">
+          <span>{scheduleProps.scheduleLoadError}</span>
+          <button className="shrink-0 underline underline-offset-2" onClick={() => {
+            if (scheduleProps.selectedCourse) void scheduleProps.loadCourseSchedule(scheduleProps.selectedCourse, scheduleProps.selectedSemester);
+          }}>Tentar novamente</button>
         </div>
       )}
 

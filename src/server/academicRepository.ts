@@ -8,9 +8,11 @@ export type CourseDetails = {
   curriculum: any | null;
   schedule: Discipline[] | null;
   scheduleExtraction: any | null;
+  scheduleUpdatedAt: string | null;
   contents: any | null;
   resolvedSemester: string | null;
 };
+export type CourseInclude = 'curriculum' | 'schedule' | 'contents';
 
 export type SaveCourseInput = {
   id: string;
@@ -30,7 +32,7 @@ export class RepositoryError extends Error {
 
 export interface AcademicRepository {
   listCourses(): Promise<CourseMeta[]>;
-  getCourse(id: string, semester?: string, strict?: boolean): Promise<CourseDetails | null>;
+  getCourse(id: string, semester?: string, strict?: boolean, include?: CourseInclude[]): Promise<CourseDetails | null>;
   saveCourse(input: SaveCourseInput): Promise<CourseMeta>;
   updateCourseMetadata(id: string, name: string, shortName: string): Promise<CourseMeta>;
   updateCourseVisibility(id: string, patch: Partial<CourseMeta>): Promise<CourseMeta>;
@@ -95,7 +97,7 @@ function scheduleSemesterFromFile(file: string): string | null {
 }
 
 function emptyDetails(course: CourseMeta): CourseDetails {
-  return { course, curriculum: null, schedule: null, scheduleExtraction: null, contents: null, resolvedSemester: null };
+  return { course, curriculum: null, schedule: null, scheduleExtraction: null, scheduleUpdatedAt: null, contents: null, resolvedSemester: null };
 }
 
 export class FileAcademicRepository implements AcademicRepository {
@@ -162,11 +164,12 @@ export class FileAcademicRepository implements AcademicRepository {
     });
   }
 
-  async getCourse(identifier: string, requestedSemester?: string, strict = false): Promise<CourseDetails | null> {
+  async getCourse(identifier: string, requestedSemester?: string, strict = false, requestedIncludes?: CourseInclude[]): Promise<CourseDetails | null> {
     const registry = this.readRegistry();
     const course = matchCourse(registry, identifier);
     if (!course) return null;
     const details = emptyDetails({ ...course });
+    const includes = new Set(requestedIncludes || ['curriculum', 'schedule', 'contents']);
     const dir = this.courseDirectory(course);
     if (!fs.existsSync(dir)) return details;
     const files = fs.readdirSync(dir);
@@ -174,7 +177,7 @@ export class FileAcademicRepository implements AcademicRepository {
     const availableSemesters = scheduleFiles.map(scheduleSemesterFromFile).filter((value): value is string => !!value);
     if (availableSemesters.length) details.course.semesters = Array.from(new Set(availableSemesters)).sort();
 
-    const curriculumFile = files.find(file => file.startsWith('curriculo_') && file.endsWith('.json'));
+    const curriculumFile = includes.has('curriculum') ? files.find(file => file.startsWith('curriculo_') && file.endsWith('.json')) : undefined;
     if (curriculumFile) {
       try {
         details.curriculum = JSON.parse(fs.readFileSync(path.join(dir, curriculumFile), 'utf-8'));
@@ -185,18 +188,18 @@ export class FileAcademicRepository implements AcademicRepository {
       }
     }
 
-    const contentsFile = files.find(file => file.startsWith('conteudos_') && file.endsWith('.json'));
+    const contentsFile = includes.has('contents') ? files.find(file => file.startsWith('conteudos_') && file.endsWith('.json')) : undefined;
     if (contentsFile) {
       try { details.contents = JSON.parse(fs.readFileSync(path.join(dir, contentsFile), 'utf-8')); }
       catch (error) { throw new RepositoryError(`Não foi possível ler ${contentsFile}: ${(error as Error).message}`); }
     }
 
     let selectedFile: string | undefined;
-    if (requestedSemester) {
+    if (includes.has('schedule') && requestedSemester) {
       const normalizedSemester = requestedSemester.replace(/\./g, '_');
       selectedFile = scheduleFiles.find(file => file === `horario_${course.id}_${normalizedSemester}.json` || file.endsWith(`_${normalizedSemester}.json`));
     }
-    if (!selectedFile && !(requestedSemester && strict)) {
+    if (includes.has('schedule') && !selectedFile && !(requestedSemester && strict)) {
       const defaultSemester = details.course.visibleSemesters?.[0] || details.course.semesters?.[0];
       if (defaultSemester) {
         const normalizedSemester = defaultSemester.replace(/\./g, '_');
@@ -208,6 +211,7 @@ export class FileAcademicRepository implements AcademicRepository {
       details.resolvedSemester = requestedSemester && strict ? requestedSemester : scheduleSemesterFromFile(selectedFile);
       try {
         details.schedule = JSON.parse(fs.readFileSync(path.join(dir, selectedFile), 'utf-8'));
+        details.scheduleUpdatedAt = fs.statSync(path.join(dir, selectedFile)).mtime.toISOString();
         const reportFile = `extracao_${selectedFile}`;
         if (files.includes(reportFile)) details.scheduleExtraction = JSON.parse(fs.readFileSync(path.join(dir, reportFile), 'utf-8'));
         const profiles = extractProfilesFromSchedule(details.schedule);
@@ -333,29 +337,36 @@ export class SupabaseAcademicRepository implements AcademicRepository {
     });
   }
 
-  async getCourse(identifier: string, requestedSemester?: string, strict = false): Promise<CourseDetails | null> {
+  async getCourse(identifier: string, requestedSemester?: string, strict = false, requestedIncludes?: CourseInclude[]): Promise<CourseDetails | null> {
     const courses = await this.readCourseRows();
     const course = matchCourse(courses, identifier);
     if (!course) return null;
+    const includes = new Set(requestedIncludes || ['curriculum', 'schedule', 'contents']);
     const [curriculumResult, contentsResult, semestersResult] = await Promise.all([
-      this.client.from('course_curricula').select('data').eq('course_id', course.id).maybeSingle(),
-      this.client.from('course_contents').select('data').eq('course_id', course.id).maybeSingle(),
-      this.client.from('course_schedules').select('semester').eq('course_id', course.id).order('semester')
+      includes.has('curriculum')
+        ? this.client.from('course_curricula').select('data').eq('course_id', course.id).maybeSingle()
+        : Promise.resolve({ data: null, error: null }),
+      includes.has('contents')
+        ? this.client.from('course_contents').select('data').eq('course_id', course.id).maybeSingle()
+        : Promise.resolve({ data: null, error: null }),
+      includes.has('schedule')
+        ? this.client.from('course_schedules').select('semester').eq('course_id', course.id).order('semester')
+        : Promise.resolve({ data: [] as any[], error: null })
     ]);
     throwSupabaseError(curriculumResult.error);
     throwSupabaseError(contentsResult.error);
     throwSupabaseError(semestersResult.error);
     const semesters = (semestersResult.data || []).map((row: any) => row.semester);
     const updatedCourse = { ...course, semesters: Array.from(new Set([...(course.semesters || []), ...semesters])).sort() };
-    let selectedSemester = requestedSemester && semesters.includes(requestedSemester) ? requestedSemester : undefined;
+    let selectedSemester = includes.has('schedule') && requestedSemester && semesters.includes(requestedSemester) ? requestedSemester : undefined;
     if (!selectedSemester && !(requestedSemester && strict)) {
       const defaultSemester = updatedCourse.visibleSemesters?.[0] || updatedCourse.semesters?.[0];
       selectedSemester = semesters.includes(defaultSemester || '')
         ? defaultSemester
         : semesters[semesters.length - 1];
     }
-    const scheduleResult = selectedSemester
-      ? await this.client.from('course_schedules').select('semester,data,extraction').eq('course_id', course.id).eq('semester', selectedSemester).maybeSingle()
+    const scheduleResult = includes.has('schedule') && selectedSemester
+      ? await this.client.from('course_schedules').select('semester,data,extraction,updated_at').eq('course_id', course.id).eq('semester', selectedSemester).maybeSingle()
       : { data: null, error: null };
     throwSupabaseError(scheduleResult.error);
     const selected = scheduleResult.data;
@@ -363,7 +374,7 @@ export class SupabaseAcademicRepository implements AcademicRepository {
     const profiles = mergeProfiles(
       updatedCourse.profiles || [],
       extractProfilesFromCurriculum(curriculumResult.data?.data),
-      extractProfilesFromSchedule(schedule)
+      includes.has('schedule') ? extractProfilesFromSchedule(schedule) : []
     );
     updatedCourse.profiles = profiles.length ? profiles : undefined;
     return {
@@ -372,6 +383,7 @@ export class SupabaseAcademicRepository implements AcademicRepository {
       contents: contentsResult.data?.data ?? null,
       schedule,
       scheduleExtraction: selected?.extraction ?? null,
+      scheduleUpdatedAt: selected?.updated_at ?? null,
       resolvedSemester: schedule ? selected?.semester ?? null : null
     };
   }
