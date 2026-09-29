@@ -19,7 +19,7 @@ export function useExtractionMonitor(initialToken?: string) {
     const poll = async () => {
       let keepWatching = requestRunning;
       try {
-        const snapshot: ExtractionSnapshot = await extractionResponse(await fetch(`/api/extraction-jobs/${token}`, {
+        const snapshot: ExtractionSnapshot = await extractionResponse(await apiFetch(`/api/extraction-jobs/${token}`, {
           cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(5000)])
         }));
         if (controller.signal.aborted || currentGeneration !== generation.current) return;
@@ -70,3 +70,4 @@ export function useExtractionMonitor(initialToken?: string) {
   return { activity, connectionError, lastSync, start, localEvent,
     track: setToken, finish: () => setRequestRunning(false) };
 }
+import { apiFetch } from '../utils/api';

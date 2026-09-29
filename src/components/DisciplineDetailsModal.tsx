@@ -2,11 +2,7 @@ import React from 'react';
 import { X, Book, Clock, AlertCircle, Link, FileText, CheckCircle2, Circle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Discipline } from '../types';
-import bccData from '../data/bcc/curriculo_bcc.json';
-import conteudosData from '../data/bcc/conteudos_bcc.json';
-import ealData from '../data/eal/curriculo_eal.json';
-import mvetData from '../data/medicina-veterinaria/curriculo_medicina-veterinaria.json';
-import admData from '../data/adm/curriculo_adm.json';
+import { getDisciplineDetails } from '../utils/detailsHelper';
 
 interface DisciplineDetailsModalProps {
   discipline: Discipline;
@@ -14,45 +10,21 @@ interface DisciplineDetailsModalProps {
   completedDisciplines: string[];
   toggleCompleted: (id: string) => void;
   getDisciplineConflictInstance: (disc: Discipline) => { withName: string } | null;
+  curriculum: any;
+  contents: any;
 }
-
-const allSubjectsList: any[] = [
-  ...(bccData.subjects || []),
-  ...((ealData as any).profiles || []).flatMap((p: any) => p.subjects || []),
-  ...((mvetData as any).profiles || []).flatMap((p: any) => p.subjects || []),
-  ...(Array.isArray(admData) ? admData : [])
-];
 
 export function DisciplineDetailsModal({ 
   discipline, 
   onClose,
   completedDisciplines,
   toggleCompleted,
-  getDisciplineConflictInstance
+  getDisciplineConflictInstance,
+  curriculum,
+  contents
 }: DisciplineDetailsModalProps) {
   const conflict = getDisciplineConflictInstance(discipline);
-
-  // Find subject details in JSON by code or name
-  const subjectDetails = discipline.code 
-    ? allSubjectsList.find(s => s.code === discipline.code) 
-    : allSubjectsList.find(s => (s.name || '').toLowerCase() === (discipline.name || '').toLowerCase());
-
-  // Normalize codes to match variations like BCC00022 and BCC0022
-  const normalizeCode = (c?: string) => c?.toUpperCase().replace(/([A-Z]+)0+([0-9]+)/, '$1$2') || '';
-
-  const possibleCodes = [
-    discipline.code,
-    subjectDetails?.code,
-    ...(subjectDetails?.equivalences?.map((e: any) => e.code) || [])
-  ].filter(Boolean) as string[];
-
-  const normalizedPossibleCodes = possibleCodes.map(normalizeCode);
-
-  const finalConteudoDetails = conteudosData.disciplinas.find(d => 
-    normalizedPossibleCodes.includes(normalizeCode(d.codigo))
-  ) || conteudosData.disciplinas.find(d => 
-    d.nome.toLowerCase() === (discipline.name || '').toLowerCase()
-  );
+  const { subjectDetails, contentDetails: finalConteudoDetails } = getDisciplineDetails(discipline, curriculum, contents);
 
   const displayCode = discipline.code || subjectDetails?.code || finalConteudoDetails?.codigo;
   const discIdentifier = displayCode || discipline.id;

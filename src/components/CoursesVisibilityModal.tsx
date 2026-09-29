@@ -35,7 +35,7 @@ export function CoursesVisibilityModal({
     setUpdatingCourseId(courseId);
 
     try {
-      const res = await fetch(`/api/courses/${courseId}/visibility`, {
+      const res = await apiFetch(`/api/courses/${courseId}/visibility`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ [field]: newValue })
@@ -56,7 +56,7 @@ export function CoursesVisibilityModal({
   const handleUpdateSemesters = async (course: CourseMeta, newVisibleList: string[]) => {
     setUpdatingCourseId(course.id);
     try {
-      const res = await fetch(`/api/courses/${course.id}/visibility`, {
+      const res = await apiFetch(`/api/courses/${course.id}/visibility`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ visibleSemesters: newVisibleList })
@@ -411,3 +411,4 @@ export function CoursesVisibilityModal({
     </div>
   );
 }
+import { apiFetch } from '../utils/api';

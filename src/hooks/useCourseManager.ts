@@ -82,7 +82,7 @@ export function useCourseManager({
 
   const fetchCoursesList = async () => {
     try {
-      const res = await fetch('/api/courses');
+      const res = await apiFetch('/api/courses');
       if (res.ok) {
         const data = await res.json();
         setCourses(data.courses || []);
@@ -104,7 +104,7 @@ export function useCourseManager({
     setSuccessMsg(null);
 
     try {
-      const res = await fetch(`/api/courses/${courseId}`);
+      const res = await apiFetch(`/api/courses/${courseId}`);
       if (res.ok) {
         const data = await res.json();
         if (version !== courseLoadVersion.current) return;
@@ -147,7 +147,7 @@ export function useCourseManager({
     if (!selectedCourseId || isCreatingNewCourse) return;
     setIsDeletingCourse(true);
     try {
-      const res = await fetch(`/api/courses/${selectedCourseId}`, {
+      const res = await apiFetch(`/api/courses/${selectedCourseId}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -175,7 +175,7 @@ export function useCourseManager({
         setShowDeleteCourseModal(false);
 
         // Reload courses registry
-        const listRes = await fetch('/api/courses');
+        const listRes = await apiFetch('/api/courses');
         if (listRes.ok) {
           const listData = await listRes.json();
           const remainingCourses: CourseMeta[] = listData.courses || [];
@@ -265,3 +265,4 @@ export function useCourseManager({
     skipNextCourseLoad
   };
 }
+import { apiFetch } from '../utils/api';

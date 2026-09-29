@@ -1,121 +1,83 @@
-import express from "express";
-import path from "path";
-import dotenv from "dotenv";
-import fs from "fs";
+import express from 'express';
+import fs from 'node:fs';
+import path from 'node:path';
+import dotenv from 'dotenv';
 import { extractionRoutes } from './extractionRoutes';
 import { validateExtraction } from './src/utils/extraction';
 import { createAcademicAIClient, type AcademicAIClient } from './aiProvider';
+import {
+  FileAcademicRepository,
+  RepositoryError,
+  SupabaseAcademicRepository,
+  type AcademicRepository,
+  type SaveCourseInput
+} from './src/server/academicRepository';
+import {
+  createMigrationRun,
+  discoverMigrationInventory,
+  executeCourseMigration,
+  getMigrationRunReport,
+  listMigrationRuns,
+  previewMigration
+} from './src/server/academicMigration';
+import { getAcademicDataSource, requireAdmin } from './src/server/adminAuth';
+import { getSupabaseAdminClient, hasSupabaseAdminConfig, hasSupabaseAuthConfig } from './src/server/supabaseClient';
 
-// Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Maximum payload size for PDF uploads and large curriculums
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
-
-// The provider is chosen exclusively by the model selected for the extraction.
 let aiClient: AcademicAIClient | null = null;
 function getAIClient(): AcademicAIClient {
-  if (!aiClient) {
-    aiClient = createAcademicAIClient();
-  }
+  if (!aiClient) aiClient = createAcademicAIClient();
   return aiClient;
 }
 
-// Ensure data directories and central registry exist
-const DATA_DIR = process.env.ACADEMIC_DATA_DIR ? path.resolve(process.env.ACADEMIC_DATA_DIR) : path.join(process.cwd(), "src", "data");
-const REGISTRY_PATH = path.join(DATA_DIR, "courses_registry.json");
-
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+const dataSource = getAcademicDataSource();
+if (dataSource === 'supabase' && !hasSupabaseAdminConfig()) {
+  throw new Error('ACADEMIC_DATA_SOURCE=supabase exige VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY e SUPABASE_SECRET_KEY.');
 }
 
-if (!fs.existsSync(REGISTRY_PATH)) {
-  const initialRegistry = [
-    {
-      id: "bcc",
-      name: "Ciência da Computação",
-      shortName: "BCC",
-      hasCurriculum: true,
-      hasSchedule: true,
-      semesters: ["2026.1"]
-    },
-    {
-      id: "adm",
-      name: "Administração",
-      shortName: "ADM",
-      hasCurriculum: true,
-      hasSchedule: true,
-      semesters: ["2026.1"]
-    },
-    {
-      id: "eal",
-      name: "Engenharia de Alimentos",
-      shortName: "EAL",
-      hasCurriculum: true,
-      hasSchedule: true,
-      semesters: ["2026.1"],
-      profiles: ["EAL03"]
-    },
-    {
-      id: "medicina-veterinaria",
-      name: "Medicina Veterinária",
-      shortName: "MVET",
-      hasCurriculum: true,
-      hasSchedule: true,
-      semesters: ["2026.1"],
-      profiles: ["MVET03", "MVET02"]
-    }
-  ];
-  fs.writeFileSync(REGISTRY_PATH, JSON.stringify(initialRegistry, null, 2), "utf-8");
-}
-
-function getRegistry(): any[] {
-  try {
-    if (fs.existsSync(REGISTRY_PATH)) {
-      return JSON.parse(fs.readFileSync(REGISTRY_PATH, "utf-8"));
-    }
-  } catch (e) {
-    console.error("Error reading courses registry:", e);
+function existingFileRepository(): FileAcademicRepository {
+  const dataDir = process.env.ACADEMIC_DATA_DIR?.trim()
+    ? path.resolve(process.env.ACADEMIC_DATA_DIR)
+    : path.join(process.cwd(), 'src', 'data');
+  if (!fs.existsSync(path.join(dataDir, 'courses_registry.json'))) {
+    throw new RepositoryError('Os arquivos acadêmicos de origem não estão disponíveis. Restaure src/data ou configure ACADEMIC_DATA_DIR para usar a migração.', 503);
   }
-  return [];
+  return new FileAcademicRepository(dataDir);
 }
 
-function saveRegistry(registry: any[]) {
-  fs.writeFileSync(REGISTRY_PATH, JSON.stringify(registry, null, 2), "utf-8");
+const fileRepository = dataSource === 'files' ? existingFileRepository() : null;
+const repository: AcademicRepository = dataSource === 'supabase'
+  ? new SupabaseAcademicRepository(getSupabaseAdminClient())
+  : fileRepository!;
+
+function respondError(res: express.Response, error: unknown, fallback: string): void {
+  const known = error as { status?: number; message?: string; code?: string; preview?: unknown };
+  const status = Number.isInteger(known?.status) ? known.status! : error instanceof RepositoryError ? error.status : 500;
+  res.status(status).json({ error: known?.message || fallback, ...(known?.code ? { code: known.code } : {}), ...(known?.preview ? { preview: known.preview } : {}) });
 }
 
-function isLocalhostIp(req: express.Request): boolean {
-  const remoteIp = req.socket.remoteAddress || req.ip || "";
-  return (
-    remoteIp === "127.0.0.1" ||
-    remoteIp === "::1" ||
-    remoteIp === "::ffff:127.0.0.1" ||
-    remoteIp === "localhost"
-  );
+function requireMigrationClient() {
+  if (!hasSupabaseAdminConfig()) throw new RepositoryError('Configure as variáveis Supabase no servidor antes de analisar ou importar.', 503);
+  return getSupabaseAdminClient();
 }
 
-// Middleware de proteção exclusivo para localhost
-const localhostOnly: express.RequestHandler = (req, res, next) => {
-  if (isLocalhostIp(req)) {
-    return next();
-  }
-  
-  console.warn(`[SEGURANÇA] Bloqueado acesso externo à rota administrativa ${req.method} ${req.originalUrl} a partir do IP: ${req.ip}`);
-  res.status(403).json({
-    error: "Acesso não autorizado. Esta operação é restrita ao ambiente local (localhost)."
-  });
-};
+function selectedKeysFrom(body: any): string[] {
+  return Array.isArray(body?.selectedKeys) ? body.selectedKeys.filter((key: any) => typeof key === 'string') : [];
+}
 
-// --- API ROUTES ---
+function overwriteKeysFrom(body: any): string[] {
+  return Array.isArray(body?.overwriteKeys) ? body.overwriteKeys.filter((key: any) => typeof key === 'string') : [];
+}
 
-// Health check
-app.get("/api/health", (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({
-    status: "ok",
+    status: 'ok',
     nvidia_api_configured: !!process.env.NVIDIA_API_KEY,
     moonshot_api_configured: !!process.env.MOONSHOT_API_KEY,
     openrouter_api_configured: !!process.env.OPENROUTER_API_KEY,
@@ -123,448 +85,202 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Helper to extract profile IDs from curriculum data
-function extractProfilesFromCurriculum(curr: any): string[] {
-  if (!curr) return [];
-  let list: string[] = [];
-  if (curr.profiles && Array.isArray(curr.profiles)) {
-    list = curr.profiles.map((p: any) => p.id || p.name).filter(Boolean);
-  } else if (Array.isArray(curr.subjects)) {
-    list = curr.subjects.map((s: any) => s.profile).filter(Boolean);
-  } else if (Array.isArray(curr)) {
-    list = curr.map((s: any) => s.profile).filter(Boolean);
-  }
-  return Array.from(new Set(
-    list.filter((p: any) => typeof p === 'string' && p.trim().length > 0 && p.trim().toLowerCase() !== 'optativa' && p.trim().toLowerCase() !== 'sem perfil')
-  ));
-}
-
-// Helper to extract profile IDs from schedule data
-function extractProfilesFromSchedule(sched: any): string[] {
-  if (!sched || !Array.isArray(sched)) return [];
-  return Array.from(new Set(
-    sched
-      .map((s: any) => s.profile)
-      .filter((p: any) => typeof p === 'string' && p.trim().length > 0 && p.trim().toLowerCase() !== 'optativa' && p.trim().toLowerCase() !== 'sem perfil')
-  ));
-}
-
-// GET all courses metadata
-app.get("/api/courses", (req, res) => {
-  try {
-    const courses = getRegistry();
-    const enriched = courses.map((c: any) => {
-      let profiles: string[] = Array.isArray(c.profiles) ? [...c.profiles] : [];
-      let semesters: string[] = Array.isArray(c.semesters) ? [...c.semesters] : [];
-      const courseDir = path.join(DATA_DIR, c.id);
-      if (fs.existsSync(courseDir)) {
-        const files = fs.readdirSync(courseDir);
-        const currFile = files.find(f => f.startsWith("curriculo_") && f.endsWith(".json"));
-        if (currFile) {
-          try {
-            const curr = JSON.parse(fs.readFileSync(path.join(courseDir, currFile), "utf-8"));
-            const currProfiles = extractProfilesFromCurriculum(curr);
-            profiles = Array.from(new Set([...profiles, ...currProfiles]));
-          } catch {}
-        }
-        const schedFiles = files.filter(f => f.startsWith("horario_") && f.endsWith(".json"));
-        schedFiles.forEach(f => {
-          const match = f.match(/^horario_[a-z0-9_-]+_(\d{4}_\d)\.json$/);
-          if (match) {
-            semesters.push(match[1].replace('_', '.'));
-          }
-        });
-        const schedFile = schedFiles.sort().reverse()[0];
-        if (schedFile) {
-          try {
-            const sched = JSON.parse(fs.readFileSync(path.join(courseDir, schedFile), "utf-8"));
-            const schedProfiles = extractProfilesFromSchedule(sched);
-            profiles = Array.from(new Set([...profiles, ...schedProfiles]));
-          } catch {}
-        }
-      }
-      return { 
-        ...c, 
-        profiles: profiles.length > 0 ? profiles : undefined,
-        semesters: Array.from(new Set(semesters)).sort()
-      };
-    });
-    res.json({ courses: enriched });
-  } catch (error: any) {
-    res.status(500).json({ error: "Failed to read courses registry", details: error.message });
-  }
+app.get('/api/admin/config', (_req, res) => {
+  res.json({
+    authRequired: true,
+    authConfigured: hasSupabaseAuthConfig() && !!process.env.ADMIN_USER_IDS?.split(',').some(id => id.trim()),
+    dataSource
+  });
 });
 
-// GET full course details (curriculum + schedule files)
-app.get("/api/courses/:id", (req, res) => {
-  try {
-    const { id } = req.params;
-    const cleanId = id.toLowerCase();
-    const requestedSemester = req.query.semester as string | undefined; // Permite ?semester=2026.2
-    const courses = getRegistry();
-    const courseMeta = courses.find((c: any) => 
-      c.id === cleanId ||
-      c.id.toLowerCase() === cleanId ||
-      (c.shortName && c.shortName.toLowerCase() === cleanId) ||
-      (cleanId === 'engenharia-de-alimentos' && c.id === 'eal') ||
-      (cleanId === 'eal' && c.id === 'engenharia-de-alimentos') ||
-      (cleanId === 'mvet' && c.id === 'medicina-veterinaria') ||
-      (cleanId === 'medicina-veterinaria' && c.id === 'mvet') ||
-      (cleanId === 'vet' && c.id === 'medicina-veterinaria')
-    );
-
-    if (!courseMeta) {
-      return res.status(404).json({ error: `Curso '${id}' não encontrado.` });
-    }
-
-    let courseDir = path.join(DATA_DIR, courseMeta.id);
-    if (!fs.existsSync(courseDir)) {
-      if ((courseMeta.id === 'engenharia-de-alimentos' || courseMeta.id === 'eal') && fs.existsSync(path.join(DATA_DIR, 'eal'))) {
-        courseDir = path.join(DATA_DIR, 'eal');
-      } else if (courseMeta.id === 'medicina-veterinaria' && fs.existsSync(path.join(DATA_DIR, 'mvet'))) {
-        courseDir = path.join(DATA_DIR, 'mvet');
-      }
-    }
-    let resolvedSemester: string | null = null;
-    let curriculum: any = null;
-    let schedule: any = null;
-    let scheduleExtraction: any = null;
-
-    if (fs.existsSync(courseDir)) {
-      const files = fs.readdirSync(courseDir);
-
-      // Identifica todos os semestres disponíveis nos arquivos horario_<id>_<semestre>.json
-      const availableSemesters: string[] = [];
-      files.forEach(f => {
-        const match = f.match(/^horario_[a-z0-9_-]+_(\d{4}_\d)\.json$/);
-        if (match) {
-          availableSemesters.push(match[1].replace('_', '.'));
-        }
-      });
-      if (availableSemesters.length > 0) {
-        courseMeta.semesters = Array.from(new Set(availableSemesters)).sort();
-      }
-
-      // Procura currículo
-      const currFile = files.find(f => f.startsWith("curriculo_") && f.endsWith(".json"));
-      if (currFile) {
-        try {
-          curriculum = JSON.parse(fs.readFileSync(path.join(courseDir, currFile), "utf-8"));
-          if (curriculum) {
-            const profiles = extractProfilesFromCurriculum(curriculum);
-            if (profiles.length > 0) {
-              courseMeta.profiles = Array.from(new Set([...(courseMeta.profiles || []), ...profiles]));
-            }
-          }
-        } catch (e) {
-          console.error(`Error reading curriculum for ${id}:`, e);
-        }
-      }
-
-      // Procura o arquivo de horário correspondente ao semestre solicitado ou o mais recente
-      let targetSchedFile: string | undefined;
-      if (requestedSemester) {
-        const semClean = requestedSemester.replace(/\./g, '_');
-        targetSchedFile = files.find(f => f === `horario_${courseMeta.id}_${semClean}.json` || (f.startsWith('horario_') && f.endsWith(`_${semClean}.json`)));
-      }
-      if (!targetSchedFile && !(requestedSemester && req.query.strict === 'true')) {
-        // Pega o padrão definido pelo admin (primeiro de visibleSemesters) ou o primeiro de semesters
-        const defaultSem = courseMeta.visibleSemesters?.[0] || courseMeta.semesters?.[0];
-        if (defaultSem) {
-          const semClean = defaultSem.replace(/\./g, '_');
-          targetSchedFile = files.find(f => f === `horario_${courseMeta.id}_${semClean}.json` || (f.startsWith('horario_') && f.endsWith(`_${semClean}.json`)));
-        }
-      }
-      if (!targetSchedFile && !(requestedSemester && req.query.strict === 'true')) {
-        // Pega o mais recente ou o primeiro
-        const schedFiles = files.filter(f => f.startsWith("horario_") && f.endsWith(".json")).sort().reverse();
-        targetSchedFile = schedFiles[0];
-      }
-
-      if (targetSchedFile) {
-        resolvedSemester = targetSchedFile.match(/_(\d{4})_(\d)\.json$/)?.slice(1).join('.') || null;
-        try {
-          schedule = JSON.parse(fs.readFileSync(path.join(courseDir, targetSchedFile), "utf-8"));
-          const reportPath = path.join(courseDir, `extracao_${targetSchedFile}`);
-          if (fs.existsSync(reportPath)) {
-            scheduleExtraction = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
-          }
-          if (schedule) {
-            const schedProfiles = extractProfilesFromSchedule(schedule);
-            if (schedProfiles.length > 0) {
-              courseMeta.profiles = Array.from(new Set([...(courseMeta.profiles || []), ...schedProfiles]));
-            }
-          }
-        } catch (e) {
-          console.error(`Error reading schedule for ${id}:`, e);
-        }
-      }
-    }
-
-    res.json({
-      resolvedSemester: typeof schedule !== 'undefined' && schedule !== null ? (requestedSemester && req.query.strict === 'true' ? requestedSemester : resolvedSemester) : null,
-      course: courseMeta,
-      curriculum,
-      schedule,
-      scheduleExtraction
-    });
-  } catch (error: any) {
-    res.status(500).json({ error: "Failed to load course details", details: error.message });
-  }
+app.get('/api/admin/session', requireAdmin, (req, res) => {
+  res.json({ authenticated: true, userId: req.adminUserId });
 });
 
-// Metadata writes never create curriculum or semester files.
-app.patch('/api/courses/:id/metadata', localhostOnly, (req, res) => {
+app.get('/api/courses', async (_req, res) => {
   try {
-    const { name, shortName } = req.body;
-    if (typeof name !== 'string' || !name.trim() || typeof shortName !== 'string' || !shortName.trim()) {
-      return res.status(400).json({ error: 'Informe nome e sigla do curso.' });
-    }
-    const registry = getRegistry();
-    const course = registry.find((item: any) => item.id === req.params.id);
-    if (!course) return res.status(404).json({ error: 'Curso não encontrado.' });
-    course.name = name.trim();
-    course.shortName = shortName.trim();
-    saveRegistry(registry);
-    res.json({ course });
+    res.json({ courses: await repository.listCourses() });
   } catch (error) {
-    res.status(500).json({ error: 'Não foi possível salvar os dados do curso.' });
+    respondError(res, error, 'Falha ao ler o registro de cursos.');
   }
 });
 
-// POST save or update a course with its curriculum and/or schedule
-app.post("/api/courses", localhostOnly, (req, res) => {
+app.get('/api/courses/:id', async (req, res) => {
   try {
-    const { id, name, shortName, curriculum, schedule, semester } = req.body;
-    if (!id || !name) {
-      return res.status(400).json({ error: "Campos obrigatórios ausentes: 'id' e 'name'." });
-    }
-
-    if (Array.isArray(schedule) && !/^\d{4}\.[12]$/.test(semester || '')) return res.status(400).json({ error: 'Informe um semestre válido (AAAA.1 ou AAAA.2).' });
-
-    // Reject invalid academic values before creating directories or writing any data.
-    const validation = [
-      ...(schedule ? validateExtraction(schedule, 'schedule') : []),
-      ...(curriculum ? validateExtraction(Array.isArray(curriculum) ? curriculum : curriculum.subjects || [], 'linear') : []),
-      ...(curriculum?.treeSubjects ? validateExtraction(curriculum.treeSubjects, 'tree') : []),
-      ...(!curriculum?.treeSubjects && curriculum?.profiles ? curriculum.profiles.flatMap((p: any) => validateExtraction(p.subjects || [], 'tree')) : [])
-    ];
-    const errors = validation.filter(issue => issue.severity === 'error');
-    if (errors.length) return res.status(422).json({ error: 'Corrija os dados inválidos antes de salvar.', issues: errors });
-
-    const cleanId = id.toLowerCase().replace(/[^a-z0-9_-]/g, "");
-    const courseDir = path.join(DATA_DIR, cleanId);
-    if (!fs.existsSync(courseDir)) {
-      fs.mkdirSync(courseDir, { recursive: true });
-    }
-
-    const sem = (semester || "2026.1").replace(/[^a-zA-Z0-9_.-]/g, "_");
-
-    let hasCurriculum = false;
-    let hasSchedule = false;
-
-    // Save Curriculum if provided
-    if (curriculum) {
-      const currFilePath = path.join(courseDir, `curriculo_${cleanId}.json`);
-      let formattedCurriculum: any;
-      if (Array.isArray(curriculum)) {
-        formattedCurriculum = { export_date: new Date().toISOString(), subjects: curriculum };
-      } else {
-        formattedCurriculum = {
-          export_date: curriculum.export_date || new Date().toISOString(),
-          courseName: curriculum.courseName || name,
-          courseShortName: curriculum.courseShortName || shortName,
-          requisitos: curriculum.requisitos,
-          activeProfileId: curriculum.activeProfileId,
-          profiles: curriculum.profiles,
-          treeSubjects: curriculum.treeSubjects,
-          extraction: curriculum.extraction,
-          subjects: curriculum.subjects || []
-        };
-      }
-
-      fs.writeFileSync(currFilePath, JSON.stringify(formattedCurriculum, null, 2), "utf-8");
-      hasCurriculum = true;
-    } else {
-      // Check if curriculum already exists on disk
-      const files = fs.existsSync(courseDir) ? fs.readdirSync(courseDir) : [];
-      hasCurriculum = files.some(f => f.startsWith("curriculo_") && f.endsWith(".json"));
-    }
-
-    // Save Schedule if provided
-    if (schedule && Array.isArray(schedule)) {
-      const schedFilePath = path.join(courseDir, `horario_${cleanId}_${sem.replace(/\./g, "_")}.json`);
-      fs.writeFileSync(schedFilePath, JSON.stringify(schedule, null, 2), "utf-8");
-      if (req.body.scheduleExtraction) fs.writeFileSync(path.join(courseDir, `extracao_${path.basename(schedFilePath)}`), JSON.stringify(req.body.scheduleExtraction, null, 2), 'utf-8');
-      hasSchedule = true;
-    } else {
-      // Check if schedule already exists on disk
-      const files = fs.existsSync(courseDir) ? fs.readdirSync(courseDir) : [];
-      hasSchedule = files.some(f => f.startsWith("horario_") && f.endsWith(".json"));
-    }
-
-    // Determine profiles from curriculum and schedule
-    let detectedProfiles: string[] = [];
-    if (curriculum) {
-      detectedProfiles = extractProfilesFromCurriculum(curriculum);
-    }
-    if (schedule && Array.isArray(schedule)) {
-      const schedProfiles = Array.from(new Set(schedule.map((d: any) => d.profile).filter(Boolean)));
-      detectedProfiles = Array.from(new Set([...detectedProfiles, ...schedProfiles]));
-    }
-
-    // Update Registry
-    const registry = getRegistry();
-    const existingIndex = registry.findIndex((c: any) => c.id === cleanId);
-    const existingMeta = existingIndex > -1 ? registry[existingIndex] : null;
-
-    const mergedProfiles = Array.from(new Set([
-      ...(existingMeta?.profiles || []),
-      ...detectedProfiles
-    ])).filter(Boolean);
-
-    // Atualizar semestres acumulando os existentes
-    const existingSemesters = Array.isArray(existingMeta?.semesters) ? existingMeta.semesters : [];
-    const diskFiles = fs.existsSync(courseDir) ? fs.readdirSync(courseDir) : [];
-    const diskSemesters: string[] = [];
-    diskFiles.forEach(f => {
-      const match = f.match(/^horario_[a-z0-9_-]+_(\d{4}_\d)\.json$/);
-      if (match) {
-        diskSemesters.push(match[1].replace('_', '.'));
-      }
-    });
-    const formattedSem = sem.replace(/_/g, ".");
-    const mergedSemesters = Array.from(new Set([...existingSemesters, ...diskSemesters, ...(Array.isArray(schedule) ? [formattedSem] : [])])).sort();
-
-    const updatedMeta: any = {
-      id: cleanId,
-      name: name.trim(),
-      shortName: (shortName || cleanId.toUpperCase()).trim(),
-      hasCurriculum,
-      hasSchedule,
-      semesters: mergedSemesters
-    };
-
-    if (mergedProfiles.length > 0) {
-      updatedMeta.profiles = mergedProfiles;
-    }
-
-    if (existingIndex > -1) {
-      registry[existingIndex] = {
-        ...registry[existingIndex],
-        ...updatedMeta
-      };
-    } else {
-      registry.push(updatedMeta);
-    }
-
-    saveRegistry(registry);
-
-    res.json({
-      success: true,
-      message: `Curso '${name}' salvo com sucesso no projeto!`,
-      course: updatedMeta
-    });
-  } catch (error: any) {
-    console.error("Error saving course:", error);
-    res.status(500).json({ error: "Falha ao salvar curso", details: error.message });
+    const strict = req.query.strict === 'true';
+    const semester = typeof req.query.semester === 'string' ? req.query.semester : undefined;
+    const details = await repository.getCourse(req.params.id, semester, strict);
+    if (!details) return res.status(404).json({ error: `Curso '${req.params.id}' não encontrado.` });
+    return res.json(details);
+  } catch (error) {
+    return respondError(res, error, 'Falha ao carregar os dados do curso.');
   }
 });
 
-// DELETE a custom course from registry and disk
-app.delete("/api/courses/:id", localhostOnly, (req, res) => {
+app.patch('/api/courses/:id/metadata', requireAdmin, async (req, res) => {
+  const { name, shortName } = req.body || {};
+  if (typeof name !== 'string' || !name.trim() || typeof shortName !== 'string' || !shortName.trim()) {
+    return res.status(400).json({ error: 'Informe nome e sigla do curso.' });
+  }
   try {
-    const { id } = req.params;
-    const cleanId = id.toLowerCase().replace(/[^a-z0-9_-]/g, "");
-    let registry = getRegistry();
-    const isPresent = registry.some((c: any) => c.id === cleanId);
-
-    if (!isPresent) {
-      return res.status(404).json({ error: "Curso não encontrado no registro." });
-    }
-
-    registry = registry.filter((c: any) => c.id !== cleanId);
-    saveRegistry(registry);
-
-    // Also remove files from disk if present
-    const courseDir = path.join(DATA_DIR, cleanId);
-    if (fs.existsSync(courseDir)) {
-      try {
-        fs.rmSync(courseDir, { recursive: true, force: true });
-      } catch (dirErr) {
-        console.error(`Failed to remove course directory ${courseDir}:`, dirErr);
-      }
-    }
-
-    res.json({ success: true, message: `Curso '${cleanId}' excluído com sucesso.` });
-  } catch (error: any) {
-    res.status(500).json({ error: "Falha ao excluir curso", details: error.message });
+    const course = await repository.updateCourseMetadata(req.params.id, name, shortName);
+    return res.json({ course });
+  } catch (error) {
+    return respondError(res, error, 'Não foi possível salvar os dados do curso.');
   }
 });
 
-// PATCH /api/courses/:id/visibility - Atualiza visibilidade do curso, módulos e semestres
-app.patch("/api/courses/:id/visibility", localhostOnly, (req, res) => {
+app.post('/api/courses', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  if (typeof body.id !== 'string' || !body.id.trim() || typeof body.name !== 'string' || !body.name.trim()) {
+    return res.status(400).json({ error: "Campos obrigatórios ausentes: 'id' e 'name'." });
+  }
+  if (Array.isArray(body.schedule) && !/^\d{4}\.[12]$/.test(body.semester || '')) {
+    return res.status(400).json({ error: 'Informe um semestre válido (AAAA.1 ou AAAA.2).' });
+  }
+
+  const curriculum = body.curriculum;
+  const validation = [
+    ...(body.schedule ? validateExtraction(body.schedule, 'schedule') : []),
+    ...(curriculum ? validateExtraction(Array.isArray(curriculum) ? curriculum : curriculum.subjects || [], 'linear') : []),
+    ...(curriculum?.treeSubjects ? validateExtraction(curriculum.treeSubjects, 'tree') : []),
+    ...(!curriculum?.treeSubjects && curriculum?.profiles ? curriculum.profiles.flatMap((profile: any) => validateExtraction(profile.subjects || [], 'tree')) : [])
+  ];
+  const errors = validation.filter(issue => issue.severity === 'error');
+  if (errors.length) return res.status(422).json({ error: 'Corrija os dados inválidos antes de salvar.', issues: errors });
+
   try {
-    const { id } = req.params;
-    const { hidden, showSchedule, showDisciplines, showMatriz, visibleSemesters } = req.body;
-    
-    const registry = getRegistry();
-    const cleanId = id.toLowerCase().replace(/[^a-z0-9_-]/g, "");
-    const courseIndex = registry.findIndex((c: any) => c.id.toLowerCase() === cleanId);
-
-    if (courseIndex === -1) {
-      return res.status(404).json({ error: "Curso não encontrado no registro." });
-    }
-
-    // Atualiza apenas os campos enviados
-    registry[courseIndex] = {
-      ...registry[courseIndex],
-      ...(hidden !== undefined ? { hidden: Boolean(hidden) } : {}),
-      ...(showSchedule !== undefined ? { showSchedule: Boolean(showSchedule) } : {}),
-      ...(showDisciplines !== undefined ? { showDisciplines: Boolean(showDisciplines) } : {}),
-      ...(showMatriz !== undefined ? { showMatriz: Boolean(showMatriz) } : {}),
-      ...(Array.isArray(visibleSemesters) ? { visibleSemesters } : {})
-    };
-
-    saveRegistry(registry);
-
-    res.json({
-      success: true,
-      message: "Configurações de visibilidade salvas.",
-      course: registry[courseIndex]
-    });
-  } catch (error: any) {
-    console.error("Erro ao atualizar visibilidade do curso:", error);
-    res.status(500).json({ error: "Falha ao atualizar visibilidade.", details: error.message });
+    const course = await repository.saveCourse(body as SaveCourseInput);
+    return res.json({ success: true, message: `Curso '${body.name}' salvo com sucesso no projeto!`, course });
+  } catch (error) {
+    return respondError(res, error, 'Falha ao salvar curso.');
   }
 });
 
-app.use('/api', localhostOnly, extractionRoutes(getAIClient));
+app.delete('/api/courses/:id', requireAdmin, async (req, res) => {
+  try {
+    await repository.deleteCourse(req.params.id);
+    return res.json({ success: true, message: `Curso '${req.params.id}' excluído com sucesso.` });
+  } catch (error) {
+    return respondError(res, error, 'Falha ao excluir curso.');
+  }
+});
 
-// --- VITE DEV OR PRODUCTION STATICS HANDLERS ---
+app.patch('/api/courses/:id/visibility', requireAdmin, async (req, res) => {
+  try {
+    const course = await repository.updateCourseVisibility(req.params.id, req.body || {});
+    return res.json({ success: true, message: 'Configurações de visibilidade salvas.', course });
+  } catch (error) {
+    return respondError(res, error, 'Falha ao atualizar visibilidade.');
+  }
+});
+
+app.get('/api/admin/migrations/inventory', requireAdmin, (_req, res) => {
+  try {
+    const inventory = discoverMigrationInventory(fileRepository ?? existingFileRepository());
+    return res.json({
+      sourceDirectory: inventory.sourceDirectory,
+      items: inventory.items.map(({ data: _data, ...item }) => ({ ...item, status: item.parseError ? 'invalid' : 'available' })),
+      missing: inventory.missing,
+      ignoredFiles: inventory.ignoredFiles,
+      destinationConfigured: hasSupabaseAdminConfig()
+    });
+  } catch (error) {
+    return respondError(res, error, 'Não foi possível analisar os arquivos acadêmicos.');
+  }
+});
+
+app.post('/api/admin/migrations/validate', requireAdmin, async (req, res) => {
+  try {
+    const preview = await previewMigration(
+      discoverMigrationInventory(fileRepository ?? existingFileRepository()),
+      requireMigrationClient(),
+      selectedKeysFrom(req.body),
+      overwriteKeysFrom(req.body)
+    );
+    return res.json(preview);
+  } catch (error) {
+    return respondError(res, error, 'Não foi possível validar a seleção.');
+  }
+});
+
+app.post('/api/admin/migrations/runs', requireAdmin, async (req, res) => {
+  try {
+    if (typeof req.body?.fingerprint !== 'string' || !req.body.fingerprint) {
+      return res.status(400).json({ error: 'Valide a seleção antes de iniciar a migração.' });
+    }
+    const run = await createMigrationRun(
+      requireMigrationClient(),
+      req.adminUserId || 'local',
+      discoverMigrationInventory(fileRepository ?? existingFileRepository()),
+      selectedKeysFrom(req.body),
+      overwriteKeysFrom(req.body),
+      req.body.fingerprint
+    );
+    return res.status(201).json(run);
+  } catch (error) {
+    return respondError(res, error, 'Não foi possível iniciar a migração.');
+  }
+});
+
+app.post('/api/admin/migrations/runs/:runId/courses/:courseId', requireAdmin, async (req, res) => {
+  try {
+    const result = await executeCourseMigration(requireMigrationClient(), fileRepository ?? existingFileRepository(), req.params.runId, req.params.courseId);
+    return res.json(result);
+  } catch (error) {
+    return respondError(res, error, 'Falha ao importar este curso.');
+  }
+});
+
+app.get('/api/admin/migrations/runs', requireAdmin, async (_req, res) => {
+  try { return res.json({ runs: await listMigrationRuns(requireMigrationClient()) }); }
+  catch (error) { return respondError(res, error, 'Não foi possível carregar o histórico.'); }
+});
+
+app.get('/api/admin/migrations/runs/:runId/report', requireAdmin, async (req, res) => {
+  try {
+    const report = await getMigrationRunReport(requireMigrationClient(), req.params.runId);
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="my-ufape-migration-${req.params.runId}.json"`);
+    return res.send(JSON.stringify(report, null, 2));
+  } catch (error) {
+    return respondError(res, error, 'Não foi possível gerar o relatório.');
+  }
+});
+
+app.get('/api/admin/migrations/runs/:runId', requireAdmin, async (req, res) => {
+  try {
+    const client = requireMigrationClient();
+    const [{ data: run, error: runError }, { data: items, error: itemsError }] = await Promise.all([
+      client.from('migration_runs').select('*').eq('id', req.params.runId).maybeSingle(),
+      client.from('migration_items').select('id,course_id,source_key,kind,semester,source_file,status,error,processed_at').eq('run_id', req.params.runId).order('course_id').order('kind')
+    ]);
+    if (runError) throw runError;
+    if (itemsError) throw itemsError;
+    if (!run) return res.status(404).json({ error: 'Execução de migração não encontrada.' });
+    return res.json({ run, items: items || [] });
+  } catch (error) {
+    return respondError(res, error, 'Não foi possível consultar a execução.');
+  }
+});
+
+app.use('/api', requireAdmin, extractionRoutes(getAIClient));
 
 async function bootstrap() {
-  if (process.env.NODE_ENV !== "production") {
-    // Dynamically import Vite in development context
-    const { createServer: createViteServer } = await import("vite");
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
+  if (process.env.NODE_ENV !== 'production') {
+    const { createServer: createViteServer } = await import('vite');
+    const vite = await createViteServer({ server: { middlewareMode: true }, appType: 'spa' });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), "dist");
+    const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
+    app.get('*', (_req, res) => res.sendFile(path.join(distPath, 'index.html')));
   }
-
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[FULL-STACK] Express secure environment server listening on http://localhost:${PORT}`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`[FULL-STACK] Express server listening on http://localhost:${PORT}`);
   });
 }
 
-bootstrap().catch((err) => {
-  console.error("Failed to kickstart server:", err);
+bootstrap().catch(error => {
+  console.error('Failed to kickstart server:', error);
 });

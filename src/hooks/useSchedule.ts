@@ -1,10 +1,9 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { bcc2026_1, eal2026_1, eal2026_2, adm2026_1, mvet2026_1 } from '../data';
-import initialCoursesRegistry from '../data/courses_registry.json';
 import { Discipline, TimeSlot } from '../types';
 import { TIMESLOTS } from '../constants';
 import { canAccessAdmin } from '../utils/domain';
 import { validateExtraction } from '../utils/extraction';
+import { apiFetch } from '../utils/api';
 
 export interface SavedGrade {
   id: string;
@@ -192,6 +191,8 @@ export function useSchedule() {
   const [mobileTab, setMobileTab] = useState<'disciplines' | 'schedule'>('disciplines');
   const [searchQuery, setSearchQuery] = useState('');
   const [detailsDiscipline, setDetailsDiscipline] = useState<Discipline | null>(null);
+  const [courseCurriculum, setCourseCurriculum] = useState<any | null>(null);
+  const [courseContents, setCourseContents] = useState<any | null>(null);
 
   const [savedGrades, setSavedGrades] = useState<SavedGrade[]>([]);
   const [completedDisciplines, setCompletedDisciplines] = useState<string[]>([]);
@@ -201,6 +202,8 @@ export function useSchedule() {
     if (!course) {
       lastLoadedCourseRef.current = null;
       setSelectedCourse(null);
+      setCourseCurriculum(null);
+      setCourseContents(null);
       setSchedule([]);
       setDisciplinesList([]);
       setGradeTitle('');
@@ -212,6 +215,8 @@ export function useSchedule() {
 
     lastLoadedCourseRef.current = course;
     setSelectedCourse(course);
+    setCourseCurriculum(null);
+    setCourseContents(null);
     try {
       localStorage.setItem('selectedCourse', course);
     } catch {}
@@ -238,25 +243,12 @@ export function useSchedule() {
       setSelectedProfile('all');
     }
 
-    // Buscar os semestres disponíveis do curso
-    const applyFallbackSemesters = (courseId: string) => {
-      const meta = (initialCoursesRegistry as any[]).find(c => c.id === courseId);
-      const activeSemesters = (meta?.visibleSemesters && Array.isArray(meta.visibleSemesters) && meta.visibleSemesters.length > 0)
-        ? meta.visibleSemesters
-        : (meta?.semesters && Array.isArray(meta.semesters) && meta.semesters.length > 0 ? meta.semesters : ['2026.1']);
-      if (activeSemesters && activeSemesters.length > 0) {
-        setAvailableSemesters(activeSemesters);
-        if (!activeSemesters.includes(selectedSemester)) {
-          const defaultSem = activeSemesters[0] || '2026.1';
-          setSelectedSemester(defaultSem);
-          lastLoadedSemesterRef.current = defaultSem;
-        }
-      }
-    };
-
-    fetch(`/api/courses/${course}`)
+    // Buscar os semestres e o currículo publicados pela fonte ativa.
+    apiFetch(`/api/courses/${course}`)
       .then(res => res.ok ? res.json() : null)
       .then(data => {
+        setCourseCurriculum(data?.curriculum || null);
+        setCourseContents(data?.contents || null);
         const activeSemesters = (data?.course?.visibleSemesters && Array.isArray(data.course.visibleSemesters) && data.course.visibleSemesters.length > 0)
           ? data.course.visibleSemesters
           : (data?.course?.semesters && Array.isArray(data.course.semesters) && data.course.semesters.length > 0 ? data.course.semesters : null);
@@ -273,36 +265,30 @@ export function useSchedule() {
               setSchedule([]);
             }
           }
-        } else {
-          applyFallbackSemesters(course);
-        }
+        } else setAvailableSemesters([]);
       })
       .catch(() => {
-        applyFallbackSemesters(course);
+        setCourseCurriculum(null);
+        setCourseContents(null);
+        setAvailableSemesters([]);
       });
   };
 
   useEffect(() => {
     if (selectedCourse) {
-      fetch(`/api/courses/${selectedCourse}?semester=${selectedSemester}`)
+      apiFetch(`/api/courses/${selectedCourse}?semester=${selectedSemester}`)
         .then(res => res.ok ? res.json() : null)
         .then(data => {
+          setCourseCurriculum(data?.curriculum || null);
+          setCourseContents(data?.contents || null);
           const activeSemesters = (data?.course?.visibleSemesters && Array.isArray(data.course.visibleSemesters) && data.course.visibleSemesters.length > 0)
             ? data.course.visibleSemesters
             : (data?.course?.semesters && Array.isArray(data.course.semesters) && data.course.semesters.length > 0 ? data.course.semesters : null);
           if (activeSemesters && activeSemesters.length > 0) {
             setAvailableSemesters(activeSemesters);
-          } else {
-            const meta = (initialCoursesRegistry as any[]).find(c => c.id === selectedCourse);
-            const fallback = meta?.visibleSemesters || meta?.semesters;
-            if (fallback?.length) setAvailableSemesters(fallback);
-          }
+          } else setAvailableSemesters([]);
         })
-        .catch(() => {
-          const meta = (initialCoursesRegistry as any[]).find(c => c.id === selectedCourse);
-          const fallback = meta?.visibleSemesters || meta?.semesters;
-          if (fallback?.length) setAvailableSemesters(fallback);
-        });
+        .catch(() => { setCourseCurriculum(null); setCourseContents(null); setAvailableSemesters([]); });
     }
   }, [selectedCourse]);
 
@@ -555,9 +541,11 @@ export function useSchedule() {
 
   const loadCourseSchedule = async (courseId: string, semester: string) => {
     try {
-      const res = await fetch(`/api/courses/${courseId}?semester=${semester}`);
+      const res = await apiFetch(`/api/courses/${courseId}?semester=${semester}`);
       if (res.ok) {
         const data = await res.json();
+        setCourseCurriculum(data?.curriculum || null);
+        setCourseContents(data?.contents || null);
         const activeSemesters = (data.course?.visibleSemesters && Array.isArray(data.course.visibleSemesters) && data.course.visibleSemesters.length > 0)
           ? data.course.visibleSemesters
           : (data.course?.semesters && Array.isArray(data.course.semesters) && data.course.semesters.length > 0 ? data.course.semesters : null);
@@ -610,69 +598,21 @@ export function useSchedule() {
 
     const loaded = await loadCourseSchedule(type, sem);
     if (!loaded) {
-      let fallbackList: Discipline[] = [];
-      if (type === 'eal' || type === 'engenharia-de-alimentos') {
-        fallbackList = (sem === '2026.2' ? eal2026_2 : eal2026_1).map(sanitizeDiscipline);
-        setDisciplinesList(fallbackList);
-        setGradeTitle(`EAL - Engenharia de Alimentos - Período ${sem}`);
-      } else if (type === 'adm') {
-        fallbackList = adm2026_1.map(sanitizeDiscipline);
-        setDisciplinesList(fallbackList);
-        setGradeTitle(`ADM - Administração - Período ${sem}`);
-      } else if (type === 'bcc') {
-        fallbackList = bcc2026_1.map(sanitizeDiscipline);
-        setDisciplinesList(fallbackList);
-        setGradeTitle(`BCC - Bacharelado em Ciência da Computação - Período ${sem}`);
-      } else if (type === 'medicina-veterinaria' || type === 'mvet') {
-        fallbackList = mvet2026_1.map(sanitizeDiscipline);
-        setDisciplinesList(fallbackList);
-        setGradeTitle(`MVET - Medicina Veterinária - Período ${sem}`);
-      }
-
-      const meta = (initialCoursesRegistry as any[]).find(c => c.id === type);
-      const activeSemesters = (meta?.visibleSemesters && meta.visibleSemesters.length > 0)
-        ? meta.visibleSemesters
-        : (meta?.semesters && meta.semesters.length > 0 ? meta.semesters : ['2026.1']);
-      setAvailableSemesters(activeSemesters);
-
-      const stored = localStorage.getItem(`schedule_${type}_${sem}`) || (sem === '2026.1' ? localStorage.getItem(`schedule_${type}`) : null);
-      let parsedSchedule: Discipline[] = stored ? JSON.parse(stored).map(sanitizeDiscipline) : [];
-
-      if (fallbackList.length > 0 && parsedSchedule.length > 0) {
-        const validIds = new Set(fallbackList.map(d => d.id));
-        const validCodes = new Set(fallbackList.map(d => d.code).filter(Boolean));
-        const cleanSchedule = parsedSchedule.filter(d => validIds.has(d.id) || (d.code && validCodes.has(d.code)));
-        if (cleanSchedule.length !== parsedSchedule.length) {
-          parsedSchedule = cleanSchedule;
-          try {
-            localStorage.setItem(`schedule_${type}_${sem}`, JSON.stringify(cleanSchedule));
-            if (sem === '2026.1') {
-              localStorage.setItem(`schedule_${type}`, JSON.stringify(cleanSchedule));
-            }
-          } catch {}
-        }
-      }
-
-      lastLoadedCourseRef.current = type;
-      lastLoadedSemesterRef.current = sem;
-      setSchedule(parsedSchedule);
+      setDisciplinesList([]);
+      setGradeTitle('');
+      setSchedule([]);
     }
-    
+
     setSelectedPeriod(1);
     try {
       const storedProf = localStorage.getItem(`selected_profile_${type}`);
-      if (storedProf && storedProf !== 'todos') {
-        setSelectedProfile(storedProf);
-      } else {
-        setSelectedProfile('all');
-      }
+      setSelectedProfile(storedProf && storedProf !== 'todos' ? storedProf : 'all');
     } catch {
       setSelectedProfile('all');
     }
     setSearchQuery('');
     setView('schedule');
   };
-
   const handleSemesterChange = async (newSemester: string) => {
     setSelectedSemester(newSemester);
     localStorage.setItem('selectedSemester', newSemester);
@@ -703,7 +643,7 @@ export function useSchedule() {
       
       const base64Data = await base64Promise;
 
-      const response = await fetch("/api/extract-schedule", {
+      const response = await apiFetch("/api/extract-schedule", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -909,6 +849,8 @@ export function useSchedule() {
     isDisciplineScheduled,
     detailsDiscipline,
     setDetailsDiscipline,
+    courseCurriculum,
+    courseContents,
     savedGrades,
     loadSavedGrade,
     removeSavedGrade,

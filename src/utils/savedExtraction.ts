@@ -33,13 +33,14 @@ export async function extractionResponse(response: Response) {
 
 export async function prepareExtraction(saved: SavedExtraction, input: unknown, signal: AbortSignal) {
   persistSavedExtraction(saved);
-  return extractionResponse(await fetch('/api/extraction-jobs', { method: 'POST',
+  return extractionResponse(await apiFetch('/api/extraction-jobs', { method: 'POST',
     headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: saved.token, mode: saved.mode, input }), signal }));
 }
 
 export async function resumeExtraction(saved: SavedExtraction, signal: AbortSignal) {
   const endpoint = saved.mode === 'tree' ? 'extract-curriculum-tree' : saved.mode === 'linear' ? 'extract-curriculum' : 'extract-schedule';
-  return extractionResponse(await fetch(`/api/${endpoint}`, { method: 'POST',
+  return extractionResponse(await apiFetch(`/api/${endpoint}`, { method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ resumeToken: saved.token, model: saved.model }), signal }));
 }
+import { apiFetch } from './api';

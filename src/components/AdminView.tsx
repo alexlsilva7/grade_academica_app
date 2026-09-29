@@ -28,6 +28,8 @@ import { ScheduleEditModal } from './admin/ScheduleEditModal';
 import { TreeNodeEditModal } from './admin/TreeNodeEditModal';
 import { ProfileMetaEditModal } from './admin/ProfileMetaEditModal';
 import { DeleteConfirmModal } from './admin/DeleteConfirmModal';
+import { DataMigration } from './admin/DataMigration';
+import { apiFetch } from '../utils/api';
 
 interface AdminViewProps {
   setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines' | 'admin') => void;
@@ -327,7 +329,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
     const version = ++semesterLoadVersion.current;
     setIsLoadingSemester(true); setErrorMsg(null);
     try {
-      const response = await fetch(`/api/courses/${courseManager.selectedCourseId}?semester=${encodeURIComponent(semester)}&strict=true`);
+      const response = await apiFetch(`/api/courses/${courseManager.selectedCourseId}?semester=${encodeURIComponent(semester)}&strict=true`);
       if (!response.ok) throw new Error('Não foi possível carregar a oferta.');
       const data = await response.json();
       if (version !== semesterLoadVersion.current) return;
@@ -353,7 +355,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
     const id = courseManager.isCreatingNewCourse ? name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') : courseManager.selectedCourseId;
     if (!id || (courseManager.isCreatingNewCourse && courseManager.courses.some(course => course.id === id))) { setErrorMsg('Já existe um curso com este identificador ou o nome é inválido.'); return false; }
     const request = async (url: string, method: string, body: unknown) => {
-      const response = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const response = await apiFetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       const data = await response.json();
       if (!response.ok) throw new Error([data.error || 'Falha ao salvar.', ...(data.issues || []).map((issue: ExtractionIssue) => `${issue.record}: ${issue.message}`)].join(' '));
       return data;
@@ -608,10 +610,10 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
       }} />}
       <AdminSidebar courses={courseManager.courses} courseId={courseManager.selectedCourseId} creating={courseManager.isCreatingNewCourse} section={section} dirty={dirty} disabled={busy} onCourse={selectCourse} onSection={navigate} onBack={() => guardNavigation(() => setView('home'))} />
       <div className="flex-1 min-w-0 flex flex-col">
-      <AdminTopBar title={sectionInfo.label} description={sectionInfo.description} context={`${courseManager.courseShortName} · ${courseManager.courseName}`} saveLabel={saveDomain === 'settings' ? 'Salvar configurações' : saveDomain === 'schedule' ? `Salvar oferta${courseManager.scheduleSemester ? ' de ' + courseManager.scheduleSemester : ''}` : 'Salvar currículo'} dirty={dirty[saveDomain]} busy={busy || (!courseManager.isCreatingNewCourse && loadedCourseId !== courseManager.selectedCourseId)} onExportJsonFile={section === 'settings' ? undefined : jsonImportExport.handleExportJsonFile} onSaveToProject={() => void handleSaveToProject()} />
+      <AdminTopBar title={sectionInfo.label} description={sectionInfo.description} context={section === 'migration' ? 'Arquivos acadêmicos · Supabase' : `${courseManager.courseShortName} · ${courseManager.courseName}`} saveLabel={saveDomain === 'settings' ? 'Salvar configurações' : saveDomain === 'schedule' ? `Salvar oferta${courseManager.scheduleSemester ? ' de ' + courseManager.scheduleSemester : ''}` : 'Salvar currículo'} dirty={section === 'migration' ? false : dirty[saveDomain]} busy={section === 'migration' ? false : busy || (!courseManager.isCreatingNewCourse && loadedCourseId !== courseManager.selectedCourseId)} onExportJsonFile={section === 'settings' || section === 'migration' ? undefined : jsonImportExport.handleExportJsonFile} onSaveToProject={section === 'migration' ? undefined : () => void handleSaveToProject()} />
       <main ref={contentAreaRef} aria-labelledby="admin-section-title" className="flex-1 overflow-y-auto p-8 space-y-6">
         {/* Notifications and Banners */}
-        <NotificationBanners
+        {section !== 'migration' && <NotificationBanners
           extractionReport={section === 'import' ? jsonImportExport.extractionReport : null}
           activeMode={activeMode}
           disciplines={disciplines}
@@ -625,10 +627,10 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
           courseShortName={courseManager.courseShortName}
           onAcceptDifferentCourse={() => selectCourse('__new__')}
           onDismissDifferentCourse={() => courseManager.setDetectedDifferentCourse(null)}
-        />
+        />}
 
-        {courseManager.isLoadingCourse && <p role="status">Carregando curso…</p>}
-        {!courseManager.isLoadingCourse && !courseManager.isCreatingNewCourse && loadedCourseId !== courseManager.selectedCourseId && <button className="admin-primary" onClick={() => void courseManager.loadCourseData(courseManager.selectedCourseId)}>Tentar carregar novamente</button>}
+        {section !== 'migration' && courseManager.isLoadingCourse && <p role="status">Carregando curso…</p>}
+        {section !== 'migration' && !courseManager.isLoadingCourse && !courseManager.isCreatingNewCourse && loadedCourseId !== courseManager.selectedCourseId && <button className="admin-primary" onClick={() => void courseManager.loadCourseData(courseManager.selectedCourseId)}>Tentar carregar novamente</button>}
         <fieldset disabled={busy} hidden={!courseManager.isCreatingNewCourse && loadedCourseId !== courseManager.selectedCourseId} className="space-y-6 min-w-0 disabled:opacity-60">
           {section === 'settings' && <CourseSettings name={courseManager.courseName} shortName={courseManager.courseShortName} visibility={visibility} semesters={currentMeta?.semesters || []} creating={courseManager.isCreatingNewCourse} onName={courseManager.setCourseName} onShortName={courseManager.setCourseShortName} onVisibility={setVisibility} onDelete={() => courseManager.setShowDeleteCourseModal(true)} />}
           {section === 'profiles' && <ProfileSection profiles={courseProfiles} nodes={extractedTreeSubjects} onAdd={profileManager.handleAddNewProfile} onEdit={profile => { setExtractedProfile(profile); profileManager.setEditProfileMeta({ ...profile }); profileManager.setIsEditingProfileMeta(true); }} onDelete={requestDeleteProfile} onStructure={id => { profileManager.handleSelectProfileToReview(id); navigate('structure'); }} />}
@@ -691,6 +693,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
           </>}
 
         </fieldset>
+        {section === 'migration' && <DataMigration />}
       </main>
       </div>
     </div>

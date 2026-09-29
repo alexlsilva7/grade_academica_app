@@ -10,10 +10,12 @@ import { MobileNav } from './components/MobileNav';
 import { DisciplineDetailsModal } from './components/DisciplineDetailsModal';
 import { AnimatePresence } from 'motion/react';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 import { Navbar } from './components/Navbar';
 import { canAccessAdmin } from './utils/domain';
 import { ScheduleTour } from './components/ScheduleTour';
 import { ScheduleImageModal } from './components/ScheduleImageModal';
+import { AdminAccess } from './components/admin/AdminAccess';
 
 export default function App() {
   const scheduleProps = useSchedule();
@@ -59,11 +61,13 @@ export default function App() {
           setSelectedProfile={scheduleProps.setSelectedProfile}
         />
       ) : (scheduleProps.view === 'admin' && canAccessAdmin()) ? (
-        <AdminView
-          setView={scheduleProps.setView}
-          setDisciplinesList={scheduleProps.setDisciplinesList}
-          setGradeTitle={scheduleProps.setGradeTitle}
-        />
+        <AdminAccess onBack={() => scheduleProps.setView('home')}>
+          <AdminView
+            setView={scheduleProps.setView}
+            setDisciplinesList={scheduleProps.setDisciplinesList}
+            setGradeTitle={scheduleProps.setGradeTitle}
+          />
+        </AdminAccess>
       ) : scheduleProps.view === 'disciplines' ? (
         <DisciplinesView
           setView={scheduleProps.setView}
@@ -114,6 +118,8 @@ export default function App() {
               themePreference={scheduleProps.themePreference}
               cycleTheme={scheduleProps.cycleTheme}
               onOpenTour={() => setIsScheduleTourOpen(true)}
+              curriculum={scheduleProps.courseCurriculum}
+              contents={scheduleProps.courseContents}
             />
             <ScheduleGrid 
               mobileTab={scheduleProps.mobileTab}
@@ -123,6 +129,8 @@ export default function App() {
               onShowDetails={scheduleProps.setDetailsDiscipline}
               onOpenTour={() => setIsScheduleTourOpen(true)}
               onExportImage={() => setIsImageModalOpen(true)}
+              curriculum={scheduleProps.courseCurriculum}
+              contents={scheduleProps.courseContents}
             />
           </div>
           
@@ -134,6 +142,8 @@ export default function App() {
                 completedDisciplines={scheduleProps.completedDisciplines}
                 toggleCompleted={scheduleProps.toggleCompleted}
                 getDisciplineConflictInstance={scheduleProps.getDisciplineConflictInstance}
+                curriculum={scheduleProps.courseCurriculum}
+                contents={scheduleProps.courseContents}
               />
             )}
           </AnimatePresence>
@@ -180,6 +190,8 @@ export default function App() {
           </div>
         </div>
       )}
+
+      <Analytics />
     </>
   );
 }

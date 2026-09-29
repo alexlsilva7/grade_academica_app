@@ -1,10 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Navbar } from './Navbar';
 import { Search, Filter, BookOpen, Clock, Info } from 'lucide-react';
-import bccData from '../data/bcc/curriculo_bcc.json';
-import ealData from '../data/eal/curriculo_eal.json';
-import admData from '../data/adm/curriculo_adm.json';
-import mvetData from '../data/medicina-veterinaria/curriculo_medicina-veterinaria.json';
+import { apiFetch } from '../utils/api';
 
 interface DisciplinesViewProps {
   setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines') => void;
@@ -39,6 +36,7 @@ export function DisciplinesView({
   const [selectedDiscipline, setSelectedDiscipline] = useState<any | null>(null);
 
   const [dynamicData, setDynamicData] = useState<any | null>(null);
+  const [contentsData, setContentsData] = useState<any | null>(null);
 
   React.useEffect(() => {
     if (course) {
@@ -54,25 +52,27 @@ export function DisciplinesView({
         setSelectedProfile('todos');
       }
 
-      fetch(`/api/courses/${course}`)
+      setDynamicData(null);
+      setContentsData(null);
+      apiFetch(`/api/courses/${course}`)
         .then(res => res.json())
         .then(data => {
           if (data.curriculum) {
             setDynamicData(data.curriculum);
-          } else if (data.schedule) {
-            setDynamicData(data.schedule);
-          }
+          } else setDynamicData(null);
+          setContentsData(data.contents || null);
         })
         .catch(() => {});
     }
   }, [course]);
 
-  const activeData: any = dynamicData || (
-    (course === 'eal' || course === 'engenharia-de-alimentos') ? ealData :
-    course === 'adm' ? admData :
-    (course === 'medicina-veterinaria' || course === 'mvet') ? mvetData :
-    bccData
-  );
+  const activeData: any = dynamicData;
+
+  const selectedContent = selectedDiscipline && Array.isArray(contentsData?.disciplinas)
+    ? contentsData.disciplinas.find((item: any) =>
+      (selectedDiscipline.code && item.codigo?.toUpperCase() === selectedDiscipline.code.toUpperCase())
+      || (item.nome || '').toLowerCase() === (selectedDiscipline.name || '').toLowerCase())
+    : null;
 
   const subjects: any[] = useMemo(() => {
     if (!activeData) return [];
@@ -328,6 +328,13 @@ export function DisciplinesView({
                   <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
                     {selectedDiscipline.ementa}
                   </p>
+                </div>
+              )}
+
+              {selectedContent?.conteudo_programatico && (
+                <div>
+                  <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-2 uppercase tracking-wide">Conteúdo programático</h4>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">{selectedContent.conteudo_programatico}</p>
                 </div>
               )}
 

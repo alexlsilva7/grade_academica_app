@@ -75,4 +75,5 @@
   .admin-panel { @apply rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6; }
   .admin-input { @apply block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm; }
   .admin-primary { @apply rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-sm font-semibold disabled:opacity-50; }
+  .admin-secondary { @apply rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 px-4 py-2 text-sm font-semibold disabled:opacity-50; }
 }

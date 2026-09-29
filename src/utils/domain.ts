@@ -18,9 +18,11 @@ export function isProduction(): boolean {
   );
 }
 
-/**
- * O painel administrativo e suas ações só existem estritamente na máquina local (localhost).
- */
 export function canAccessAdmin(): boolean {
-  return isLocalhost();
+  return isLocalhost() || hasSupabaseBrowserConfig;
 }
+
+export function canManageHomeCourses(): boolean {
+  return isLocalhost() && !hasSupabaseBrowserConfig;
+}
+import { hasSupabaseBrowserConfig } from './supabaseClient';
