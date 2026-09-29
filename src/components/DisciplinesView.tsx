@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Navbar } from './Navbar';
-import { Search, Filter, BookOpen, Clock, Info } from 'lucide-react';
+import { Search, Filter, BookOpen, Clock, Info, Loader2 } from 'lucide-react';
 import { apiFetch } from '../utils/api';
 
 interface DisciplinesViewProps {
@@ -39,6 +39,7 @@ export function DisciplinesView({
   const [contentsData, setContentsData] = useState<any | null>(null);
   const [dataSources, setDataSources] = useState<string[]>([]);
   const [dataUpdatedAt, setDataUpdatedAt] = useState<string | null>(null);
+  const [loadStatus, setLoadStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
   React.useEffect(() => {
     let cancelled = false;
@@ -59,6 +60,7 @@ export function DisciplinesView({
       setContentsData(null);
       setDataSources([]);
       setDataUpdatedAt(null);
+      setLoadStatus('loading');
       apiFetch(`/api/courses/${course}?include=curriculum,contents`)
         .then(res => {
           if (!res.ok) throw new Error('Não foi possível carregar o catálogo do curso.');
@@ -73,10 +75,13 @@ export function DisciplinesView({
           const sources = data.curriculum?.extraction?.sources;
           setDataSources(Array.isArray(sources) ? sources.filter((source: unknown): source is string => typeof source === 'string') : []);
           setDataUpdatedAt(typeof data.curriculum?.export_date === 'string' ? data.curriculum.export_date : null);
+          setLoadStatus('ready');
         })
         .catch(() => {
-          if (!cancelled) { setDynamicData(null); setContentsData(null); setDataSources([]); setDataUpdatedAt(null); }
+          if (!cancelled) { setDynamicData(null); setContentsData(null); setDataSources([]); setDataUpdatedAt(null); setLoadStatus('error'); }
         });
+    } else {
+      setLoadStatus('ready');
     }
     return () => { cancelled = true; };
   }, [course]);
@@ -279,9 +284,13 @@ export function DisciplinesView({
                 </div>
               ))}
               {filteredSubjects.length === 0 && (
-                <div className="col-span-full py-12 text-center text-slate-500 dark:text-slate-400">
-                  <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                  <p>Nenhuma disciplina encontrada com esses filtros.</p>
+                <div role={loadStatus === 'ready' ? undefined : 'status'} className="col-span-full py-12 text-center text-slate-500 dark:text-slate-400">
+                  {loadStatus === 'loading' ? <Loader2 className="w-9 h-9 mx-auto mb-4 animate-spin text-indigo-500" />
+                    : <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-20" />}
+                  <p>{loadStatus === 'loading' ? 'Carregando disciplinas…'
+                    : loadStatus === 'error' ? 'Não foi possível carregar as disciplinas. Atualize a página para tentar novamente.'
+                      : subjects.length === 0 ? 'Nenhuma disciplina disponível para este curso.'
+                        : 'Nenhuma disciplina encontrada com esses filtros.'}</p>
                 </div>
               )}
             </div>

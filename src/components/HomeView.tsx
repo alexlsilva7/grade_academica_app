@@ -32,18 +32,24 @@ export function HomeView({
 }: HomeViewProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [courses, setCourses] = useState<CourseMeta[]>([]);
+  const [coursesStatus, setCoursesStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [courseProfiles, setCourseProfiles] = useState<string[]>([]);
   const [isVisibilityModalOpen, setIsVisibilityModalOpen] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     apiFetch('/api/courses')
-      .then(res => res.json())
-      .then(data => {
-        if (data.courses && Array.isArray(data.courses) && data.courses.length > 0) {
-          setCourses(data.courses);
-        }
+      .then(res => {
+        if (!res.ok) throw new Error('Não foi possível carregar os cursos.');
+        return res.json();
       })
-      .catch(() => {});
+      .then(data => {
+        if (cancelled) return;
+        setCourses(Array.isArray(data.courses) ? data.courses : []);
+        setCoursesStatus('ready');
+      })
+      .catch(() => { if (!cancelled) setCoursesStatus('error'); });
+    return () => { cancelled = true; };
   }, []);
 
   // Fetch available profiles for the selected course
@@ -176,9 +182,9 @@ export function HomeView({
     (selectedCourse === 'mvet' && c.id === 'medicina-veterinaria') ||
     (selectedCourse === 'medicina-veterinaria' && c.id === 'mvet')
   );
-  const showSchedule = currentCourseMeta?.showSchedule !== false;
-  const showDisciplines = currentCourseMeta?.showDisciplines !== false;
-  const showMatriz = currentCourseMeta?.showMatriz !== false;
+  const showSchedule = coursesStatus === 'ready' && currentCourseMeta?.showSchedule !== false;
+  const showDisciplines = coursesStatus === 'ready' && currentCourseMeta?.showDisciplines !== false;
+  const showMatriz = coursesStatus === 'ready' && currentCourseMeta?.showMatriz !== false;
   const hasCurriculum = currentCourseMeta?.hasCurriculum ?? (selectedCourse === 'bcc' || selectedCourse === 'eal' || selectedCourse === 'engenharia-de-alimentos' || selectedCourse === 'medicina-veterinaria' || selectedCourse === 'adm');
   const courseDisplayName = currentCourseMeta ? currentCourseMeta.name : (
     selectedCourse === 'bcc' ? 'Ciência da Computação' :
@@ -290,8 +296,10 @@ export function HomeView({
                 ))}
 
                 {visibleCourses.length === 0 && (
-                  <div className="col-span-full p-6 text-center text-slate-400 dark:text-slate-500 text-sm">
-                    Nenhum curso disponível no momento.
+                  <div role={coursesStatus === 'ready' ? undefined : 'status'} className="col-span-full p-6 text-center text-slate-400 dark:text-slate-500 text-sm">
+                    {coursesStatus === 'loading' ? <span className="inline-flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" />Carregando cursos…</span>
+                      : coursesStatus === 'error' ? 'Não foi possível carregar os cursos. Atualize a página para tentar novamente.'
+                        : 'Nenhum curso disponível no momento.'}
                   </div>
                 )}
               </div>
@@ -350,7 +358,7 @@ export function HomeView({
                 </div>
 
                 {/* Profile selection dropdown if course has more than one profile */}
-                {courseProfiles.length > 1 && (
+                {isLocalhost() && courseProfiles.length > 1 && (
                   <div className="flex flex-col sm:items-end gap-1.5 w-full sm:w-auto bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200 dark:border-slate-700/60 shadow-xs animate-in fade-in">
                     <label htmlFor="course-profile-select" className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
                       <Layers className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
@@ -473,8 +481,10 @@ export function HomeView({
                 )}
 
                 {!showSchedule && !showDisciplines && !showMatriz && (
-                  <div className="col-span-full p-8 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-2xl text-center text-slate-500 dark:text-slate-400 text-sm">
-                    Nenhum módulo está disponível para este curso no momento.
+                  <div role={coursesStatus === 'ready' ? undefined : 'status'} className="col-span-full p-8 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-2xl text-center text-slate-500 dark:text-slate-400 text-sm">
+                    {coursesStatus === 'loading' ? <span className="inline-flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" />Carregando dados do curso…</span>
+                      : coursesStatus === 'error' ? 'Não foi possível carregar os dados do curso. Atualize a página para tentar novamente.'
+                        : 'Nenhum módulo está disponível para este curso no momento.'}
                   </div>
                 )}
 
