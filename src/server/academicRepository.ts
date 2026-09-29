@@ -315,19 +315,20 @@ export class SupabaseAcademicRepository implements AcademicRepository {
 
   async listCourses(): Promise<CourseMeta[]> {
     const courses = await this.readCourseRows();
-    const [curriculumResult, scheduleResult] = await Promise.all([
-      this.client.from('course_curricula').select('course_id,data'),
-      this.client.from('course_schedules').select('course_id,semester,data')
-    ]);
-    throwSupabaseError(curriculumResult.error);
+    // The course row already stores profile metadata. The catalog needs only
+    // semester identifiers; avoid transferring curricula and timetable JSONB.
+    const scheduleResult = await this.client.from('course_schedules').select('course_id,semester');
     throwSupabaseError(scheduleResult.error);
+    const semestersByCourse = new Map<string, Set<string>>();
+    for (const row of scheduleResult.data || []) {
+      const semesters = semestersByCourse.get(row.course_id) || new Set<string>();
+      semesters.add(row.semester);
+      semestersByCourse.set(row.course_id, semesters);
+    }
     return courses.map(course => {
-      const curriculum = curriculumResult.data?.find((row: any) => row.course_id === course.id)?.data;
-      const schedules = (scheduleResult.data || []).filter((row: any) => row.course_id === course.id);
       return {
         ...course,
-        profiles: mergeProfiles(course.profiles || [], extractProfilesFromCurriculum(curriculum), ...schedules.map((row: any) => extractProfilesFromSchedule(row.data))),
-        semesters: Array.from(new Set([...(course.semesters || []), ...schedules.map((row: any) => row.semester)])).sort()
+        semesters: Array.from(new Set([...(course.semesters || []), ...(semestersByCourse.get(course.id) || [])])).sort()
       };
     });
   }
@@ -336,22 +337,28 @@ export class SupabaseAcademicRepository implements AcademicRepository {
     const courses = await this.readCourseRows();
     const course = matchCourse(courses, identifier);
     if (!course) return null;
-    const [curriculumResult, contentsResult, schedulesResult] = await Promise.all([
+    const [curriculumResult, contentsResult, semestersResult] = await Promise.all([
       this.client.from('course_curricula').select('data').eq('course_id', course.id).maybeSingle(),
       this.client.from('course_contents').select('data').eq('course_id', course.id).maybeSingle(),
-      this.client.from('course_schedules').select('semester,data,extraction').eq('course_id', course.id).order('semester')
+      this.client.from('course_schedules').select('semester').eq('course_id', course.id).order('semester')
     ]);
     throwSupabaseError(curriculumResult.error);
     throwSupabaseError(contentsResult.error);
-    throwSupabaseError(schedulesResult.error);
-    const schedules = schedulesResult.data || [];
-    const semesters = schedules.map((row: any) => row.semester);
+    throwSupabaseError(semestersResult.error);
+    const semesters = (semestersResult.data || []).map((row: any) => row.semester);
     const updatedCourse = { ...course, semesters: Array.from(new Set([...(course.semesters || []), ...semesters])).sort() };
-    let selected = requestedSemester ? schedules.find((row: any) => row.semester === requestedSemester) : undefined;
-    if (!selected && !(requestedSemester && strict)) {
+    let selectedSemester = requestedSemester && semesters.includes(requestedSemester) ? requestedSemester : undefined;
+    if (!selectedSemester && !(requestedSemester && strict)) {
       const defaultSemester = updatedCourse.visibleSemesters?.[0] || updatedCourse.semesters?.[0];
-      selected = schedules.find((row: any) => row.semester === defaultSemester) || schedules[schedules.length - 1];
+      selectedSemester = semesters.includes(defaultSemester || '')
+        ? defaultSemester
+        : semesters[semesters.length - 1];
     }
+    const scheduleResult = selectedSemester
+      ? await this.client.from('course_schedules').select('semester,data,extraction').eq('course_id', course.id).eq('semester', selectedSemester).maybeSingle()
+      : { data: null, error: null };
+    throwSupabaseError(scheduleResult.error);
+    const selected = scheduleResult.data;
     const schedule = selected?.data ?? null;
     const profiles = mergeProfiles(
       updatedCourse.profiles || [],
@@ -365,7 +372,7 @@ export class SupabaseAcademicRepository implements AcademicRepository {
       contents: contentsResult.data?.data ?? null,
       schedule,
       scheduleExtraction: selected?.extraction ?? null,
-      resolvedSemester: schedule ? (requestedSemester && strict ? requestedSemester : selected?.semester ?? null) : null
+      resolvedSemester: schedule ? selected?.semester ?? null : null
     };
   }
 
