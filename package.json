@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "start": "node dist/server.cjs",
     "clean": "rm -rf dist",
+    "cleanup:extraction": "tsx scripts/cleanupExtractionState.ts",
     "lint": "tsc --noEmit",
     "test": "node --import tsx tests/runner.ts"
   },
