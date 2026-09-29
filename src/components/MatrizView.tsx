@@ -26,9 +26,16 @@ import { motion } from 'motion/react';
 import { CurriculumProfile } from '../types';
 import { apiFetch } from '../utils/api';
 import { MatrizTour } from './MatrizTour';
+import { applyMatrixProgressImport, completedDisciplinesKey, matrixProgressKey, readStoredHours, restoreMatrixSubjects } from '../utils/matrixProgress';
+
+function prerequisiteValues(source: any): unknown {
+  if (Object.prototype.hasOwnProperty.call(source, 'prereqs')) return source.prereqs;
+  if (Object.prototype.hasOwnProperty.call(source, 'prerequisites')) return source.prerequisites;
+  return null;
+}
 
 function mapSubject(source: any, index: number): any {
-  const requirements = source.prereqs ?? source.prerequisites;
+  const requirements = prerequisiteValues(source);
   return {
     id: source.id || source.code || `subject_${index}`,
     code: source.code,
@@ -36,7 +43,7 @@ function mapSubject(source: any, index: number): any {
     hours: source.hours ?? source.workload?.total ?? source.workload?.total_hours ?? null,
     period: source.period == null ? 0 : source.period === 'Optativa' ? 0 : Number(source.period),
     type: source.type?.toLowerCase().includes('opt') ? 'optativa' : (source.type || 'computacao'),
-    prereqs: Array.isArray(requirements) ? requirements.map((item: any) => typeof item === 'string' ? item : item.id || item.code || item.name).filter(Boolean) : [],
+    prereqs: Array.isArray(requirements) ? requirements.map((item: any) => typeof item === 'string' ? item : item.id || item.code || item.name).filter(Boolean) : null,
     desc: source.desc || source.ementa || '',
   };
 }
@@ -50,13 +57,13 @@ function mapProfileSubjects(sources: any[]): any[] {
     }
   });
   return mapped.map((subject, index) => {
-    const requirements = sources[index].prereqs ?? sources[index].prerequisites;
+    const requirements = prerequisiteValues(sources[index]);
     return {
       ...subject,
       prereqs: Array.isArray(requirements) ? requirements.map((item: any) => {
         const ref = typeof item === 'string' ? item : item.id || item.code || item.name;
         return typeof ref === 'string' ? ids.get(ref.trim().toLowerCase()) || ref : null;
-      }).filter(Boolean) : []
+      }).filter(Boolean) : null
     };
   });
 }
@@ -92,7 +99,7 @@ interface Subject {
   hours: number | null;
   period: number;
   type: string;
-  prereqs: string[];
+  prereqs: string[] | null;
   desc: string;
   status: 'pendente' | 'cursando' | 'concluido';
   grade: string;
@@ -153,6 +160,7 @@ export function MatrizView({
           || profiles[0]?.id
           || '';
         setActiveProfileId(selected);
+        if (selectedProfile === 'all' && selected) setSelectedProfile?.(selected);
       } catch (error) {
         if (!isCancelled) {
           setAvailableProfiles([]);
@@ -179,76 +187,66 @@ export function MatrizView({
   }, [availableProfiles, activeProfileId, loadedCourseName]);
   // Carregar disciplinas com estado a partir do perfil ativo e localStorage
   const [subjects, setSubjects] = useState<Subject[]>([]);
+  const currentProgressKey = matrixProgressKey(course, activeProfile.id);
+  const [hydratedProgressKey, setHydratedProgressKey] = useState('');
 
   // Recarregar disciplinas e progresso quando perfil ativo mudar
   useEffect(() => {
     if (!availableProfiles.some(profile => profile.id === activeProfile.id) || !activeProfile.subjects) return;
-    const key = `${course || 'bcc'}_matriz_progress_${activeProfile.id}`;
-    const legacyKey = activeProfile.id === 'BCC02' ? 'bcc_matriz_progress_antiga' : 'bcc_matriz_progress';
+    const key = matrixProgressKey(course, activeProfile.id);
+    const legacyKey = activeProfile.id === 'BCC02' || activeProfile.id === 'antiga' ? 'bcc_matriz_progress_antiga' : 'bcc_matriz_progress';
     const saved = localStorage.getItem(key) || ((course === 'bcc' || !course) ? localStorage.getItem(legacyKey) : null);
-    
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const merged = activeProfile.subjects.map(s => {
-            const existing = parsed.find((p: any) => p.id === s.id || (p.code && p.code === s.code));
-            return {
-              ...s,
-              status: existing ? existing.status : 'pendente',
-              grade: existing ? existing.grade : ''
-            };
-          });
-          setSubjects(merged);
-          return;
-        }
-      } catch {}
-    }
-
-    setSubjects(activeProfile.subjects.map(s => ({ ...s, status: 'pendente', grade: '' })));
+    setSubjects(restoreMatrixSubjects(activeProfile.subjects as Subject[], saved));
+    setHydratedProgressKey(key);
   }, [activeProfile, availableProfiles, course]);
 
   // Persistir progresso do perfil ativo no localStorage
   useEffect(() => {
     if (!availableProfiles.some(profile => profile.id === activeProfile.id)) return;
-    const key = `${course || 'bcc'}_matriz_progress_${activeProfile.id}`;
+    const key = currentProgressKey;
+    if (hydratedProgressKey !== key) return;
     try {
       localStorage.setItem(key, JSON.stringify(subjects));
-      
-      if (course === 'bcc' || !course) {
-        if (activeProfile.id === 'BCC03' || activeProfile.id === 'nova') {
-          localStorage.setItem('bcc_matriz_progress', JSON.stringify(subjects));
-          const completedList = subjects
-            .filter(s => s.status === 'concluido')
-            .map(s => s.code || s.id);
-          localStorage.setItem('completedDisciplines', JSON.stringify(completedList));
-        } else if (activeProfile.id === 'BCC02' || activeProfile.id === 'antiga') {
-          localStorage.setItem('bcc_matriz_progress_antiga', JSON.stringify(subjects));
-        }
+      const completedList = subjects.filter(subject => subject.status === 'concluido').map(subject => subject.code || subject.id);
+      localStorage.setItem(completedDisciplinesKey(course, activeProfile.id), JSON.stringify(completedList));
+      if ((course === 'bcc' || !course) && (activeProfile.id === 'BCC03' || activeProfile.id === 'nova')) {
+        localStorage.setItem('bcc_matriz_progress', JSON.stringify(subjects));
+        localStorage.setItem('completedDisciplines', JSON.stringify(completedList));
+      } else if ((course === 'bcc' || !course) && (activeProfile.id === 'BCC02' || activeProfile.id === 'antiga')) {
+        localStorage.setItem('bcc_matriz_progress_antiga', JSON.stringify(subjects));
       }
     } catch (e) {
       console.error('Falha ao salvar progresso da matriz', e);
     }
-  }, [subjects, activeProfile, availableProfiles, course]);
+  }, [subjects, activeProfile, availableProfiles, course, hydratedProgressKey]);
 
-  const [acexHours, setAcexHours] = useState(() => {
-    return Number(localStorage.getItem(`${course || 'bcc'}_acex_hours_${activeProfileId}`)) || Number(localStorage.getItem('bcc_acex_hours')) || 0;
-  });
-  const [accHours, setAccHours] = useState(() => {
-    return Number(localStorage.getItem(`${course || 'bcc'}_acc_hours_${activeProfileId}`)) || Number(localStorage.getItem('bcc_acc_hours')) || 0;
-  });
+  const [acexHours, setAcexHours] = useState(0);
+  const [accHours, setAccHours] = useState(0);
+  const [hydratedHoursKey, setHydratedHoursKey] = useState('');
 
   useEffect(() => {
     if (!availableProfiles.some(profile => profile.id === activeProfile.id)) return;
+    const key = `${course || 'bcc'}_${activeProfile.id}`;
+    const legacyAcex = (course === 'bcc' || !course) && (activeProfile.id === 'BCC03' || activeProfile.id === 'nova') ? 'bcc_acex_hours' : undefined;
+    const legacyAcc = (course === 'bcc' || !course) && (activeProfile.id === 'BCC03' || activeProfile.id === 'nova') ? 'bcc_acc_hours' : undefined;
+    setAcexHours(readStoredHours(localStorage, `${course || 'bcc'}_acex_hours_${activeProfile.id}`, legacyAcex));
+    setAccHours(readStoredHours(localStorage, `${course || 'bcc'}_acc_hours_${activeProfile.id}`, legacyAcc));
+    setHydratedHoursKey(key);
+  }, [course, activeProfile.id, availableProfiles]);
+
+  useEffect(() => {
+    if (!availableProfiles.some(profile => profile.id === activeProfile.id)) return;
+    if (hydratedHoursKey !== `${course || 'bcc'}_${activeProfile.id}`) return;
     localStorage.setItem(`${course || 'bcc'}_acex_hours_${activeProfile.id}`, acexHours.toString());
-    if (activeProfile.id === 'BCC03') localStorage.setItem('bcc_acex_hours', acexHours.toString());
-  }, [acexHours, activeProfile, availableProfiles, course]);
+    if ((course === 'bcc' || !course) && (activeProfile.id === 'BCC03' || activeProfile.id === 'nova')) localStorage.setItem('bcc_acex_hours', acexHours.toString());
+  }, [acexHours, activeProfile, availableProfiles, course, hydratedHoursKey]);
 
   useEffect(() => {
     if (!availableProfiles.some(profile => profile.id === activeProfile.id)) return;
+    if (hydratedHoursKey !== `${course || 'bcc'}_${activeProfile.id}`) return;
     localStorage.setItem(`${course || 'bcc'}_acc_hours_${activeProfile.id}`, accHours.toString());
-    if (activeProfile.id === 'BCC03') localStorage.setItem('bcc_acc_hours', accHours.toString());
-  }, [accHours, activeProfile, availableProfiles, course]);
+    if ((course === 'bcc' || !course) && (activeProfile.id === 'BCC03' || activeProfile.id === 'nova')) localStorage.setItem('bcc_acc_hours', accHours.toString());
+  }, [accHours, activeProfile, availableProfiles, course, hydratedHoursKey]);
 
   const handleSelectProfile = (profileId: string) => {
     setActiveProfileId(profileId);
@@ -284,18 +282,6 @@ export function MatrizView({
       return () => clearTimeout(timer);
     }
   }, []);
-
-  useEffect(() => {
-    if (course === 'bcc' || !course) {
-      localStorage.setItem('bcc_acex_hours', acexHours.toString());
-    }
-  }, [acexHours, course]);
-
-  useEffect(() => {
-    if (course === 'bcc' || !course) {
-      localStorage.setItem('bcc_acc_hours', accHours.toString());
-    }
-  }, [accHours, course]);
 
   // --- CÁLCULO DE RELAÇÕES ---
   const dependentsMap = useMemo(() => {
@@ -515,15 +501,16 @@ export function MatrizView({
     fileReader.readAsText(e.target.files[0], "UTF-8");
     fileReader.onload = (event) => {
       try {
-        const parsed = JSON.parse(event.target?.result as string);
-        if (parsed.subjects && Array.isArray(parsed.subjects)) {
-          setSubjects(parsed.subjects);
-          if (parsed.acexHours !== undefined) setAcexHours(parsed.acexHours);
-          if (parsed.accHours !== undefined) setAccHours(parsed.accHours);
-          alert("Progresso importado com sucesso!");
-        } else {
-          alert("Formato de ficheiro inválido.");
+        const parsed: unknown = JSON.parse(event.target?.result as string);
+        const restored = applyMatrixProgressImport(parsed, course || 'bcc', activeProfile.id, subjects);
+        if (!restored) {
+          alert("Este arquivo não corresponde ao curso e perfil abertos, ou tem um formato inválido.");
+          return;
         }
+        setSubjects(restored.subjects);
+        if (restored.acexHours !== undefined) setAcexHours(restored.acexHours);
+        if (restored.accHours !== undefined) setAccHours(restored.accHours);
+        alert("Progresso importado com sucesso!");
       } catch (err) {
         alert("Erro ao ler o ficheiro.");
       }

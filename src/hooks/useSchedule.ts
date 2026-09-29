@@ -4,6 +4,7 @@ import { TIMESLOTS } from '../constants';
 import { canAccessAdmin } from '../utils/domain';
 import { validateExtraction } from '../utils/extraction';
 import { apiFetch } from '../utils/api';
+import { completedDisciplinesKey, matrixProgressKey, setMatrixSubjectCompletion } from '../utils/matrixProgress';
 
 export interface SavedGrade {
   id: string;
@@ -329,29 +330,11 @@ export function useSchedule() {
     }
   }, [schedule, selectedCourse, selectedSemester]);
 
-  // Synchronize completed disciplines back when navigating to scheduling
-  useEffect(() => {
-    if (view === 'schedule') {
-      try {
-        const storedCompleted = localStorage.getItem('completedDisciplines');
-        if (storedCompleted) {
-          setCompletedDisciplines(JSON.parse(storedCompleted));
-        }
-      } catch (e) {
-        console.error('Failed to reload completedDisciplines on view change', e);
-      }
-    }
-  }, [view]);
-
   useEffect(() => {
     try {
       const stored = localStorage.getItem('savedGrades');
       if (stored) {
         setSavedGrades(JSON.parse(stored));
-      }
-      const storedCompleted = localStorage.getItem('completedDisciplines');
-      if (storedCompleted) {
-        setCompletedDisciplines(JSON.parse(storedCompleted));
       }
     } catch (e) {
       console.error('Failed to load from localStorage', e);
@@ -362,7 +345,10 @@ export function useSchedule() {
     setCompletedDisciplines(prev => {
       const isCompleted = prev.includes(disciplineId);
       const updated = isCompleted ? prev.filter(id => id !== disciplineId) : [...prev, disciplineId];
-      localStorage.setItem('completedDisciplines', JSON.stringify(updated));
+      localStorage.setItem(completedDisciplinesKey(selectedCourse, selectedProfile), JSON.stringify(updated));
+      if (selectedCourse === 'bcc' && (selectedProfile === 'BCC03' || selectedProfile === 'nova')) {
+        localStorage.setItem('completedDisciplines', JSON.stringify(updated));
+      }
 
       // Se estiver marcando como concluída, remove da grade de horários automaticamente
       if (!isCompleted) {
@@ -371,22 +357,22 @@ export function useSchedule() {
 
       // Synchronize with Matrix Curriculum Progress
       try {
-        const matrixSaved = localStorage.getItem('bcc_matriz_progress');
-        if (matrixSaved) {
-          const matrixSubjects = JSON.parse(matrixSaved);
-          const updatedMatrix = matrixSubjects.map((s: any) => {
-            const matchesCode = s.code && s.code === disciplineId;
-            const matchesId = s.id === disciplineId;
-            if (matchesCode || matchesId) {
-              return { 
-                ...s, 
-                status: isCompleted ? 'pendente' : 'concluido',
-                grade: isCompleted ? '' : s.grade
-              };
+        const discipline = disciplinesList.find(item => item.id === disciplineId || item.code === disciplineId);
+        const progressProfile = discipline?.profile || (selectedProfile === 'all' ? '' : selectedProfile);
+        if (progressProfile) {
+          const key = matrixProgressKey(selectedCourse, progressProfile);
+          const legacyKey = progressProfile === 'BCC02' ? 'bcc_matriz_progress_antiga' : 'bcc_matriz_progress';
+          const matrixSaved = localStorage.getItem(key)
+            || (selectedCourse === 'bcc' ? localStorage.getItem(legacyKey) : null);
+          const updatedMatrix = setMatrixSubjectCompletion(matrixSaved, disciplineId, !isCompleted);
+          if (updatedMatrix) {
+            localStorage.setItem(key, updatedMatrix);
+            if (selectedCourse === 'bcc' && (progressProfile === 'BCC03' || progressProfile === 'nova')) {
+              localStorage.setItem('bcc_matriz_progress', updatedMatrix);
+            } else if (selectedCourse === 'bcc' && (progressProfile === 'BCC02' || progressProfile === 'antiga')) {
+              localStorage.setItem('bcc_matriz_progress_antiga', updatedMatrix);
             }
-            return s;
-          });
-          localStorage.setItem('bcc_matriz_progress', JSON.stringify(updatedMatrix));
+          }
         }
       } catch (e) {
         console.error('Failed to sync completed discipline with matrix progress', e);
@@ -449,7 +435,7 @@ export function useSchedule() {
     try {
       const course = localStorage.getItem('selectedCourse');
       const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
-      const stored = localStorage.getItem(key) || localStorage.getItem('saved_selectedProfile');
+      const stored = course ? localStorage.getItem(key) : localStorage.getItem('saved_selectedProfile');
       if (stored && stored !== 'todos') {
         return stored;
       }
@@ -458,6 +444,37 @@ export function useSchedule() {
       return 'all';
     }
   });
+
+  const currentCompletedKey = completedDisciplinesKey(selectedCourse, selectedProfile);
+  const [hydratedCompletedKey, setHydratedCompletedKey] = useState('');
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(currentCompletedKey)
+        ?? (selectedCourse === 'bcc' && (selectedProfile === 'BCC03' || selectedProfile === 'nova')
+          ? localStorage.getItem('completedDisciplines')
+          : null);
+      const parsed: unknown = stored ? JSON.parse(stored) : [];
+      setCompletedDisciplines(Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : []);
+      setHydratedCompletedKey(currentCompletedKey);
+    } catch (e) {
+      console.error('Failed to load completed disciplines', e);
+      setCompletedDisciplines([]);
+      setHydratedCompletedKey(currentCompletedKey);
+    }
+  }, [currentCompletedKey, view]);
+
+  useEffect(() => {
+    if (hydratedCompletedKey !== currentCompletedKey) return;
+    try {
+      localStorage.setItem(currentCompletedKey, JSON.stringify(completedDisciplines));
+      if (selectedCourse === 'bcc' && (selectedProfile === 'BCC03' || selectedProfile === 'nova')) {
+        localStorage.setItem('completedDisciplines', JSON.stringify(completedDisciplines));
+      }
+    } catch (e) {
+      console.error('Failed to save completed disciplines', e);
+    }
+  }, [completedDisciplines, currentCompletedKey, hydratedCompletedKey, selectedCourse, selectedProfile]);
 
   // Persist profile selection
   useEffect(() => {
