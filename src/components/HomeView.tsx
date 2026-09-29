@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { BookOpen, Sun, Moon, Monitor, Download, Upload, BrainCircuit, CalendarDays, Layers, ArrowRight, ChevronDown, Trash2, Loader2, AlertCircle, Sliders } from 'lucide-react';
 import { exportAllUserData, importAllUserData } from '../utils/backupHelper';
-import { canAccessAdmin, canManageHomeCourses } from '../utils/domain';
+import { canManageHomeCourses, isLocalhost } from '../utils/domain';
 import { CourseMeta } from '../types';
 import { CoursesVisibilityModal } from './CoursesVisibilityModal';
 import { apiFetch } from '../utils/api';
@@ -310,7 +310,7 @@ export function HomeView({
                 )}
               </div>
 
-              {canAccessAdmin() && (
+              {isLocalhost() && (
                 <button 
                   onClick={() => setView('admin')}
                   className="w-full p-4 border border-dashed border-indigo-200 dark:border-indigo-800/80 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/40 dark:hover:bg-indigo-950/20 rounded-xl transition-all text-left group flex items-center justify-between cursor-pointer"
@@ -492,7 +492,7 @@ export function HomeView({
                   </div>
                 )}
 
-                {canAccessAdmin() && (
+                {isLocalhost() && (
                   <button 
                     onClick={() => setView('admin')}
                     className="w-full p-6 border border-dashed border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 rounded-xl transition-all text-left shadow-sm group flex flex-col gap-2 md:col-span-3 cursor-pointer"
