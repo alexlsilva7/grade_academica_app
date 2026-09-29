@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express';
-import { getSupabaseAuthClient, hasSupabaseAuthConfig } from './supabaseClient';
+import { getSupabaseAuthClient, hasSupabaseAuthConfig } from './supabaseClient.js';
 
 declare global {
   namespace Express {

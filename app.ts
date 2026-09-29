@@ -2,9 +2,9 @@ import express from 'express';
 import fs from 'node:fs';
 import path from 'node:path';
 import dotenv from 'dotenv';
-import { extractionRoutes } from './extractionRoutes';
-import { validateExtraction } from './src/utils/extraction';
-import { createAcademicAIClient, type AcademicAIClient } from './aiProvider';
+import { extractionRoutes } from './extractionRoutes.js';
+import { validateExtraction } from './src/utils/extraction.js';
+import { createAcademicAIClient, type AcademicAIClient } from './aiProvider.js';
 import {
   FileAcademicRepository,
   RepositoryError,
@@ -12,7 +12,7 @@ import {
   type AcademicRepository,
   type CourseInclude,
   type SaveCourseInput
-} from './src/server/academicRepository';
+} from './src/server/academicRepository.js';
 import {
   createMigrationRun,
   discoverMigrationInventory,
@@ -20,9 +20,9 @@ import {
   getMigrationRunReport,
   listMigrationRuns,
   previewMigration
-} from './src/server/academicMigration';
-import { getAcademicDataSource, requireAdmin } from './src/server/adminAuth';
-import { getSupabaseAdminClient, hasSupabaseAdminConfig, hasSupabaseAuthConfig } from './src/server/supabaseClient';
+} from './src/server/academicMigration.js';
+import { getAcademicDataSource, requireAdmin } from './src/server/adminAuth.js';
+import { getSupabaseAdminClient, hasSupabaseAdminConfig, hasSupabaseAuthConfig } from './src/server/supabaseClient.js';
 
 dotenv.config();
 
