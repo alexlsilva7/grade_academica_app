@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, CalendarDays, ChevronLeft, ChevronRight, ExternalLink, List, Loader2, Search, Sparkles } from 'lucide-react';
 import { Navbar } from './Navbar';
+import { CalendarCategoryBadge, calendarCategoryHighlights } from './CalendarCategoryBadge';
 import { CalendarEventDialog } from './CalendarEventDialog';
 import { CALENDAR_CATEGORIES, type CalendarEvent, type CalendarPublication } from '../calendarTypes';
 import { calendarAvailableMonths, calendarEventStatus, calendarIntersects, calendarMonthDays, calendarRange,
@@ -21,13 +22,13 @@ const temporalLabels = { today: 'Hoje', ending: 'Termina hoje', ongoing: 'Em and
 
 function EventCard({ event, today, onOpen }: { event: CalendarEvent; today: string; onOpen: (e: CalendarEvent) => void }) {
   const label = temporalLabels[calendarEventStatus(event, today)];
-  return <button onClick={() => onOpen(event)} className="w-full text-left rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 sm:p-5 hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors group">
+  return <button onClick={() => onOpen(event)} className={`w-full text-left rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 sm:p-5 hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors group ${calendarCategoryHighlights[event.categoria]?.border || ''}`}>
     <div className="flex flex-wrap items-center gap-2 text-xs mb-2">
       <span className="font-semibold text-indigo-600 dark:text-indigo-300">{calendarRange(event)}</span>
       {label && <span className={`rounded-full px-2 py-1 font-semibold ${label === 'Termina hoje' ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200'}`}>{label}</span>}
     </div>
     <div className="flex gap-3 items-start"><h3 className="font-semibold flex-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-300">{event.titulo}</h3><ArrowRight size={16} className="shrink-0 text-slate-400 mt-1" /></div>
-    <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">{CALENDAR_CATEGORIES[event.categoria]} · {event.semestres.join(' / ') || 'Semestre a conferir'}</p>
+    <div className="flex flex-wrap items-center gap-2 mt-3"><CalendarCategoryBadge category={event.categoria} /><span className="text-xs text-slate-500 dark:text-slate-400">{event.semestres.join(' / ') || 'Semestre a conferir'}</span></div>
   </button>;
 }
 
@@ -127,10 +128,12 @@ export function CalendarView({ setView, darkMode, themePreference, cycleTheme }:
                   <span className={`inline-flex items-center justify-center w-7 h-7 text-xs rounded-full ${date === today ? 'bg-indigo-600 text-white font-bold' : 'font-medium'}`}>{Number(date.slice(-2))}</span>
                   {mark?.classification && <span className={`block truncate text-[9px] sm:text-[10px] rounded px-1 mt-1 ${dayStyles[mark.classification] || ''}`}>{mark.classification}</span>}
                   {events.length > 0 && <span className="block sm:hidden text-[10px] text-indigo-600 dark:text-indigo-300 mt-1">{events.length} evento{events.length > 1 ? 's' : ''}</span>}
-                  <span className="hidden sm:block mt-1 space-y-1">{events.slice(0, 2).map(event => <span key={event.id} className="block truncate text-[10px] text-slate-600 dark:text-slate-300">{event.titulo}</span>)}{events.length > 2 && <span className="block text-[10px] text-indigo-600 dark:text-indigo-300">+{events.length - 2} eventos</span>}</span>
+                  <span className="flex gap-1 mt-1 sm:hidden">{[...new Set(events.map(event => event.categoria))].filter(category => calendarCategoryHighlights[category]).map(category => <span key={category} title={CALENDAR_CATEGORIES[category]} className={`w-2 h-2 rounded-full ${calendarCategoryHighlights[category]!.dot}`}><span className="sr-only">{CALENDAR_CATEGORIES[category]}</span></span>)}</span>
+                  <span className="hidden sm:block mt-1 space-y-1">{events.slice(0, 2).map(event => <span key={event.id} className={`block truncate text-[10px] rounded px-1 py-0.5 ${calendarCategoryHighlights[event.categoria]?.badge || 'text-slate-600 dark:text-slate-300'}`}>{event.titulo}</span>)}{events.length > 2 && <span className="block text-[10px] text-indigo-600 dark:text-indigo-300">+{events.length - 2} eventos</span>}</span>
                 </button>;
               })}</div>
             </div>
+            <div className="flex flex-wrap gap-2 mt-4" aria-label="Categorias em destaque"><CalendarCategoryBadge category="matricula" /><CalendarCategoryBadge category="reajuste" /><CalendarCategoryBadge category="feriado" /></div>
             <div className="flex flex-wrap gap-2 mt-4 text-[11px]" aria-label="Legenda">{Object.entries(dayStyles).map(([name, styles]) => <span key={name} className={`rounded px-2 py-1 ${styles}`}>{name}</span>)}</div>
             {selectedDay && <section className="mt-6" aria-labelledby="calendar-selected-day"><h3 id="calendar-selected-day" className="font-bold mb-3">{formatCalendarDate(selectedDay, { day: 'numeric', month: 'long', year: 'numeric' })}</h3>
               {dayLookup.get(selectedDay)?.classification && <p className="text-sm text-slate-500 mb-3">Classificação do dia: {dayLookup.get(selectedDay)!.classification}</p>}

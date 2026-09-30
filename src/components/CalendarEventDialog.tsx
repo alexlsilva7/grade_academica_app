@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { ExternalLink, X } from 'lucide-react';
-import { CALENDAR_CATEGORIES, type CalendarEvent } from '../calendarTypes';
+import { CalendarCategoryBadge } from './CalendarCategoryBadge';
+import { type CalendarEvent } from '../calendarTypes';
 import { calendarRange, calendarSourcePage } from '../utils/academicCalendar';
 
 export function CalendarEventDialog({ event, sourceUrl, onClose }: {
@@ -18,7 +19,7 @@ export function CalendarEventDialog({ event, sourceUrl, onClose }: {
     <div className="flex items-start gap-4 justify-between"><h2 id="calendar-event-title" className="font-bold text-xl">{event.titulo}</h2>
       <button type="button" onClick={onClose} aria-label="Fechar detalhes" className="shrink-0 rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800"><X size={20} /></button></div>
     <p className="mt-3 font-medium text-indigo-600 dark:text-indigo-300">{calendarRange(event)}</p>
-    <p className="mt-2 text-sm text-slate-500">{CALENDAR_CATEGORIES[event.categoria]} · {event.semestres.join(' / ') || 'Semestre a conferir'}</p>
+    <div className="mt-3 flex flex-wrap items-center gap-2"><CalendarCategoryBadge category={event.categoria} /><span className="text-sm text-slate-500">{event.semestres.join(' / ') || 'Semestre a conferir'}</span></div>
     <p className="mt-5 whitespace-pre-wrap leading-relaxed">{event.descricaoOriginal}</p>
     {event.horarioOriginal && <p className="mt-3 text-sm">Horário: {event.horarioOriginal}</p>}
     {event.publico.length > 0 && <p className="mt-3 text-sm">Público: {event.publico.join(', ')}</p>}
