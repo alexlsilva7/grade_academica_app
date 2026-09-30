@@ -2,8 +2,6 @@ import express from 'express';
 import fs from 'node:fs';
 import path from 'node:path';
 import dotenv from 'dotenv';
-import { createCalendarRouter } from './src/server/calendarRoutes.js';
-import { SupabaseCalendarRepository } from './src/server/calendarRepository.js';
 import { extractionRoutes } from './extractionRoutes.js';
 import { validateExtraction } from './src/utils/extraction.js';
 import { createAcademicAIClient, type AcademicAIClient } from './aiProvider.js';
@@ -31,12 +29,6 @@ dotenv.config();
 const app = express();
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-
-let calendarRepository: SupabaseCalendarRepository | null = null;
-app.use('/api', createCalendarRouter(() => {
-  if (!hasSupabaseAdminConfig()) return null;
-  return calendarRepository ??= new SupabaseCalendarRepository(getSupabaseAdminClient());
-}, requireAdmin));
 
 let aiClient: AcademicAIClient | null = null;
 function getAIClient(): AcademicAIClient {
