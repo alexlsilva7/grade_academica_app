@@ -10,6 +10,7 @@ import { canAccessAdmin } from './utils/domain';
 const MatrizView = lazy(() => import('./components/MatrizView').then(module => ({ default: module.MatrizView })));
 const DisciplinesView = lazy(() => import('./components/DisciplinesView').then(module => ({ default: module.DisciplinesView })));
 const AdminView = lazy(() => import('./components/AdminView').then(module => ({ default: module.AdminView })));
+const CalendarView = lazy(() => import('./components/CalendarView').then(module => ({ default: module.CalendarView })));
 const Sidebar = lazy(() => import('./components/Sidebar').then(module => ({ default: module.Sidebar })));
 const ScheduleGrid = lazy(() => import('./components/ScheduleGrid').then(module => ({ default: module.ScheduleGrid })));
 const MobileNav = lazy(() => import('./components/MobileNav').then(module => ({ default: module.MobileNav })));
@@ -54,6 +55,11 @@ export default function App() {
           selectedProfile={scheduleProps.selectedProfile}
           setSelectedProfile={scheduleProps.setSelectedProfile}
         />
+      ) : scheduleProps.view === 'calendar' ? (
+        <Suspense fallback={<ViewLoading />}>
+          <CalendarView setView={scheduleProps.setView} darkMode={scheduleProps.darkMode}
+            themePreference={scheduleProps.themePreference} cycleTheme={scheduleProps.cycleTheme} />
+        </Suspense>
       ) : scheduleProps.view === 'matriz' ? (
         <Suspense fallback={<ViewLoading />}>
           <MatrizView

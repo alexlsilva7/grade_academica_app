@@ -28,6 +28,7 @@ As telas principais aceitam links diretos e atualizam o histórico do navegador:
 | Planejamento de horário | `/schedule?course=bcc&semester=2026.1&profile=BCC03` |
 | Matriz curricular | `/matriz?course=eal&semester=2026.1&profile=EAL03` |
 | Catálogo de disciplinas | `/disciplinas?course=eal&semester=2026.1` |
+| Calendário acadêmico | `/calendario` |
 | Administração | `/admin` |
 
 Curso, semestre e perfil são validados. Um semestre não publicado é substituído por uma opção disponível; curso ou caminho desconhecido retorna ao início. O servidor mantém a autenticação administrativa nas APIs mesmo que alguém abra `/admin` diretamente. Em produção, o Express serve `index.html` como fallback para as rotas da SPA.
@@ -119,3 +120,13 @@ app.ts              API Express compartilhada
 api/index.ts        Entrada da função na Vercel
 server.ts           Servidor local e fallback da SPA
 ```
+
+## Calendário acadêmico da UFAPE
+
+`/calendario` abre em **Hoje e próximos**, usando a data de Brasília (`America/Sao_Paulo`). Inclui intervalos em andamento até seu último dia e próximos eventos de todos os semestres. A data é atualizada enquanto a página estiver visível e ao retornar à aba. Também há lista por mês, grade mensal, busca, filtros e detalhes com a página de origem no PDF oficial. Divergências da extração ficam sinalizadas.
+
+A seção **Calendário acadêmico** no painel administrativo é global. Importe `calendario-academico-ufape.json`, confira a prévia, aplique ao rascunho e informe a URL HTTPS do PDF oficial. Revise os eventos e as classificações de dias conflitantes com justificativa. **Salvar rascunho** mantém as alterações privadas; **Publicar calendário** publica a versão salva. Eventos sem datas completas ficam apenas na revisão administrativa. Exportar rascunho gera um backup que pode ser reimportado.
+
+A migração `supabase/migrations/20260930100723_academic_calendar.sql` cria a tabela institucional com rascunho e publicação separados. O servidor usa a chave secreta; usuários anônimos e autenticados não acessam a tabela diretamente. As rotas de escrita exigem um administrador autorizado. Alterações usam a revisão salva e retornam HTTP 409 quando outra sessão já modificou o calendário; exporte alterações locais antes de recarregar.
+
+Para conferir o fluxo completo sem modificar o banco real: `npx tsx tests/calendarBrowser.fixture.ts`, depois abra `http://127.0.0.1:3016/admin`. Esse servidor é exclusivo de testes, usa dados em memória e escuta somente no endereço local. Não o utilize em produção.

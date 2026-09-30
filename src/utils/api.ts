@@ -14,7 +14,7 @@ export async function apiFetch(input: RequestInfo | URL, init: RequestInit = {})
   const request = input instanceof Request ? input : null;
   const requestUrl = new URL(request?.url || input.toString(), typeof window === 'undefined' ? 'http://localhost' : window.location.origin);
   const method = (init.method || request?.method || 'GET').toUpperCase();
-  const publicAcademicRead = method === 'GET' && /^\/api\/courses(?:\/[^/]+)?\/?$/.test(requestUrl.pathname);
+  const publicAcademicRead = method === 'GET' && (/^\/api\/courses(?:\/[^/]+)?\/?$/.test(requestUrl.pathname) || requestUrl.pathname === '/api/calendar');
   const headers = new Headers(init.headers || request?.headers || undefined);
   const cacheMode = init.cache || request?.cache;
   const cacheable = publicAcademicRead && requestUrl.origin === (typeof window === 'undefined' ? 'http://localhost' : window.location.origin)

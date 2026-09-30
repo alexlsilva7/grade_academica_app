@@ -2,6 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildAppLocation, parseAppLocation, writeAppLocation } from '../src/utils/appLocation';
 
+test('calendar is an institution-wide route independent of course, semester and profile', () => {
+  assert.deepEqual(parseAppLocation('/calendario', '?course=old&semester=2026.2&profile=old'), {
+    view: 'calendar', course: null, semester: null, profile: null, invalid: false
+  });
+  assert.equal(buildAppLocation({ view: 'calendar', course: 'bcc', semester: '2026.1', profile: 'BCC03' }), '/calendario');
+});
+
 test('direct academic routes retain course, semester and profile in the parsed location', () => {
   assert.deepEqual(parseAppLocation('/matriz/', '?course=EAL&semester=2026.2&profile=EAL03'), {
     view: 'matriz', course: 'eal', semester: '2026.2', profile: 'EAL03', invalid: false

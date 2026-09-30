@@ -29,6 +29,7 @@ import { TreeNodeEditModal } from './admin/TreeNodeEditModal';
 import { ProfileMetaEditModal } from './admin/ProfileMetaEditModal';
 import { DeleteConfirmModal } from './admin/DeleteConfirmModal';
 import { DataMigration } from './admin/DataMigration';
+import { CalendarAdmin } from './admin/CalendarAdmin';
 import { apiFetch } from '../utils/api';
 
 interface AdminViewProps {
@@ -51,6 +52,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
 
   // Navigation & Mode State
   const [section, setSection] = useState<AdminSection>(() => readAdminSection('bcc'));
+  const [calendarDirty, setCalendarDirty] = useState(false);
   const [importMode, setImportMode] = useState<'curriculum' | 'schedule'>('schedule');
   const activeMode = section === 'schedule' ? 'schedule' : section === 'import' ? importMode : 'curriculum';
   const [isSaving, setIsSaving] = useState(false);
@@ -270,7 +272,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
     setBaseline(snapshots);
     jsonImportExport.setPastedJsonText('');
     jsonImportExport.setValidationResult(null);
-    setSection(courseManager.courses.length === 0 ? 'settings' : readAdminSection(courseManager.selectedCourseId));
+    setSection(current => current === 'calendar' ? current : courseManager.courses.length === 0 ? 'settings' : readAdminSection(courseManager.selectedCourseId));
     adminFilters.resetFilters();
   }, [courseManager.loadedVersion]);
 
@@ -287,15 +289,20 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
   }, [snapshots.settings, snapshots.curriculum, snapshots.schedule, baseline]);
 
   const navigate = (next: AdminSection) => {
+    if (section === 'calendar' && next !== 'calendar' && calendarDirty && !window.confirm('Sair do calendário e descartar as alterações não salvas?')) return;
     setSection(next);
     if (next === 'structure') setReviewTab('tree');
     else if (next === 'import') setReviewTab('json');
     else setReviewTab('table');
-    try { localStorage.setItem(`admin_section_${courseManager.selectedCourseId}`, next); } catch {}
+    try {
+      if (next === 'calendar') localStorage.setItem('admin_global_section', 'calendar');
+      else { localStorage.removeItem('admin_global_section'); localStorage.setItem(`admin_section_${courseManager.selectedCourseId}`, next); }
+    } catch {}
     contentAreaRef.current?.scrollTo({ top: 0 });
     requestAnimationFrame(() => document.getElementById('admin-section-title')?.focus());
   };
   const guardNavigation = (action: () => void, domains: SaveDomain[] = ['settings', 'curriculum', 'schedule']) => {
+    if (section === 'calendar' && calendarDirty && !window.confirm('Sair do calendário e descartar as alterações não salvas?')) return;
     const pending = domains.filter(domain => dirty[domain]);
     if (pending.length) setPendingNavigation({ action, domains: pending });
     else action();
@@ -465,7 +472,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
           />);
 
   return (
-    <div className="h-[100dvh] bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex min-w-[1100px] overflow-hidden font-sans">
+    <div className={`h-[100dvh] bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex overflow-hidden font-sans ${section === 'calendar' ? 'flex-col sm:flex-row' : 'min-w-[1100px]'}`}>
       {/* MODAL 1: EDIT CURRICULUM SUBJECT */}
       {curriculumEditor.editingCurrIndex !== null && (
         <CurriculumEditModal
@@ -608,12 +615,18 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
         for (const domain of pendingNavigation.domains) { if (!(await handleSaveToProject(domain))) { setPendingNavigation(null); return; } }
         const action = pendingNavigation.action; setPendingNavigation(null); action();
       }} />}
-      <AdminSidebar courses={courseManager.courses} courseId={courseManager.selectedCourseId} creating={courseManager.isCreatingNewCourse} section={section} dirty={dirty} disabled={busy} onCourse={selectCourse} onSection={navigate} onBack={() => guardNavigation(() => setView('home'))} />
+      <AdminSidebar courses={courseManager.courses} courseId={courseManager.selectedCourseId} creating={courseManager.isCreatingNewCourse} section={section} dirty={dirty} disabled={section === 'calendar' ? false : busy} onCourse={selectCourse} onSection={navigate} onBack={() => guardNavigation(() => setView('home'))} />
       <div className="flex-1 min-w-0 flex flex-col">
-      <AdminTopBar title={sectionInfo.label} description={sectionInfo.description} context={section === 'migration' ? 'Arquivos acadêmicos · Supabase' : `${courseManager.courseShortName} · ${courseManager.courseName}`} saveLabel={saveDomain === 'settings' ? 'Salvar configurações' : saveDomain === 'schedule' ? `Salvar oferta${courseManager.scheduleSemester ? ' de ' + courseManager.scheduleSemester : ''}` : 'Salvar currículo'} dirty={section === 'migration' ? false : dirty[saveDomain]} busy={section === 'migration' ? false : busy || (!courseManager.isCreatingNewCourse && loadedCourseId !== courseManager.selectedCourseId)} onExportJsonFile={section === 'settings' || section === 'migration' ? undefined : jsonImportExport.handleExportJsonFile} onSaveToProject={section === 'migration' ? undefined : () => void handleSaveToProject()} />
-      <main ref={contentAreaRef} aria-labelledby="admin-section-title" className="flex-1 overflow-y-auto p-8 space-y-6">
+      <AdminTopBar title={sectionInfo.label} description={sectionInfo.description}
+        context={section === 'calendar' ? 'UFAPE · Calendário institucional' : section === 'migration' ? 'Arquivos acadêmicos · Supabase' : `${courseManager.courseShortName} · ${courseManager.courseName}`}
+        saveLabel={saveDomain === 'settings' ? 'Salvar configurações' : saveDomain === 'schedule' ? `Salvar oferta${courseManager.scheduleSemester ? ' de ' + courseManager.scheduleSemester : ''}` : 'Salvar currículo'}
+        dirty={section === 'calendar' ? calendarDirty : section === 'migration' ? false : dirty[saveDomain]}
+        busy={section === 'calendar' || section === 'migration' ? false : busy || (!courseManager.isCreatingNewCourse && loadedCourseId !== courseManager.selectedCourseId)}
+        onExportJsonFile={section === 'settings' || section === 'migration' || section === 'calendar' ? undefined : jsonImportExport.handleExportJsonFile}
+        onSaveToProject={section === 'migration' || section === 'calendar' ? undefined : () => void handleSaveToProject()} />
+      <main ref={contentAreaRef} aria-labelledby="admin-section-title" className={`flex-1 overflow-y-auto space-y-6 ${section === 'calendar' ? 'p-4 sm:p-8' : 'p-8'}`}>
         {/* Notifications and Banners */}
-        {section !== 'migration' && <NotificationBanners
+        {section !== 'migration' && section !== 'calendar' && <NotificationBanners
           extractionReport={section === 'import' ? jsonImportExport.extractionReport : null}
           activeMode={activeMode}
           disciplines={disciplines}
@@ -629,12 +642,12 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
           onDismissDifferentCourse={() => courseManager.setDetectedDifferentCourse(null)}
         />}
 
-        {section !== 'migration' && courseManager.isLoadingCourse && <p role="status">Carregando curso…</p>}
-        {section !== 'migration' && !courseManager.isLoadingCourse && !courseManager.isCreatingNewCourse && loadedCourseId !== courseManager.selectedCourseId && <button className="admin-primary" onClick={() => void courseManager.loadCourseData(courseManager.selectedCourseId)}>Tentar carregar novamente</button>}
+        {section !== 'migration' && section !== 'calendar' && courseManager.isLoadingCourse && <p role="status">Carregando curso…</p>}
+        {section !== 'migration' && section !== 'calendar' && !courseManager.isLoadingCourse && !courseManager.isCreatingNewCourse && loadedCourseId !== courseManager.selectedCourseId && <button className="admin-primary" onClick={() => void courseManager.loadCourseData(courseManager.selectedCourseId)}>Tentar carregar novamente</button>}
         <fieldset disabled={busy} hidden={!courseManager.isCreatingNewCourse && loadedCourseId !== courseManager.selectedCourseId} className="space-y-6 min-w-0 disabled:opacity-60">
           {section === 'settings' && <CourseSettings name={courseManager.courseName} shortName={courseManager.courseShortName} visibility={visibility} semesters={currentMeta?.semesters || []} creating={courseManager.isCreatingNewCourse} onName={courseManager.setCourseName} onShortName={courseManager.setCourseShortName} onVisibility={setVisibility} onDelete={() => courseManager.setShowDeleteCourseModal(true)} />}
           {section === 'profiles' && <ProfileSection profiles={courseProfiles} nodes={extractedTreeSubjects} onAdd={profileManager.handleAddNewProfile} onEdit={profile => { setExtractedProfile(profile); profileManager.setEditProfileMeta({ ...profile }); profileManager.setIsEditingProfileMeta(true); }} onDelete={requestDeleteProfile} onStructure={id => { profileManager.handleSelectProfileToReview(id); navigate('structure'); }} />}
-          {section === 'structure' && <div className="admin-panel flex items-center gap-4"><label htmlFor="admin-profile" className="text-sm font-medium">{section === 'import' ? 'Perfil para registros sem perfil' : 'Perfil curricular'}</label><select id="admin-profile" className="admin-input max-w-xs" value={extractedProfile?.id || ''} onChange={e => profileManager.handleSelectProfileToReview(e.target.value)}><option value="">Todos os perfis / sem perfil</option>{courseProfiles.map(profile => <option key={profile.id} value={profile.id}>{profile.id} · {profile.name}</option>)}</select><span className="text-xs text-slate-500">Alterações fazem parte do currículo compartilhado.</span></div>}
+          {section === 'structure' && <div className="admin-panel flex items-center gap-4"><label htmlFor="admin-profile" className="text-sm font-medium">Perfil curricular</label><select id="admin-profile" className="admin-input max-w-xs" value={extractedProfile?.id || ''} onChange={e => profileManager.handleSelectProfileToReview(e.target.value)}><option value="">Todos os perfis / sem perfil</option>{courseProfiles.map(profile => <option key={profile.id} value={profile.id}>{profile.id} · {profile.name}</option>)}</select><span className="text-xs text-slate-500">Alterações fazem parte do currículo compartilhado.</span></div>}
           {section === 'schedule' && semesterControls}
           {section === 'import' && <>
 
@@ -694,6 +707,7 @@ export function AdminView({ setView, setDisciplinesList, setGradeTitle }: AdminV
 
         </fieldset>
         {section === 'migration' && <DataMigration />}
+        {section === 'calendar' && <CalendarAdmin onDirtyChange={setCalendarDirty} />}
       </main>
       </div>
     </div>
