@@ -123,9 +123,9 @@ server.ts           Servidor local e fallback da SPA
 
 ## Calendário acadêmico da UFAPE
 
-O botão **Calendário acadêmico** da home abre o PDF hospedado em `/documents/calendario-academico-ufape-2026.pdf`, na página da tabela do mês atual. `/calendario` também redireciona para esse documento. A seleção usa `America/Sao_Paulo`: setembro de 2026 abre a página 8; outubro abre a 9. Antes ou depois da cobertura desta edição, abre a primeira ou a última tabela disponível.
+O botão **Calendário acadêmico** da home abre `/calendario`, com o PDF hospedado em `/documents/calendario-academico-ufape-2026.pdf` incorporado à página, na tabela do mês atual. O cabeçalho e a navegação do site permanecem disponíveis; também há opções para baixar o documento ou abri-lo em nova aba. A seleção usa `America/Sao_Paulo`: setembro de 2026 abre a página 8; outubro abre a 9. Antes ou depois da cobertura desta edição, abre a primeira ou a última tabela disponível.
 
-O arquivo original fica em `public/documents` e é incluído no build estático. A abertura usa o fragmento `#page=N` do leitor de PDF do navegador. Ao atualizar a edição, substitua o PDF e atualize o mapeamento em `src/utils/academicCalendarPdf.ts`.
+O arquivo original fica em `public/documents` e é incluído no build estático. A abertura usa o fragmento `#page=N` do leitor de PDF incorporado do navegador. O mês é atualizado ao retornar à aba e enquanto a página estiver visível. O Vite ignora `public/documents` no monitoramento de arquivos para evitar erros EBUSY de bloqueio no Windows, mantendo o PDF disponível normalmente. Ao atualizar a edição, substitua o PDF e atualize o mapeamento em `src/utils/academicCalendarPdf.ts`.
 
 A seção **Calendário acadêmico** no painel administrativo é global. Importe `calendario-academico-ufape.json`, confira a prévia, aplique ao rascunho e informe a URL HTTPS do PDF oficial. Revise os eventos e as classificações de dias conflitantes com justificativa. **Salvar rascunho** mantém as alterações privadas; **Publicar calendário** publica a versão salva. Eventos sem datas completas ficam apenas na revisão administrativa. Exportar rascunho gera um backup que pode ser reimportado.
 
