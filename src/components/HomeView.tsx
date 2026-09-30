@@ -132,6 +132,9 @@ export function HomeView({
               key.startsWith(`disciplines_selectedProfile_${selectedCourse}`) ||
               key.startsWith(`matrix_version_${selectedCourse}`) ||
               key.startsWith(`${selectedCourse}_matriz_progress`) ||
+              key === `completedDisciplines_${selectedCourse}` ||
+              key.startsWith(`completedDisciplines_${selectedCourse}_`) ||
+              (selectedCourse === 'bcc' && key === 'completedDisciplines') ||
               key.startsWith(`${selectedCourse}_acex_hours`) ||
               key.startsWith(`${selectedCourse}_acc_hours`)
             ) {

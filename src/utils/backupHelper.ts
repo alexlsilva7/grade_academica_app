@@ -1,3 +1,5 @@
+import { completionCourseKey, migrateCompletedDisciplines } from './disciplineCompletion';
+
 // Backup and restore utility for all customized user data.
 const staticKeys = [
     'themePreference',
@@ -26,6 +28,7 @@ export function isBackupStorageKey(key: string): boolean {
     || key.startsWith('disciplines_selectedProfile_')
     || key.startsWith('matrix_version_')
     || /^[a-z0-9_-]+_(?:matriz_progress|acex_hours|acc_hours)_.+$/i.test(key)
+    || /^completedDisciplines_[a-z0-9_-]+$/i.test(key)
     || /^completedDisciplines_[a-z0-9_-]+_.+$/i.test(key);
 }
 
@@ -47,6 +50,38 @@ export function restoreBackupData(storage: Pick<Storage, 'getItem' | 'setItem' |
   if (!entries.length || entries.some(([key, value]) => isBackupStorageKey(key) && value !== null && typeof value !== 'string')) return false;
   const accepted = entries.filter(([key, value]) => isBackupStorageKey(key) && (value === null || typeof value === 'string'));
   if (!accepted.length) return false;
+
+  // Build legacy conclusions from the backup itself, never from stale live progress.
+  const staged = new Map(accepted.filter(([, value]) => value !== null).map(([key, value]) => [key, value as string]));
+  const courses = new Set<string>();
+  for (const [key] of accepted) {
+    const matrixCourse = key.match(/^(.+)_matriz_progress(?:_.+)?$/)?.[1];
+    if (matrixCourse) courses.add(matrixCourse);
+    if (key.startsWith('selected_profile_')) courses.add(key.slice('selected_profile_'.length));
+  }
+  if (typeof staged.get('selectedCourse') === 'string') courses.add(staged.get('selectedCourse')!);
+  if (staged.has('completedDisciplines')) courses.add('bcc');
+  for (const [key] of accepted) {
+    if (!key.startsWith('completedDisciplines_')) continue;
+    if ([...courses].some(course => key === completionCourseKey(course) || key.startsWith(`${completionCourseKey(course)}_`))) continue;
+    const legacy = key.match(/^completedDisciplines_(.+)_([A-Z][A-Z0-9]*|all|nova|antiga)$/);
+    courses.add(legacy ? legacy[1] : key.slice('completedDisciplines_'.length));
+  }
+  const stagedStorage = {
+    get length() { return staged.size; },
+    key(index: number) { return Array.from(staged.keys())[index] ?? null; },
+    getItem(key: string) { return staged.get(key) ?? null; },
+    setItem(key: string, value: string) { staged.set(key, value); }
+  };
+  for (const course of courses) {
+    const canonicalKey = completionCourseKey(course);
+    const hasLegacyProgress = accepted.some(([key]) => key.startsWith(`${course}_matriz_progress`)
+      || key.startsWith(`${canonicalKey}_`) || (course === 'bcc' && key === 'completedDisciplines'));
+    if (hasLegacyProgress && !accepted.some(([key]) => key === canonicalKey)) {
+      migrateCompletedDisciplines(stagedStorage, course);
+      accepted.push([canonicalKey, staged.get(canonicalKey)!]);
+    }
+  }
 
   const previous = new Map(accepted.map(([key]) => [key, storage.getItem(key)]));
   try {

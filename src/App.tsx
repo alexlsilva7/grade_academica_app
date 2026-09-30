@@ -131,7 +131,7 @@ export default function App() {
               toggleDiscipline={scheduleProps.toggleDiscipline}
               onShowDetails={scheduleProps.setDetailsDiscipline}
               hasApiKey={scheduleProps.hasApiKey}
-              completedDisciplines={scheduleProps.completedDisciplines}
+              isDisciplineCompleted={scheduleProps.isDisciplineCompleted}
               toggleCompleted={scheduleProps.toggleCompleted}
               getDisciplineConflictInstance={scheduleProps.getDisciplineConflictInstance}
               darkMode={scheduleProps.darkMode}
@@ -160,7 +160,7 @@ export default function App() {
                   <DisciplineDetailsModal
                     discipline={scheduleProps.detailsDiscipline}
                     onClose={() => scheduleProps.setDetailsDiscipline(null)}
-                    completedDisciplines={scheduleProps.completedDisciplines}
+                    isDisciplineCompleted={scheduleProps.isDisciplineCompleted}
                     toggleCompleted={scheduleProps.toggleCompleted}
                     getDisciplineConflictInstance={scheduleProps.getDisciplineConflictInstance}
                     curriculum={scheduleProps.courseCurriculum}

@@ -160,6 +160,9 @@ export function useCourseManager({
               key.startsWith(`disciplines_selectedProfile_${selectedCourseId}`) ||
               key.startsWith(`matrix_version_${selectedCourseId}`) ||
               key.startsWith(`${selectedCourseId}_matriz_progress`) ||
+              key === `completedDisciplines_${selectedCourseId}` ||
+              key.startsWith(`completedDisciplines_${selectedCourseId}_`) ||
+              (selectedCourseId === 'bcc' && key === 'completedDisciplines') ||
               key.startsWith(`${selectedCourseId}_acex_hours`) ||
               key.startsWith(`${selectedCourseId}_acc_hours`)
             ) {
