@@ -19,7 +19,3 @@ export function academicCalendarPdfPage(now = new Date()): number {
   // Outside this edition's coverage, open its nearest available monthly table.
   return monthlyPages.find(([coveredMonth]) => month <= coveredMonth)?.[1] || 16;
 }
-
-export function academicCalendarPdfUrl(now = new Date()): string {
-  return `${ACADEMIC_CALENDAR_PDF_PATH}#page=${academicCalendarPdfPage(now)}`;
-}

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { academicCalendarPdfPage, academicCalendarPdfUrl, ACADEMIC_CALENDAR_PDF_PATH } from '../src/utils/academicCalendarPdf';
+import { academicCalendarPdfPage, ACADEMIC_CALENDAR_PDF_PATH } from '../src/utils/academicCalendarPdf';
 
 test('PDF opening selects the monthly table using the current date in Sao Paulo', () => {
   assert.equal(academicCalendarPdfPage(new Date('2026-09-30T12:00:00Z')), 8);
@@ -15,8 +15,7 @@ test('PDF opening selects the monthly table using the current date in Sao Paulo'
   assert.equal(academicCalendarPdfPage(new Date('2028-01-01T12:00:00Z')), 16);
 });
 
-test('PDF link targets the document shipped with the site and includes a one-based page fragment', () => {
-  assert.equal(academicCalendarPdfUrl(new Date('2026-09-30T12:00:00Z')), `${ACADEMIC_CALENDAR_PDF_PATH}#page=8`);
+test('the original official PDF is still shipped for download', () => {
   const file = fs.openSync(path.join('public', ACADEMIC_CALENDAR_PDF_PATH), 'r');
   try {
     const header = Buffer.alloc(5);
