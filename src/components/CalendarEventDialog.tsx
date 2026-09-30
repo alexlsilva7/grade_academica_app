@@ -22,11 +22,6 @@ export function CalendarEventDialog({ event, sourceUrl, onClose }: {
     <p className="mt-5 whitespace-pre-wrap leading-relaxed">{event.descricaoOriginal}</p>
     {event.horarioOriginal && <p className="mt-3 text-sm">Horário: {event.horarioOriginal}</p>}
     {event.publico.length > 0 && <p className="mt-3 text-sm">Público: {event.publico.join(', ')}</p>}
-    {event.precisaRevisao && <div className="mt-5 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm">
-      <p className="font-semibold text-amber-800 dark:text-amber-300">Informação a conferir</p>
-      <ul className="list-disc pl-4 mt-2 space-y-2">{event.motivosRevisao.map((reason, i) => <li key={i}>{reason}</li>)}</ul>
-      {!event.motivosRevisao.length && <p className="mt-2">Confira este evento no documento original.</p>}
-    </div>}
     <div className="mt-6 flex flex-col items-start gap-3">
       {event.links.map(link => <a key={link} href={link} target="_blank" rel="noopener noreferrer" className="text-sm text-indigo-600 dark:text-indigo-300 underline break-all">{link}</a>)}
       {(event.origens.length ? event.origens : [null]).map((origin, i) => <a key={i} href={calendarSourcePage(sourceUrl, origin?.pagina)} target="_blank" rel="noopener noreferrer"

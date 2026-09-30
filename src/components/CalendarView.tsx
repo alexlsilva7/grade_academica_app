@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, ArrowRight, CalendarDays, ChevronLeft, ChevronRight, ExternalLink, List, Loader2, Search, Sparkles } from 'lucide-react';
+import { ArrowRight, CalendarDays, ChevronLeft, ChevronRight, ExternalLink, List, Loader2, Search, Sparkles } from 'lucide-react';
 import { Navbar } from './Navbar';
 import { CalendarEventDialog } from './CalendarEventDialog';
 import { CALENDAR_CATEGORIES, type CalendarEvent, type CalendarPublication } from '../calendarTypes';
@@ -25,7 +25,6 @@ function EventCard({ event, today, onOpen }: { event: CalendarEvent; today: stri
     <div className="flex flex-wrap items-center gap-2 text-xs mb-2">
       <span className="font-semibold text-indigo-600 dark:text-indigo-300">{calendarRange(event)}</span>
       {label && <span className={`rounded-full px-2 py-1 font-semibold ${label === 'Termina hoje' ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200'}`}>{label}</span>}
-      {event.precisaRevisao && <span className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-300"><AlertCircle size={12} />Informação a conferir</span>}
     </div>
     <div className="flex gap-3 items-start"><h3 className="font-semibold flex-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-300">{event.titulo}</h3><ArrowRight size={16} className="shrink-0 text-slate-400 mt-1" /></div>
     <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">{CALENDAR_CATEGORIES[event.categoria]} · {event.semestres.join(' / ') || 'Semestre a conferir'}</p>
@@ -122,20 +121,19 @@ export function CalendarView({ setView, darkMode, themePreference, cycleTheme }:
               <div className="grid grid-cols-7">{calendarMonthDays(month).map(date => {
                 const events = filtered.filter(event => calendarIntersects(event, date, date));
                 const mark = dayLookup.get(date); const inMonth = date.startsWith(month); const active = selectedDay === date;
-                return <button key={date} aria-label={`${formatCalendarDate(date, { day: 'numeric', month: 'long', year: 'numeric' })}, ${events.length} evento${events.length === 1 ? '' : 's'}${mark?.classification ? `, ${mark.classification}` : ''}${mark?.needsReview ? ', informação a conferir' : ''}`}
+                return <button key={date} aria-label={`${formatCalendarDate(date, { day: 'numeric', month: 'long', year: 'numeric' })}, ${events.length} evento${events.length === 1 ? '' : 's'}${mark?.classification ? `, ${mark.classification}` : ''}`}
                   aria-current={date === today ? 'date' : undefined} aria-pressed={active} onClick={() => setSelectedDay(date)}
                   className={`min-w-0 min-h-20 sm:min-h-32 text-left p-1.5 sm:p-2 border-r border-b border-slate-100 dark:border-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 ${!inMonth ? 'opacity-40' : ''} ${active ? 'ring-2 ring-inset ring-indigo-500' : ''}`}>
                   <span className={`inline-flex items-center justify-center w-7 h-7 text-xs rounded-full ${date === today ? 'bg-indigo-600 text-white font-bold' : 'font-medium'}`}>{Number(date.slice(-2))}</span>
-                  {mark && <span className={`block truncate text-[9px] sm:text-[10px] rounded px-1 mt-1 ${mark.needsReview ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200' : dayStyles[mark.classification || ''] || ''}`}>{mark.needsReview ? 'A conferir' : mark.classification}</span>}
+                  {mark?.classification && <span className={`block truncate text-[9px] sm:text-[10px] rounded px-1 mt-1 ${dayStyles[mark.classification] || ''}`}>{mark.classification}</span>}
                   {events.length > 0 && <span className="block sm:hidden text-[10px] text-indigo-600 dark:text-indigo-300 mt-1">{events.length} evento{events.length > 1 ? 's' : ''}</span>}
-                  <span className="hidden sm:block mt-1 space-y-1">{events.slice(0, 2).map(event => <span key={event.id} className="block truncate text-[10px] text-slate-600 dark:text-slate-300">{event.precisaRevisao ? '⚠ ' : ''}{event.titulo}</span>)}{events.length > 2 && <span className="block text-[10px] text-indigo-600 dark:text-indigo-300">+{events.length - 2} eventos</span>}</span>
+                  <span className="hidden sm:block mt-1 space-y-1">{events.slice(0, 2).map(event => <span key={event.id} className="block truncate text-[10px] text-slate-600 dark:text-slate-300">{event.titulo}</span>)}{events.length > 2 && <span className="block text-[10px] text-indigo-600 dark:text-indigo-300">+{events.length - 2} eventos</span>}</span>
                 </button>;
               })}</div>
             </div>
-            <div className="flex flex-wrap gap-2 mt-4 text-[11px]" aria-label="Legenda">{Object.entries(dayStyles).map(([name, styles]) => <span key={name} className={`rounded px-2 py-1 ${styles}`}>{name}</span>)}<span className="rounded px-2 py-1 bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200">Informação a conferir</span></div>
+            <div className="flex flex-wrap gap-2 mt-4 text-[11px]" aria-label="Legenda">{Object.entries(dayStyles).map(([name, styles]) => <span key={name} className={`rounded px-2 py-1 ${styles}`}>{name}</span>)}</div>
             {selectedDay && <section className="mt-6" aria-labelledby="calendar-selected-day"><h3 id="calendar-selected-day" className="font-bold mb-3">{formatCalendarDate(selectedDay, { day: 'numeric', month: 'long', year: 'numeric' })}</h3>
               {dayLookup.get(selectedDay)?.classification && <p className="text-sm text-slate-500 mb-3">Classificação do dia: {dayLookup.get(selectedDay)!.classification}</p>}
-              {dayLookup.get(selectedDay)?.needsReview && <p className="text-sm text-amber-700 dark:text-amber-300 mb-3">Marcação a conferir: {dayLookup.get(selectedDay)!.classifications.join(' / ')}. <a className="underline" href={`${calendar.sourceUrl.split('#')[0]}#page=${dayLookup.get(selectedDay)!.pages[0]}`} target="_blank" rel="noopener noreferrer">Consultar fonte</a></p>}
               {cards(filtered.filter(event => calendarIntersects(event, selectedDay, selectedDay)), 'Nenhum evento nesta data para estes filtros.')}</section>}
           </>}
         </>}
