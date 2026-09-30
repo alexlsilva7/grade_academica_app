@@ -35,7 +35,7 @@ Curso, semestre e perfil são validados. Um semestre não publicado é substitu�
 
 ## Progresso e backups
 
-Preferências, horário montado e progresso acadêmico ficam no `localStorage` do navegador. O progresso de matriz, horas de ACEX/ACC e disciplinas concluídas é separado por curso e perfil. O backup inclui essas chaves da aplicação e a restauração ignora credenciais e outras chaves que não pertencem ao My UFAPE. Os dados acadêmicos publicados continuam no Supabase.
+Preferências, horário montado e progresso acadêmico ficam no `localStorage` do navegador. Disciplinas concluídas usam uma lista por curso (`completedDisciplines_<curso>`), compartilhada pela matriz e montagem de horário em todos os perfis e semestres. A correspondência usa o código da disciplina, sem alterar zeros ou pontuação; disciplinas sem código mantêm a marcação pelo ID dentro do perfil. Notas e horas de ACEX/ACC continuam separadas por curso e perfil. Marcações antigas são migradas automaticamente, e o backup inclui as novas chaves. A restauração ignora credenciais e outras chaves que não pertencem ao My UFAPE. Os dados acadêmicos publicados continuam no Supabase.
 
 ## Extração e retenção
 

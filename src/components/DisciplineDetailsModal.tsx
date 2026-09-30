@@ -7,8 +7,8 @@ import { getDisciplineDetails } from '../utils/detailsHelper';
 interface DisciplineDetailsModalProps {
   discipline: Discipline;
   onClose: () => void;
-  completedDisciplines: string[];
-  toggleCompleted: (id: string) => void;
+  isDisciplineCompleted: (discipline: Discipline) => boolean;
+  toggleCompleted: (discipline: Discipline) => void;
   getDisciplineConflictInstance: (disc: Discipline) => { withName: string } | null;
   curriculum: any;
   contents: any;
@@ -17,7 +17,7 @@ interface DisciplineDetailsModalProps {
 export function DisciplineDetailsModal({ 
   discipline, 
   onClose,
-  completedDisciplines,
+  isDisciplineCompleted,
   toggleCompleted,
   getDisciplineConflictInstance,
   curriculum,
@@ -27,7 +27,7 @@ export function DisciplineDetailsModal({
   const { subjectDetails, contentDetails: finalConteudoDetails } = getDisciplineDetails(discipline, curriculum, contents);
 
   const displayCode = discipline.code || subjectDetails?.code || finalConteudoDetails?.codigo;
-  const discIdentifier = displayCode || discipline.id;
+  const isCompleted = isDisciplineCompleted(discipline);
 
   return (
     <AnimatePresence>
@@ -263,14 +263,14 @@ export function DisciplineDetailsModal({
         {/* Footer */}
         <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex justify-between items-center shrink-0">
           <button
-            onClick={() => toggleCompleted(discIdentifier)}
+            onClick={() => toggleCompleted(discipline)}
             className={`flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors border ${
-              completedDisciplines.includes(discIdentifier)
+              isCompleted
                 ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/30'
                 : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
             }`}
           >
-            {completedDisciplines.includes(discIdentifier) ? (
+            {isCompleted ? (
               <>
                 <CheckCircle2 className="w-4 h-4 mr-2" />
                 Concluída

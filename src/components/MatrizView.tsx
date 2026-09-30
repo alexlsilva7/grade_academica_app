@@ -27,7 +27,9 @@ import { motion } from 'motion/react';
 import { CurriculumProfile } from '../types';
 import { apiFetch } from '../utils/api';
 import { MatrizTour } from './MatrizTour';
-import { applyMatrixProgressImport, completedDisciplinesKey, matrixProgressKey, readStoredHours, restoreMatrixSubjects } from '../utils/matrixProgress';
+import { applyMatrixProgressImport, matrixProgressKey, readStoredHours, restoreMatrixSubjects } from '../utils/matrixProgress';
+import { useCompletedDisciplines } from '../hooks/useCompletedDisciplines';
+import { applySubjectCompletions, curriculumCompletionCatalog } from '../utils/disciplineCompletion';
 
 function prerequisiteValues(source: any): unknown {
   if (Object.prototype.hasOwnProperty.call(source, 'prereqs')) return source.prereqs;
@@ -200,9 +202,20 @@ export function MatrizView({
     };
   }, [availableProfiles, activeProfileId, loadedCourseName]);
   // Carregar disciplinas com estado a partir do perfil ativo e localStorage
-  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [matrixSubjects, setSubjects] = useState<Subject[]>([]);
   const currentProgressKey = matrixProgressKey(course, activeProfile.id);
   const [hydratedProgressKey, setHydratedProgressKey] = useState('');
+  const completionCatalog = useMemo(() => curriculumCompletionCatalog({ profiles: availableProfiles }), [availableProfiles]);
+  const completion = useCompletedDisciplines(course || 'bcc', completionCatalog);
+  const subjects = useMemo(() => completion.ready
+    ? applySubjectCompletions(matrixSubjects, completion.completedDisciplines, activeProfile.id)
+    : matrixSubjects, [matrixSubjects, completion.ready, completion.completedDisciplines, activeProfile.id]);
+
+  useEffect(() => {
+    if (completion.ready && hydratedProgressKey === currentProgressKey) {
+      setSubjects(previous => applySubjectCompletions(previous, completion.completedDisciplines, activeProfile.id));
+    }
+  }, [completion.ready, completion.completedDisciplines, activeProfile.id, hydratedProgressKey, currentProgressKey]);
 
   // Recarregar disciplinas e progresso quando perfil ativo mudar
   useEffect(() => {
@@ -218,21 +231,18 @@ export function MatrizView({
   useEffect(() => {
     if (!availableProfiles.some(profile => profile.id === activeProfile.id)) return;
     const key = currentProgressKey;
-    if (hydratedProgressKey !== key) return;
+    if (hydratedProgressKey !== key || !completion.ready) return;
     try {
       localStorage.setItem(key, JSON.stringify(subjects));
-      const completedList = subjects.filter(subject => subject.status === 'concluido').map(subject => subject.code || subject.id);
-      localStorage.setItem(completedDisciplinesKey(course, activeProfile.id), JSON.stringify(completedList));
       if ((course === 'bcc' || !course) && (activeProfile.id === 'BCC03' || activeProfile.id === 'nova')) {
         localStorage.setItem('bcc_matriz_progress', JSON.stringify(subjects));
-        localStorage.setItem('completedDisciplines', JSON.stringify(completedList));
       } else if ((course === 'bcc' || !course) && (activeProfile.id === 'BCC02' || activeProfile.id === 'antiga')) {
         localStorage.setItem('bcc_matriz_progress_antiga', JSON.stringify(subjects));
       }
     } catch (e) {
       console.error('Falha ao salvar progresso da matriz', e);
     }
-  }, [subjects, activeProfile, availableProfiles, course, hydratedProgressKey]);
+  }, [subjects, activeProfile, availableProfiles, course, hydratedProgressKey, completion.ready]);
 
   const [acexHours, setAcexHours] = useState(0);
   const [accHours, setAccHours] = useState(0);
@@ -277,7 +287,9 @@ export function MatrizView({
 
 
   const [hoveredSubject, setHoveredSubject] = useState<Subject | null>(null);
-  const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
+  const selectedSubject = subjects.find(subject => subject.id === selectedSubjectId) || null;
+  const setSelectedSubject = (subject: Subject | null) => setSelectedSubjectId(subject?.id || null);
   const [svgSize, setSvgSize] = useState({ width: 0, height: 0 });
   const [arrows, setArrows] = useState<{ id: string; type: 'prereq' | 'dependent'; path: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -451,19 +463,16 @@ export function MatrizView({
 
   // --- ACÇÕES ---
   const toggleSubjectStatus = (id: string) => {
-    setSubjects(prev => prev.map(s => {
-      if (s.id === id) {
-        let nextStatus: 'pendente' | 'cursando' | 'concluido' = 'pendente';
-        if (s.status === 'pendente') nextStatus = 'cursando';
-        else if (s.status === 'cursando') nextStatus = 'concluido';
-        return { ...s, status: nextStatus, grade: nextStatus === 'concluido' ? s.grade : '' };
-      }
-      return s;
-    }));
+    const subject = subjects.find(item => item.id === id);
+    if (!subject) return;
+    setSubjectStatus(id, subject.status === 'pendente' ? 'cursando' : subject.status === 'cursando' ? 'concluido' : 'pendente');
   };
 
   const setSubjectStatus = (id: string, status: 'pendente' | 'cursando' | 'concluido') => {
-    setSubjects(prev => prev.map(s => {
+    const subject = subjects.find(item => item.id === id);
+    if (!subject) return;
+    completion.setCompleted(subject, status === 'concluido', activeProfile.id);
+    setSubjects(subjects.map(s => {
       if (s.id === id) {
         return { ...s, status, grade: status === 'concluido' ? s.grade : '' };
       }
@@ -484,7 +493,9 @@ export function MatrizView({
   };
 
   const resetProgress = () => {
-    setSubjects(prev => prev.map(s => ({ ...s, status: 'pendente', grade: '' })));
+    const resetSubjects = subjects.map(s => ({ ...s, status: 'pendente' as const, grade: '' }));
+    completion.replaceProfile(activeProfile.id, resetSubjects);
+    setSubjects(resetSubjects);
     setAcexHours(0);
     setAccHours(0);
     setSelectedSubject(null);
@@ -521,6 +532,7 @@ export function MatrizView({
           alert("Este arquivo não corresponde ao curso e perfil abertos, ou tem um formato inválido.");
           return;
         }
+        completion.replaceProfile(activeProfile.id, restored.subjects);
         setSubjects(restored.subjects);
         if (restored.acexHours !== undefined) setAcexHours(restored.acexHours);
         if (restored.accHours !== undefined) setAccHours(restored.accHours);

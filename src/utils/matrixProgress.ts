@@ -1,3 +1,5 @@
+import { normalizeDisciplineCode } from './disciplineCompletion';
+
 export type MatrixStatus = 'pendente' | 'cursando' | 'concluido';
 
 export type MatrixProgressSubject = {
@@ -32,10 +34,10 @@ export function restoreMatrixSubjects<T extends MatrixProgressSubject>(catalog: 
   const savedByCode = new Map<string, MatrixProgressSubject>();
   for (const subject of parseSavedSubjects(saved)) {
     savedById.set(subject.id, subject);
-    if (subject.code) savedByCode.set(subject.code, subject);
+    if (subject.code) savedByCode.set(normalizeDisciplineCode(subject.code), subject);
   }
   return catalog.map(subject => {
-    const existing = savedById.get(subject.id) || (subject.code ? savedByCode.get(subject.code) : undefined);
+    const existing = savedById.get(subject.id) || (subject.code ? savedByCode.get(normalizeDisciplineCode(subject.code)) : undefined);
     const status = existing?.status;
     return {
       ...subject,

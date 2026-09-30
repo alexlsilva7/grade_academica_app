@@ -4,7 +4,8 @@ import { TIMESLOTS } from '../constants';
 import { canAccessAdmin } from '../utils/domain';
 import { validateExtraction } from '../utils/extraction';
 import { apiFetch } from '../utils/api';
-import { completedDisciplinesKey, matrixProgressKey, setMatrixSubjectCompletion } from '../utils/matrixProgress';
+import { useCompletedDisciplines } from './useCompletedDisciplines';
+import { curriculumCompletionCatalog } from '../utils/disciplineCompletion';
 import { buildAppLocation, parseAppLocation, writeAppLocation, type AppLocation, type AppView } from '../utils/appLocation';
 
 export interface SavedGrade {
@@ -208,7 +209,6 @@ export function useSchedule() {
   const [courseContents, setCourseContents] = useState<any | null>(null);
 
   const [savedGrades, setSavedGrades] = useState<SavedGrade[]>([]);
-  const [completedDisciplines, setCompletedDisciplines] = useState<string[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<string | null>(initialCourse);
   const [isScheduleLoading, setIsScheduleLoading] = useState(false);
   const [scheduleLoadError, setScheduleLoadError] = useState<string | null>(null);
@@ -318,45 +318,8 @@ export function useSchedule() {
     }
   }, []);
 
-  const toggleCompleted = (disciplineId: string) => {
-    setCompletedDisciplines(prev => {
-      const isCompleted = prev.includes(disciplineId);
-      const updated = isCompleted ? prev.filter(id => id !== disciplineId) : [...prev, disciplineId];
-      localStorage.setItem(completedDisciplinesKey(selectedCourse, selectedProfile), JSON.stringify(updated));
-      if (selectedCourse === 'bcc' && (selectedProfile === 'BCC03' || selectedProfile === 'nova')) {
-        localStorage.setItem('completedDisciplines', JSON.stringify(updated));
-      }
-
-      // Se estiver marcando como concluída, remove da grade de horários automaticamente
-      if (!isCompleted) {
-        setSchedule(prevSchedule => prevSchedule.filter(d => d.id !== disciplineId && d.code !== disciplineId));
-      }
-
-      // Synchronize with Matrix Curriculum Progress
-      try {
-        const discipline = disciplinesList.find(item => item.id === disciplineId || item.code === disciplineId);
-        const progressProfile = discipline?.profile || (selectedProfile === 'all' ? '' : selectedProfile);
-        if (progressProfile) {
-          const key = matrixProgressKey(selectedCourse, progressProfile);
-          const legacyKey = progressProfile === 'BCC02' ? 'bcc_matriz_progress_antiga' : 'bcc_matriz_progress';
-          const matrixSaved = localStorage.getItem(key)
-            || (selectedCourse === 'bcc' ? localStorage.getItem(legacyKey) : null);
-          const updatedMatrix = setMatrixSubjectCompletion(matrixSaved, disciplineId, !isCompleted);
-          if (updatedMatrix) {
-            localStorage.setItem(key, updatedMatrix);
-            if (selectedCourse === 'bcc' && (progressProfile === 'BCC03' || progressProfile === 'nova')) {
-              localStorage.setItem('bcc_matriz_progress', updatedMatrix);
-            } else if (selectedCourse === 'bcc' && (progressProfile === 'BCC02' || progressProfile === 'antiga')) {
-              localStorage.setItem('bcc_matriz_progress_antiga', updatedMatrix);
-            }
-          }
-        }
-      } catch (e) {
-        console.error('Failed to sync completed discipline with matrix progress', e);
-      }
-
-      return updated;
-    });
+  const toggleCompleted = (discipline: Discipline) => {
+    completion.setCompleted(discipline, !completion.isCompleted(discipline));
   };
 
   const saveGradeToLocal = (title: string, disciplines: Discipline[]) => {
@@ -423,36 +386,19 @@ export function useSchedule() {
     }
   });
 
-  const currentCompletedKey = completedDisciplinesKey(selectedCourse, selectedProfile);
-  const [hydratedCompletedKey, setHydratedCompletedKey] = useState('');
+  const completionCatalog = useMemo(() => curriculumCompletionCatalog(courseCurriculum,
+    lastLoadedCourseRef.current === selectedCourse && (courseCurriculum || scheduleDataInfo) ? disciplinesList : []),
+  [courseCurriculum, disciplinesList, selectedCourse, scheduleDataInfo]);
+  const completion = useCompletedDisciplines(selectedCourse, completionCatalog);
+  const { completedDisciplines, isCompleted: isDisciplineCompleted } = completion;
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(currentCompletedKey)
-        ?? (selectedCourse === 'bcc' && (selectedProfile === 'BCC03' || selectedProfile === 'nova')
-          ? localStorage.getItem('completedDisciplines')
-          : null);
-      const parsed: unknown = stored ? JSON.parse(stored) : [];
-      setCompletedDisciplines(Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : []);
-      setHydratedCompletedKey(currentCompletedKey);
-    } catch (e) {
-      console.error('Failed to load completed disciplines', e);
-      setCompletedDisciplines([]);
-      setHydratedCompletedKey(currentCompletedKey);
-    }
-  }, [currentCompletedKey, view]);
-
-  useEffect(() => {
-    if (hydratedCompletedKey !== currentCompletedKey) return;
-    try {
-      localStorage.setItem(currentCompletedKey, JSON.stringify(completedDisciplines));
-      if (selectedCourse === 'bcc' && (selectedProfile === 'BCC03' || selectedProfile === 'nova')) {
-        localStorage.setItem('completedDisciplines', JSON.stringify(completedDisciplines));
-      }
-    } catch (e) {
-      console.error('Failed to save completed disciplines', e);
-    }
-  }, [completedDisciplines, currentCompletedKey, hydratedCompletedKey, selectedCourse, selectedProfile]);
+    if (!completion.ready || lastLoadedCourseRef.current !== selectedCourse || lastLoadedSemesterRef.current !== selectedSemester) return;
+    setSchedule(previous => {
+      const next = previous.filter(discipline => !isDisciplineCompleted(discipline));
+      return next.length === previous.length ? previous : next;
+    });
+  }, [completion.ready, isDisciplineCompleted, selectedCourse, selectedSemester, schedule]);
 
   // Persist profile selection
   useEffect(() => {
@@ -878,8 +824,7 @@ export function useSchedule() {
   };
 
   const getDisciplineConflictInstance = (disc: Discipline) => {
-    const discIdentifier = disc.code || disc.id;
-    const isCompleted = completedDisciplines.includes(discIdentifier) || completedDisciplines.includes(disc.id);
+    const isCompleted = isDisciplineCompleted(disc);
     if (isCompleted) return null;
 
     if (schedule.some(d => d.id === disc.id)) return null;
@@ -891,8 +836,7 @@ export function useSchedule() {
   };
 
   const toggleDiscipline = (disc: Discipline) => {
-    const discIdentifier = disc.code || disc.id;
-    const isCompleted = completedDisciplines.includes(discIdentifier) || completedDisciplines.includes(disc.id);
+    const isCompleted = isDisciplineCompleted(disc);
     if (isCompleted) return;
 
     const isScheduled = schedule.some(d => d.id === disc.id);
@@ -947,8 +891,7 @@ export function useSchedule() {
           localStorage.setItem('savedGrades', JSON.stringify(data.savedGrades));
         }
         if (data.completedDisciplines && Array.isArray(data.completedDisciplines)) {
-          setCompletedDisciplines(data.completedDisciplines);
-          localStorage.setItem('completedDisciplines', JSON.stringify(data.completedDisciplines));
+          completion.replaceAll(data.completedDisciplines);
         }
         alert("Dados importados com sucesso!");
       } catch (error) {
@@ -999,6 +942,7 @@ export function useSchedule() {
     loadSavedGrade,
     removeSavedGrade,
     completedDisciplines,
+    isDisciplineCompleted,
     toggleCompleted,
     getDisciplineConflictInstance,
     darkMode,

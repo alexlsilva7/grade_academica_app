@@ -6,7 +6,7 @@ Este documento cataloga todos os itens armazenados localmente no navegador pelo 
 
 ## 1. Inventário de Chaves de Armazenamento Local
 
-A aplicação atual armazena 16 chaves principais no `localStorage` do navegador:
+A aplicação mantém as seguintes chaves principais e suas variantes por curso, perfil e semestre no `localStorage` do navegador:
 
 | Chave | Tipo de Conteúdo | Descrição e Exemplo de Conteúdo |
 | :--- | :--- | :--- |
@@ -19,7 +19,8 @@ A aplicação atual armazena 16 chaves principais no `localStorage` do navegador
 | `schedule_bcc` | `string` (JSON) | Array serializado de disciplinas adicionadas à grade de Ciência da Computação. |
 | `schedule_eal` | `string` (JSON) | Array serializado de disciplinas adicionadas à grade de Engenharia de Alimentos. |
 | `schedule_adm` | `string` (JSON) | Array serializado de disciplinas adicionadas à grade de Administração. |
-| `completedDisciplines` | `string` (JSON) | Array de strings com os IDs/códigos das matérias que o aluno já concluiu (ex: `["CCMP3057", "log_mat_1"]`). |
+| `completedDisciplines_<curso>` | `string` (JSON) | Fonte única de conclusões por curso, compartilhada entre matriz, horário, perfis e semestres (ex: `["CCMP3057", "id:BCC03:opt_1"]`). |
+| `completedDisciplines` e `completedDisciplines_<curso>_<perfil>` | `string` (JSON) | Chaves legadas, lidas na migração inicial e na restauração de backups antigos. |
 | `savedGrades` | `string` (JSON) | Array de grades customizadas salvas localmente pelo usuário (`[{id, title, disciplines}]`). |
 | `bcc_matriz_progress` | `string` (JSON) | Array serializado do progresso da **Matriz Nova** de BCC com status e notas (`Subject[]`). |
 | `bcc_matriz_progress_antiga` | `string` (JSON) | Array serializado do progresso da **Matriz Antiga** de BCC (`Subject[]`). |
@@ -27,11 +28,15 @@ A aplicação atual armazena 16 chaves principais no `localStorage` do navegador
 | `bcc_acex_hours` | `string` (numérico) | Quantidade de horas de Atividades Curriculares de Extensão cumpridas (ex: `"120"`). |
 | `bcc_acc_hours` | `string` (numérico) | Quantidade de horas de Atividades Complementares cumpridas (ex: `"45"`). |
 
+Os códigos das conclusões são normalizados com `trim()` e maiúsculas, preservando zeros e pontuação. Sem código, a identidade usa `id:<perfil>:<id>`, com os componentes escapados para aceitar nomes de perfil com espaços e separadores. Não há correspondência por nome ou equivalência. Notas, status `cursando` e horas de ACEX/ACC continuam separados por perfil.
+
+A primeira leitura reúne as marcações das listas legadas e dos progressos salvos. Depois da migração, a nova chave é definitiva, inclusive quando contém `[]`: uma disciplina desmarcada não volta a ser concluída por causa de dados antigos. Importação e reset de um perfil alteram apenas suas disciplinas; códigos compartilhados refletem a alteração nos demais perfis. Ao concluir, todas as ofertas daquele código saem do horário atual.
+
 ---
 
 ## 2. Estrutura do Arquivo de Backup (`my_ufape_backup.json`)
 
-Ao clicar no botão de download de backup na Home, o sistema coleta as 13 chaves principais de dados e empacota em um único arquivo JSON.
+Ao clicar no botão de download de backup na Home, o sistema coleta as chaves reconhecidas da aplicação, incluindo conclusões por curso e progresso por perfil, e empacota em um único arquivo JSON. Restaurar um backup legado recalcula as conclusões a partir dos dados importados, mesmo quando já existe uma lista nova no navegador.
 
 ### 2.1. Exemplo do Arquivo de Backup
 ```json

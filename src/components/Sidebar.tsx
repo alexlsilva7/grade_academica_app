@@ -23,8 +23,8 @@ interface SidebarProps {
   availableProfiles?: string[];
   selectedProfile?: string;
   setSelectedProfile?: (p: string) => void;
-  completedDisciplines: string[];
-  toggleCompleted: (id: string) => void;
+  isDisciplineCompleted: (discipline: Discipline) => boolean;
+  toggleCompleted: (discipline: Discipline) => void;
   getDisciplineConflictInstance: (disc: Discipline) => { withName: string } | null;
   darkMode: boolean;
   themePreference: 'light' | 'dark' | 'system';
@@ -52,7 +52,7 @@ export function Sidebar({
   toggleDiscipline,
   onShowDetails,
   hasApiKey,
-  completedDisciplines,
+  isDisciplineCompleted,
   toggleCompleted,
   getDisciplineConflictInstance,
   darkMode,
@@ -179,8 +179,7 @@ export function Sidebar({
         ) : (
           displayedDisciplines.map((disc, idx) => {
             const scheduled = isDisciplineScheduled(disc.id);
-            const discIdentifier = disc.code || disc.id;
-            const isCompleted = completedDisciplines.includes(discIdentifier);
+            const isCompleted = isDisciplineCompleted(disc);
             const conflict = getDisciplineConflictInstance(disc);
             return (
               <motion.div
@@ -223,7 +222,7 @@ export function Sidebar({
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        toggleCompleted(discIdentifier);
+                        toggleCompleted(disc);
                       }}
                       className={`w-10 h-10 min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center rounded-lg transition-colors ${
                         isCompleted 
