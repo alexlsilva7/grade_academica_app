@@ -19,6 +19,8 @@ interface NavbarProps {
   dataSemester?: string;
   onSemesterChange?: (sem: string) => void;
   onExportImage?: () => void;
+  onExportMatrixProgress?: () => void;
+  onImportMatrixProgress?: (file: File) => void;
 }
 
 export function Navbar({
@@ -36,9 +38,12 @@ export function Navbar({
   dataUpdatedAt,
   dataSemester,
   onSemesterChange,
-  onExportImage
+  onExportImage,
+  onExportMatrixProgress,
+  onImportMatrixProgress
 }: NavbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const matrixFileInputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const formattedDataDate = dataUpdatedAt && Number.isFinite(Date.parse(dataUpdatedAt))
@@ -183,6 +188,20 @@ export function Navbar({
                   </>
                 )}
 
+                {onExportMatrixProgress && (
+                  <button onClick={() => { setIsMenuOpen(false); onExportMatrixProgress(); }}
+                    className="w-full px-4 py-2.5 text-left text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center gap-2.5 transition-colors cursor-pointer">
+                    <Download className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" /> Exportar progresso do perfil
+                  </button>
+                )}
+                {onImportMatrixProgress && (
+                  <button onClick={() => { setIsMenuOpen(false); matrixFileInputRef.current?.click(); }}
+                    className="w-full px-4 py-2.5 text-left text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center gap-2.5 transition-colors cursor-pointer">
+                    <Upload className="h-4 w-4 shrink-0 text-slate-500 dark:text-slate-400" /> Importar progresso do perfil
+                  </button>
+                )}
+                {(onExportMatrixProgress || onImportMatrixProgress) && <div className="h-px bg-slate-100 dark:bg-slate-700 my-1" />}
+
                 <button
                   onClick={() => {
                     setIsMenuOpen(false);
@@ -214,6 +233,12 @@ export function Navbar({
               onChange={handleImportChange}
               className="hidden"
             />
+            {onImportMatrixProgress && <input type="file" ref={matrixFileInputRef} accept=".json" className="hidden" aria-label="Importar progresso do perfil"
+              onChange={event => {
+                const file = event.target.files?.[0];
+                event.target.value = '';
+                if (file) onImportMatrixProgress(file);
+              }} />}
           </div>
 
         </div>

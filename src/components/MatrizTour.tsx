@@ -59,6 +59,19 @@ export function MatrizTour({ isOpen, onClose, onHoverSamplePrereq }: MatrizTourP
       tip: 'A carga horária e o progresso atualizam na hora.'
     },
     {
+      id: 'elective-selection',
+      targetSelector: '[data-tour="stats-summary"]',
+      title: 'Suas Optativas',
+      category: 'Progresso',
+      icon: <BookOpen className="w-4 h-4 text-blue-500" />,
+      content: [
+        'Use "Definir optativa" no cartão para escolher uma disciplina do catálogo ou informar o nome e as horas.',
+        'Você também pode adicionar optativas no último período da matriz.',
+        'Salvar mantém o status atual. Marque como concluída para contabilizar as horas.'
+      ],
+      tip: 'Nomes, horas e optativas adicionais ficam salvos no seu progresso e nos backups.'
+    },
+    {
       id: 'prereqs-flow',
       targetSelector: '[data-tour="prereq-subject"]',
       title: 'Pré-requisitos',

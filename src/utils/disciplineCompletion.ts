@@ -1,9 +1,6 @@
 import type { MatrixProgressSubject } from './matrixProgress';
 
-export type CompletionSubject = Pick<MatrixProgressSubject, 'id' | 'code' | 'status'> & {
-  profile?: string | null;
-  electiveSelection?: { source: 'catalog' | 'manual'; code?: string; subjectId?: string };
-};
+export type CompletionSubject = Pick<MatrixProgressSubject, 'id' | 'code' | 'status' | 'electiveSelection'> & { profile?: string | null };
 export type CompletionStorage = Pick<Storage, 'getItem' | 'setItem' | 'length' | 'key'>;
 export const COMPLETION_EVENT = 'discipline-completion-changed';
 

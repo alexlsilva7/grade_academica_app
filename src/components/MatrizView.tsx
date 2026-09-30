@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   BookOpen, 
   CheckCircle, 
@@ -19,7 +19,9 @@ import {
   Moon,
   Monitor,
   BarChart2,
-  Loader2
+  Loader2,
+  Plus,
+  Pencil
 } from 'lucide-react';
 import { ThemeMode } from '../hooks/useSchedule';
 import { Navbar } from './Navbar';
@@ -27,7 +29,11 @@ import { motion } from 'motion/react';
 import { CurriculumProfile } from '../types';
 import { apiFetch } from '../utils/api';
 import { MatrizTour } from './MatrizTour';
-import { applyMatrixProgressImport, matrixProgressKey, readStoredHours, restoreMatrixSubjects } from '../utils/matrixProgress';
+import { ElectiveEditorModal } from './ElectiveEditorModal';
+import { applyMatrixProgressImport, matrixProgressKey, readStoredHours, restoreMatrixProgress } from '../utils/matrixProgress';
+import type { MatrixSubject as Subject } from '../utils/matrixProgress';
+import { countedMatrixSubjects, electiveAlreadyAssigned, electiveIdentity, getElectiveCatalog, isElective, isGenericElective, lastMatrixPeriod, matrixSubjectCode, matrixSubjectHours, matrixSubjectName, normalizeMatrixText, releaseElectiveSelection } from '../utils/matrixElectives';
+import type { ElectiveSelection } from '../utils/matrixElectives';
 import { useCompletedDisciplines } from '../hooks/useCompletedDisciplines';
 import { applySubjectCompletions, curriculumCompletionCatalog } from '../utils/disciplineCompletion';
 
@@ -45,7 +51,7 @@ function mapSubject(source: any, index: number): any {
     name: source.name || source.nome || `Disciplina ${index + 1}`,
     hours: source.hours ?? source.workload?.total ?? source.workload?.total_hours ?? null,
     period: source.period == null ? 0 : source.period === 'Optativa' ? 0 : Number(source.period),
-    type: source.type?.toLowerCase().includes('opt') ? 'optativa' : (source.type || 'computacao'),
+    type: isElective(source) ? 'optativa' : (source.type || 'computacao'),
     prereqs: Array.isArray(requirements) ? requirements.map((item: any) => typeof item === 'string' ? item : item.id || item.code || item.name).filter(Boolean) : null,
     desc: source.desc || source.ementa || '',
   };
@@ -95,19 +101,6 @@ function mapCurriculumProfiles(curriculum: any, course: string | null, courseNam
     subjects: mapProfileSubjects(rawSubjects),
   } as CurriculumProfile];
 }
-interface Subject {
-  id: string;
-  code?: string;
-  name: string;
-  hours: number | null;
-  period: number;
-  type: string;
-  prereqs: string[] | null;
-  desc: string;
-  status: 'pendente' | 'cursando' | 'concluido';
-  grade: string;
-}
-
 interface MatrizViewProps {
   setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines') => void;
   course: string | null;
@@ -130,6 +123,7 @@ export function MatrizView({
   setSelectedProfile 
 }: MatrizViewProps) {
   const [availableProfiles, setAvailableProfiles] = useState<CurriculumProfile[]>([]);
+  const [loadedCurriculum, setLoadedCurriculum] = useState<unknown>(null);
   const [loadedCourseName, setLoadedCourseName] = useState<string>('');
   const [dataSources, setDataSources] = useState<string[]>([]);
   const [dataUpdatedAt, setDataUpdatedAt] = useState<string | null>(null);
@@ -144,6 +138,7 @@ export function MatrizView({
   useEffect(() => {
     let isCancelled = false;
     setAvailableProfiles([]);
+    setLoadedCurriculum(null);
     setLoadedCourseName('');
     setDataSources([]);
     setDataUpdatedAt(null);
@@ -160,6 +155,7 @@ export function MatrizView({
         setDataSources(Array.isArray(sources) ? sources.filter((source: unknown): source is string => typeof source === 'string') : []);
         setDataUpdatedAt(typeof data.curriculum?.export_date === 'string' ? data.curriculum.export_date : null);
         const profiles = mapCurriculumProfiles(data.curriculum, course, courseName);
+        setLoadedCurriculum(data.curriculum);
         setAvailableProfiles(profiles);
         setLoadStatus('ready');
         const key = course ? `selected_profile_${course}` : 'saved_selectedProfile';
@@ -203,13 +199,18 @@ export function MatrizView({
   }, [availableProfiles, activeProfileId, loadedCourseName]);
   // Carregar disciplinas com estado a partir do perfil ativo e localStorage
   const [matrixSubjects, setSubjects] = useState<Subject[]>([]);
+  const [electiveEditor, setElectiveEditor] = useState<{ subjectId: string | null; progressKey: string } | null>(null);
   const currentProgressKey = matrixProgressKey(course, activeProfile.id);
+  const progressKeyRef = useRef(currentProgressKey);
+  progressKeyRef.current = currentProgressKey;
   const [hydratedProgressKey, setHydratedProgressKey] = useState('');
   const completionCatalog = useMemo(() => curriculumCompletionCatalog({ profiles: availableProfiles }), [availableProfiles]);
   const completion = useCompletedDisciplines(course || 'bcc', completionCatalog);
   const subjects = useMemo(() => completion.ready
     ? applySubjectCompletions(matrixSubjects, completion.completedDisciplines, activeProfile.id)
     : matrixSubjects, [matrixSubjects, completion.ready, completion.completedDisciplines, activeProfile.id]);
+  const electiveCatalog = useMemo(() => getElectiveCatalog(loadedCurriculum, activeProfile.id), [loadedCurriculum, activeProfile.id]);
+  const countedSubjects = useMemo(() => countedMatrixSubjects(subjects), [subjects]);
 
   useEffect(() => {
     if (completion.ready && hydratedProgressKey === currentProgressKey) {
@@ -223,7 +224,7 @@ export function MatrizView({
     const key = matrixProgressKey(course, activeProfile.id);
     const legacyKey = activeProfile.id === 'BCC02' || activeProfile.id === 'antiga' ? 'bcc_matriz_progress_antiga' : 'bcc_matriz_progress';
     const saved = localStorage.getItem(key) || ((course === 'bcc' || !course) ? localStorage.getItem(legacyKey) : null);
-    setSubjects(restoreMatrixSubjects(activeProfile.subjects as Subject[], saved));
+    setSubjects(restoreMatrixProgress(activeProfile.subjects as Subject[], saved));
     setHydratedProgressKey(key);
   }, [activeProfile, availableProfiles, course]);
 
@@ -290,6 +291,11 @@ export function MatrizView({
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
   const selectedSubject = subjects.find(subject => subject.id === selectedSubjectId) || null;
   const setSelectedSubject = (subject: Subject | null) => setSelectedSubjectId(subject?.id || null);
+  useEffect(() => {
+    setElectiveEditor(null);
+    setSelectedSubjectId(null);
+    setHoveredSubject(null);
+  }, [currentProgressKey]);
   const [svgSize, setSvgSize] = useState({ width: 0, height: 0 });
   const [arrows, setArrows] = useState<{ id: string; type: 'prereq' | 'dependent'; path: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -493,12 +499,13 @@ export function MatrizView({
   };
 
   const resetProgress = () => {
-    const resetSubjects = subjects.map(s => ({ ...s, status: 'pendente' as const, grade: '' }));
-    completion.replaceProfile(activeProfile.id, resetSubjects);
+    const resetSubjects = restoreMatrixProgress(activeProfile.subjects as Subject[], null);
+    completion.replaceProfile(activeProfile.id, resetSubjects, subjects);
     setSubjects(resetSubjects);
     setAcexHours(0);
     setAccHours(0);
     setSelectedSubject(null);
+    setElectiveEditor(null);
     setShowResetConfirm(false);
   };
 
@@ -520,20 +527,23 @@ export function MatrizView({
     downloadAnchor.remove();
   };
 
-  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.length) return;
+  const handleImport = (file: File) => {
     const fileReader = new FileReader();
-    fileReader.readAsText(e.target.files[0], "UTF-8");
+    fileReader.readAsText(file, "UTF-8");
     fileReader.onload = (event) => {
+      if (progressKeyRef.current !== currentProgressKey) return;
       try {
         const parsed: unknown = JSON.parse(event.target?.result as string);
-        const restored = applyMatrixProgressImport(parsed, course || 'bcc', activeProfile.id, subjects);
+        const restored = applyMatrixProgressImport(parsed, course || 'bcc', activeProfile.id, activeProfile.subjects as Subject[]);
         if (!restored) {
           alert("Este arquivo não corresponde ao curso e perfil abertos, ou tem um formato inválido.");
           return;
         }
-        completion.replaceProfile(activeProfile.id, restored.subjects);
-        setSubjects(restored.subjects);
+        const importedSubjects = [...restored.subjects, ...restored.additionalElectives];
+        completion.replaceProfile(activeProfile.id, countedMatrixSubjects(importedSubjects), subjects);
+        setSubjects(importedSubjects);
+        setSelectedSubject(null);
+        setElectiveEditor(null);
         if (restored.acexHours !== undefined) setAcexHours(restored.acexHours);
         if (restored.accHours !== undefined) setAccHours(restored.accHours);
         alert("Progresso importado com sucesso!");
@@ -548,12 +558,12 @@ export function MatrizView({
     let completedRegularHours = 0;
     let completedOptativeHours = 0;
 
-    subjects.forEach(s => {
+    countedSubjects.forEach(s => {
       if (s.status === 'concluido') {
         if (s.type === 'optativa') {
-          completedOptativeHours += s.hours ?? 0;
+          completedOptativeHours += matrixSubjectHours(s) ?? 0;
         } else {
-          completedRegularHours += s.hours ?? 0;
+          completedRegularHours += matrixSubjectHours(s) ?? 0;
         }
       }
     });
@@ -580,31 +590,25 @@ export function MatrizView({
       optativeTarget: activeProfile.optativeHours,
       mandatoryTarget: activeProfile.mandatoryHours
     };
-  }, [subjects, acexHours, accHours, activeProfile]);
+  }, [countedSubjects, acexHours, accHours, activeProfile, course]);
 
   // Função para normalizar texto removendo acentos
-  const normalizeText = (text: string) => {
-    return (text || '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase();
-  };
-
   // --- DISCIPLINAS FILTRADAS ---
   const filteredSubjects = useMemo(() => {
     return subjects.filter(s => {
-      const matchesSearch = normalizeText(s.name).includes(normalizeText(searchQuery));
+      const matchesSearch = normalizeMatrixText(`${matrixSubjectName(s)} ${s.name} ${matrixSubjectCode(s) || ''}`).includes(normalizeMatrixText(searchQuery));
 
       
       let matchesStatus = true;
-      if (filterStatus === 'concluido') matchesStatus = s.status === 'concluido';
-      else if (filterStatus === 'cursando') matchesStatus = s.status === 'cursando';
-      else if (filterStatus === 'pendente') matchesStatus = s.status === 'pendente';
-      else if (filterStatus === 'disponivel') matchesStatus = s.status === 'pendente' && isUnlocked(s.id);
+      const status = getSubjectStatus(s);
+      if (filterStatus === 'concluido') matchesStatus = status === 'concluido';
+      else if (filterStatus === 'cursando') matchesStatus = status === 'cursando';
+      else if (filterStatus === 'pendente') matchesStatus = status === 'pendente';
+      else if (filterStatus === 'disponivel') matchesStatus = status === 'pendente' && isUnlocked(s.id);
 
       return matchesSearch && matchesStatus;
     });
-  }, [subjects, searchQuery, filterStatus]);
+  }, [subjects, searchQuery, filterStatus, schedule]);
 
   // Alvos para o tour interativo
   const firstSubjectId = useMemo(() => {
@@ -623,20 +627,57 @@ export function MatrizView({
     }
   };
 
-  const maxPeriod = useMemo(() => {
-    const periodNumbers = subjects.map(s => Number(s.period) || 0).filter(p => p > 0);
-    const max = periodNumbers.length > 0 ? Math.max(...periodNumbers) : 9;
-    return Math.max(max, 1);
-  }, [subjects]);
+  const maxPeriod = useMemo(() => lastMatrixPeriod(activeProfile.subjects), [activeProfile]);
+
+  const unavailableElectiveKeys = useMemo(() => {
+    const keys = new Set<string>();
+    for (const subject of subjects) {
+      if (subject.id === electiveEditor?.subjectId) continue;
+      if (subject.electiveSelection?.source === 'catalog') keys.add(electiveIdentity(subject.electiveSelection));
+      else if (!subject.electiveSelection && subject.period > 0 && isElective(subject) && !isGenericElective(subject)) keys.add(electiveIdentity(subject));
+    }
+    return keys;
+  }, [subjects, electiveEditor?.subjectId]);
+
+  const saveElective = (selection: ElectiveSelection): string | null => {
+    if (!electiveEditor || electiveEditor.progressKey !== currentProgressKey) return 'Abra novamente o editor para este perfil.';
+    if (electiveAlreadyAssigned(subjects, selection, electiveEditor.subjectId || undefined)) return 'Esta disciplina já está utilizada em outro cartão da matriz.';
+    const releasedSubjects = electiveEditor.subjectId ? releaseElectiveSelection(subjects, electiveEditor.subjectId) : subjects;
+    const next: Subject[] = electiveEditor.subjectId
+      ? releasedSubjects.map(subject => subject.id === electiveEditor.subjectId ? { ...subject, electiveSelection: selection } : subject)
+      : [...subjects, {
+        id: `personal_opt_${crypto.randomUUID()}`, name: 'Optativa adicional', hours: null, period: maxPeriod,
+        type: 'optativa', prereqs: null, desc: '', status: 'pendente', grade: '', additionalElective: true, electiveSelection: selection
+      }];
+    completion.replaceProfile(activeProfile.id, countedMatrixSubjects(next), subjects);
+    setSubjects(next);
+    setHoveredSubject(null);
+    setElectiveEditor(null);
+    return null;
+  };
+
+  const clearElective = () => {
+    const editing = subjects.find(subject => subject.id === electiveEditor?.subjectId);
+    if (!editing) return;
+    const releasedSubjects = releaseElectiveSelection(subjects, editing.id);
+    const next = editing.additionalElective ? releasedSubjects.filter(subject => subject.id !== editing.id)
+      : releasedSubjects.map(subject => subject.id === editing.id ? { ...subject, electiveSelection: undefined, status: 'pendente' as const, grade: '' } : subject);
+    completion.replaceProfile(activeProfile.id, countedMatrixSubjects(next), subjects);
+    setSubjects(next);
+    setSelectedSubject(null);
+    setHoveredSubject(null);
+    setElectiveEditor(null);
+  };
 
   const periods = useMemo(() => {
     const list = Array.from({ length: maxPeriod }, (_, i) => i + 1);
     return list.map(pNum => {
       const periodSubjects = subjects.filter(s => Number(s.period) === pNum);
-      const totalPeriodHours = periodSubjects.reduce((acc, s) => acc + (s.hours ?? 0), 0);
-      const completedPeriodHours = periodSubjects
+      const countedPeriodSubjects = countedSubjects.filter(s => Number(s.period) === pNum);
+      const totalPeriodHours = countedPeriodSubjects.reduce((acc, s) => acc + (matrixSubjectHours(s) ?? 0), 0);
+      const completedPeriodHours = countedPeriodSubjects
         .filter(s => s.status === 'concluido')
-        .reduce((acc, s) => acc + (s.hours ?? 0), 0);
+        .reduce((acc, s) => acc + (matrixSubjectHours(s) ?? 0), 0);
 
       return {
         number: pNum,
@@ -645,7 +686,7 @@ export function MatrizView({
         completedHours: completedPeriodHours
       };
     });
-  }, [subjects, maxPeriod]);
+  }, [subjects, countedSubjects, maxPeriod]);
 
   // --- MAPAS DE CORES ---
   const typeLabels: Record<string, { name: string, bg: string, border: string, text: string }> = {
@@ -667,15 +708,16 @@ export function MatrizView({
     return 'unrelated';
   };
 
-  const getSubjectStatus = (s: Subject) => {
-    if (schedule && s.code) {
-      const inSchedule = schedule.some(d => d.code === s.code);
+  function getSubjectStatus(s: Subject) {
+    const code = matrixSubjectCode(s);
+    if (schedule && code) {
+      const inSchedule = schedule.some(d => d.code && normalizeMatrixText(d.code) === normalizeMatrixText(code));
       if (inSchedule && s.status === 'pendente') {
         return 'cursando';
       }
     }
     return s.status;
-  };
+  }
 
   const isRestoringProgress = loadStatus === 'ready' && availableProfiles.length > 0
     && hydratedProgressKey !== currentProgressKey;
@@ -709,6 +751,8 @@ export function MatrizView({
         dataSources={dataSources}
         dataUpdatedAt={dataUpdatedAt}
         dataSemester={activeProfile.validFromSemester}
+        onExportMatrixProgress={exportData}
+        onImportMatrixProgress={handleImport}
       />
 
 
@@ -886,7 +930,7 @@ export function MatrizView({
                   <div className="text-[11px] text-slate-300 dark:text-slate-200 mt-0.5 font-medium">
                     {p.completedHours}h / {p.totalHours}h
                   </div>
-                  <div className="absolute top-0 bottom-0 left-0 bg-indigo-500/80 -z-10 transition-all duration-300" style={{ width: `${(p.completedHours / p.totalHours) * 100}%` }}></div>
+                  <div className="absolute top-0 bottom-0 left-0 bg-indigo-500/80 -z-10 transition-all duration-300" style={{ width: `${p.totalHours > 0 ? Math.min(100, (p.completedHours / p.totalHours) * 100) : 0}%` }}></div>
                 </div>
 
                 {/* Lista de Disciplinas do Período */}
@@ -938,8 +982,11 @@ export function MatrizView({
                           ${!isFiltered ? 'hidden' : ''}
                         `}
                       >
+                        <button type="button" aria-label={`Alternar status de ${matrixSubjectName(s)}: ${effectiveStatus}`}
+                          className="absolute inset-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+                          onClick={event => { event.stopPropagation(); toggleSubjectStatus(s.id); }} />
                         {/* Indicadores de Estado no Canto */}
-                        <div className="absolute top-1.5 right-1.5 flex gap-1 items-center z-20">
+                        <div className="absolute top-1.5 right-1.5 flex gap-1 items-center z-20 pointer-events-none">
                           {!unlocked && effectiveStatus === 'pendente' && (
                             <span className="text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 rounded-full p-0.5" title="Pré-requisitos pendentes">
                               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -960,8 +1007,9 @@ export function MatrizView({
                         </div>
 
                         {/* Nome da Disciplina */}
-                        <div className="text-xs font-bold leading-snug break-words pr-5 select-none">
-                          {s.name}
+                        <div className="text-xs font-bold leading-snug break-words pr-5 select-none pointer-events-none">
+                          {matrixSubjectName(s)}
+                          {s.electiveSelection && <span className="mt-1 block text-[10px] font-medium text-slate-500 dark:text-slate-400">{s.name}</span>}
                         </div>
 
                         {/* Labels de Relação on Hover */}
@@ -977,14 +1025,27 @@ export function MatrizView({
                         )}
 
                         {/* Informações Inferiores */}
-                        <div className="mt-2 flex items-center justify-between">
+                        <div className="mt-2 flex items-center justify-between pointer-events-none">
                           <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 bg-white/70 dark:bg-black/30 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700/50">
-                            {s.hours != null ? `${s.hours}h` : 'CH a confirmar'}
+                            {matrixSubjectHours(s) != null ? `${matrixSubjectHours(s)}h` : 'CH a confirmar'}
                           </span>
                         </div>
+                        {(isGenericElective(s) || s.additionalElective) && (
+                          <button type="button" className="relative z-20 mt-2 flex min-h-9 items-center justify-center gap-1 rounded-md border border-indigo-200 bg-indigo-50 px-1.5 py-1.5 text-[10px] font-bold text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 dark:hover:bg-indigo-900"
+                            onClick={event => { event.stopPropagation(); setElectiveEditor({ subjectId: s.id, progressKey: currentProgressKey }); }}>
+                            <Pencil aria-hidden="true" className="h-3 w-3 shrink-0" />
+                            {s.electiveSelection ? 'Editar optativa' : 'Definir optativa'}
+                          </button>
+                        )}
                       </div>
                     );
                   })}
+                  {p.number === maxPeriod && (
+                    <button type="button" onClick={() => setElectiveEditor({ subjectId: null, progressKey: currentProgressKey })}
+                      className="flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-dashed border-indigo-300 bg-indigo-50/60 p-2 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 dark:border-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300 dark:hover:bg-indigo-950/60">
+                      <Plus aria-hidden="true" className="h-4 w-4 shrink-0" /> Adicionar optativa
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -1138,7 +1199,8 @@ export function MatrizView({
                 <span className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider ${typeLabels[selectedSubject.type]?.text || 'text-slate-500'}`}>
                   {selectedSubject.period}º Período • {typeLabels[selectedSubject.type]?.name}
                 </span>
-                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mt-1">{selectedSubject.name}</h3>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mt-1">{matrixSubjectName(selectedSubject)}</h3>
+                {selectedSubject.electiveSelection && <p className="mt-1 text-xs text-slate-500">{selectedSubject.name}{matrixSubjectCode(selectedSubject) ? ` • ${matrixSubjectCode(selectedSubject)}` : ''}</p>}
               </div>
               <button 
                 onClick={() => setSelectedSubject(null)} 
@@ -1155,7 +1217,7 @@ export function MatrizView({
                 <Info className="w-4 h-4" /> Ementa
               </h4>
               <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl border border-slate-100 dark:border-slate-700/50">
-                {selectedSubject.desc || "Ementa não detalhada."}
+                {(selectedSubject.electiveSelection ? selectedSubject.electiveSelection.desc : selectedSubject.desc) || "Ementa não detalhada."}
               </p>
             </div>
 
@@ -1163,13 +1225,13 @@ export function MatrizView({
               <div>
                 <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Carga Horária</h4>
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 block w-full text-center">
-                    {selectedSubject.hours != null ? `${selectedSubject.hours}h` : 'CH a confirmar'}
+                    {matrixSubjectHours(selectedSubject) != null ? `${matrixSubjectHours(selectedSubject)}h` : 'CH a confirmar'}
                 </span>
               </div>
               <div>
                 <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Estado Atual</h4>
                 <select
-                  value={selectedSubject.status}
+                  value={getSubjectStatus(selectedSubject)}
                   onChange={(e) => setSubjectStatus(selectedSubject.id, e.target.value as 'pendente' | 'cursando' | 'concluido')}
                   className="text-sm font-medium text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow appearance-none"
                 >
@@ -1181,6 +1243,12 @@ export function MatrizView({
             </div>
 
             {/* Pré-requisitos e Dependências */}
+            {(isGenericElective(selectedSubject) || selectedSubject.additionalElective) && (
+              <button type="button" onClick={() => setElectiveEditor({ subjectId: selectedSubject.id, progressKey: currentProgressKey })}
+                className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-indigo-50 p-3 text-sm font-semibold text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">
+                <Pencil aria-hidden="true" className="h-4 w-4" /> {selectedSubject.electiveSelection ? 'Editar optativa' : 'Definir optativa'}
+              </button>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
               <div>
                 <h4 className="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider mb-2 flex items-center justify-between">
@@ -1197,7 +1265,7 @@ export function MatrizView({
                           onClick={() => pre && setSelectedSubject(pre)}
                           className="cursor-pointer text-xs min-h-[40px] p-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 text-slate-700 dark:text-slate-300 rounded-lg hover:border-rose-400 dark:hover:border-rose-500 transition-colors flex justify-between items-center group"
                         >
-                          <span className="font-medium truncate pr-2" title={pre?.name}>{pre?.name}</span>
+                          <span className="font-medium truncate pr-2" title={pre ? matrixSubjectName(pre) : undefined}>{pre ? matrixSubjectName(pre) : preId}</span>
                           <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-rose-500 flex-shrink-0 transition-colors" />
                         </div>
                       );
@@ -1223,7 +1291,7 @@ export function MatrizView({
                           onClick={() => dep && setSelectedSubject(dep)}
                           className="cursor-pointer text-xs min-h-[40px] p-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 text-slate-700 dark:text-slate-300 rounded-lg hover:border-teal-400 dark:hover:border-teal-500 transition-colors flex justify-between items-center group"
                         >
-                          <span className="font-medium truncate pr-2" title={dep?.name}>{dep?.name}</span>
+                          <span className="font-medium truncate pr-2" title={dep ? matrixSubjectName(dep) : undefined}>{dep ? matrixSubjectName(dep) : depId}</span>
                           <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-teal-500 flex-shrink-0 transition-colors" />
                         </div>
                       );
@@ -1236,6 +1304,14 @@ export function MatrizView({
             </div>
           </div>
         </div>
+      )}
+
+      {electiveEditor?.progressKey === currentProgressKey && (
+        <ElectiveEditorModal key={`${currentProgressKey}:${electiveEditor.subjectId || 'new'}`}
+          subject={subjects.find(subject => subject.id === electiveEditor.subjectId) || null}
+          catalog={electiveCatalog} lastPeriod={maxPeriod} unavailableKeys={unavailableElectiveKeys}
+          onSave={saveElective} onClose={() => setElectiveEditor(null)}
+          onClear={electiveEditor.subjectId && subjects.some(subject => subject.id === electiveEditor.subjectId && subject.electiveSelection) ? clearElective : undefined} />
       )}
 
       {/* Modal de Confirmação para Limpar Progresso */}
@@ -1251,7 +1327,7 @@ export function MatrizView({
               </div>
               <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Limpar Todo o Progresso?</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
-                Esta ação irá repor todo o progresso das disciplinas (pendentes, em curso e concluídas), incluindo as horas extracurriculares (ACEX e ACC). Esta operação não pode ser desfeita.
+                Esta ação irá repor todo o progresso das disciplinas, limpar as escolhas de optativas, remover as optativas adicionais e zerar as horas extracurriculares (ACEX e ACC). Esta operação não pode ser desfeita.
               </p>
               <div className="grid grid-cols-2 gap-3 w-full">
                 <button
