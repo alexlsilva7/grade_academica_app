@@ -513,7 +513,7 @@ export function HomeView({
 
           <button onClick={() => setView('calendar')} className="w-full rounded-2xl border border-indigo-200 dark:border-indigo-900 bg-white dark:bg-slate-900 p-6 text-left flex items-center gap-4 shadow-sm hover:border-indigo-400 hover:shadow-md transition-all group">
             <span className="rounded-xl bg-indigo-50 dark:bg-indigo-950 p-3 text-indigo-600 dark:text-indigo-300"><CalendarDays className="w-6 h-6" /></span>
-            <span className="flex-1"><span className="block text-lg font-bold text-slate-800 dark:text-slate-100">Calendário acadêmico</span><span className="block mt-1 text-sm text-slate-500 dark:text-slate-400">Consulte o PDF oficial na página do mês atual, dentro do site.</span></span>
+            <span className="flex-1"><span className="block text-lg font-bold text-slate-800 dark:text-slate-100">Calendário acadêmico</span><span className="block mt-1 text-sm text-slate-500 dark:text-slate-400">Consulte o mês atual e amplie as páginas do calendário oficial.</span></span>
             <ArrowRight className="w-5 h-5 text-indigo-500 shrink-0 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
