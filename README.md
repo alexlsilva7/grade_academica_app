@@ -28,6 +28,7 @@ As telas principais aceitam links diretos e atualizam o histórico do navegador:
 | Planejamento de horário | `/schedule?course=bcc&semester=2026.1&profile=BCC03` |
 | Matriz curricular | `/matriz?course=eal&semester=2026.1&profile=EAL03` |
 | Catálogo de disciplinas | `/disciplinas?course=eal&semester=2026.1` |
+| Calendário acadêmico | `/calendario` |
 | Administração | `/admin` |
 
 Curso, semestre e perfil são validados. Um semestre não publicado é substituído por uma opção disponível; curso ou caminho desconhecido retorna ao início. O servidor mantém a autenticação administrativa nas APIs mesmo que alguém abra `/admin` diretamente. Em produção, o Express serve `index.html` como fallback para as rotas da SPA.
@@ -119,3 +120,11 @@ app.ts              API Express compartilhada
 api/index.ts        Entrada da função na Vercel
 server.ts           Servidor local e fallback da SPA
 ```
+
+## Calendário acadêmico da UFAPE
+
+O botão **Calendário acadêmico** da home abre `/calendario`, com o PDF hospedado em `/documents/calendario-academico-ufape-2026.pdf` incorporado à página, na tabela do mês atual. O cabeçalho e a navegação do site permanecem disponíveis; também há opções para baixar o documento ou abri-lo em nova aba. A seleção usa `America/Sao_Paulo`: setembro de 2026 abre a página 8; outubro abre a 9. Antes ou depois da cobertura desta edição, abre a primeira ou a última tabela disponível.
+
+O arquivo original fica em `public/documents` e é incluído no build estático. A abertura usa o fragmento `#page=N` do leitor de PDF incorporado do navegador. O mês é atualizado ao retornar à aba e enquanto a página estiver visível. O Vite ignora `public/documents` no monitoramento de arquivos para evitar erros EBUSY de bloqueio no Windows, mantendo o PDF disponível normalmente. Ao atualizar a edição, substitua o PDF e atualize o mapeamento em `src/utils/academicCalendarPdf.ts`.
+
+O calendário funciona sem API, importação de JSON ou armazenamento no Supabase. Para atualizar o documento, substitua o PDF estático e revise o mapeamento das páginas. As migrações registram a criação histórica e a remoção da antiga tabela de calendário em JSON.

@@ -523,7 +523,7 @@ export function useSchedule() {
         selectedSemesterRef.current = route.semester;
         setSelectedSemester(route.semester);
       }
-      if (route.view !== 'home' && route.view !== 'admin' && !route.invalid) {
+      if (route.view !== 'home' && route.view !== 'admin' && route.view !== 'calendar' && !route.invalid) {
         routedProfileRef.current = route.profile;
         setSelectedProfile(route.profile || 'all');
       } else {
@@ -536,7 +536,7 @@ export function useSchedule() {
   }, [selectedCourse]);
 
   useEffect(() => {
-    if (!selectedCourse) return;
+    if (!selectedCourse || view === 'calendar') return;
     let cancelled = false;
     apiFetch('/api/courses').then(async response => {
       if (!response.ok) return null;
@@ -572,7 +572,7 @@ export function useSchedule() {
       }
     }).catch(() => {});
     return () => { cancelled = true; };
-  }, [selectedCourse]);
+  }, [selectedCourse, view]);
 
   const isDisciplineOptativaOrCommon = (d: Discipline): boolean => {
     if (d.period === 0) return true;

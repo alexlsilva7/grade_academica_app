@@ -1,4 +1,4 @@
-export type AppView = 'home' | 'schedule' | 'matriz' | 'disciplines' | 'admin';
+export type AppView = 'home' | 'schedule' | 'matriz' | 'disciplines' | 'admin' | 'calendar';
 
 export type AppLocation = {
   view: AppView;
@@ -13,13 +13,15 @@ const pathByView: Record<AppView, string> = {
   schedule: '/schedule',
   matriz: '/matriz',
   disciplines: '/disciplinas',
-  admin: '/admin'
+  admin: '/admin',
+  calendar: '/calendario'
 };
 
 export function parseAppLocation(pathname: string, search = ''): AppLocation {
   const path = pathname.replace(/\/+$/, '') || '/';
   const knownPath = Object.entries(pathByView).find(([, value]) => value === path)?.[0] || (path === '/home' ? 'home' : null);
   const view = (knownPath || 'home') as AppView;
+  if (view === 'calendar') return { view, course: null, semester: null, profile: null, invalid: false };
   const params = new URLSearchParams(search);
   const rawCourse = params.get('course');
   const rawSemester = params.get('semester');
@@ -40,7 +42,7 @@ export function parseAppLocation(pathname: string, search = ''): AppLocation {
 
 export function buildAppLocation(location: AppLocation): string {
   const path = pathByView[location.view];
-  if (location.view === 'home' || location.view === 'admin') return path;
+  if (location.view === 'home' || location.view === 'admin' || location.view === 'calendar') return path;
   const params = new URLSearchParams();
   if (location.course && /^[a-z0-9_-]{1,80}$/i.test(location.course)) params.set('course', location.course.toLowerCase());
   if (location.semester && /^\d{4}\.[12]$/.test(location.semester)) params.set('semester', location.semester);
