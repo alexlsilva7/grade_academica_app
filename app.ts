@@ -23,10 +23,14 @@ import {
 } from './src/server/academicMigration.js';
 import { getAcademicDataSource, requireAdmin } from './src/server/adminAuth.js';
 import { getSupabaseAdminClient, hasSupabaseAdminConfig, hasSupabaseAuthConfig } from './src/server/supabaseClient.js';
+import { feedbackRoutes, feedbackBodyError } from './src/server/feedbackRoutes.js';
 
 dotenv.config();
 
 const app = express();
+// Keep public feedback payloads small before the larger academic import parser.
+app.use('/api/feedback', express.json({ limit: '16kb' }));
+app.use('/api/feedback', feedbackBodyError);
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
@@ -267,6 +271,7 @@ app.get('/api/admin/migrations/runs/:runId', requireAdmin, async (req, res) => {
   }
 });
 
+app.use('/api', feedbackRoutes(getSupabaseAdminClient, requireAdmin));
 app.use('/api', requireAdmin, extractionRoutes(getAIClient));
 
 export default app;

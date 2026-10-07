@@ -1,0 +1,26 @@
+begin;
+select plan(17);
+select ok(not has_table_privilege('anon', 'public.site_feedback', 'select'), 'visitors cannot read feedback');
+select ok(not has_table_privilege('authenticated', 'public.site_feedback', 'select'), 'non-admin accounts cannot read feedback directly');
+select ok(not has_table_privilege('anon', 'public.site_feedback', 'insert'), 'visitors cannot bypass the server validation');
+select ok(not has_table_privilege('authenticated', 'public.site_feedback', 'update'), 'accounts cannot modify status or internal notes directly');
+select ok(not has_table_privilege('anon', 'public.site_feedback', 'delete'), 'visitors cannot delete feedback');
+select ok(not has_table_privilege('authenticated', 'public.site_feedback_rate_limits', 'select'), 'rate limit hashes are private');
+select ok(not has_function_privilege('anon', 'public.submit_site_feedback(uuid,text,text,text,text,jsonb,text)', 'execute'), 'visitors cannot bypass the server rate limiter');
+select ok(not has_function_privilege('authenticated', 'public.submit_site_feedback(uuid,text,text,text,text,jsonb,text)', 'execute'), 'accounts cannot execute the submission RPC directly');
+select ok(has_function_privilege('service_role', 'public.submit_site_feedback(uuid,text,text,text,text,jsonb,text)', 'execute'), 'server can submit feedback');
+select ok((select relrowsecurity from pg_class where oid = 'public.site_feedback'::regclass), 'feedback has RLS');
+select ok((select relrowsecurity from pg_class where oid = 'public.site_feedback_rate_limits'::regclass), 'rate limits have RLS');
+
+create temporary table feedback_test_ids as select gen_random_uuid() as id, repeat('a', 64) as hash;
+select is((public.submit_site_feedback(id, 'suggestion', 'Teste de sugestão privada.', null, null, '{}'::jsonb, hash)->>'id'), id::text, 'valid submission succeeds') from feedback_test_ids;
+select is((select count(*)::integer from public.site_feedback where id = (select id from feedback_test_ids)), 1, 'one row is stored');
+select public.submit_site_feedback(id, 'suggestion', 'Teste de sugestão privada.', null, null, '{}'::jsonb, hash) from feedback_test_ids;
+select is((select submissions from public.site_feedback_rate_limits where requester_hash = repeat('a', 64)), 1, 'idempotent retry does not consume another submission');
+select public.submit_site_feedback(gen_random_uuid(), 'problem', 'Teste do controle de envios.', null, null, '{}'::jsonb, repeat('a', 64)) from generate_series(1, 4);
+select is((public.submit_site_feedback(gen_random_uuid(), 'problem', 'Envio acima do limite.', null, null, '{}'::jsonb, repeat('a', 64))->>'rate_limited')::boolean, true, 'sixth submission is limited');
+update public.site_feedback_rate_limits set window_start = now() - interval '16 minutes' where requester_hash = repeat('a', 64);
+select ok(public.submit_site_feedback(gen_random_uuid(), 'other', 'Envio depois da janela.', null, null, '{}'::jsonb, repeat('a', 64)) ? 'id', 'a new window accepts feedback');
+select is((select submissions from public.site_feedback_rate_limits where requester_hash = repeat('a', 64)), 1, 'new window resets the count');
+select * from finish();
+rollback;

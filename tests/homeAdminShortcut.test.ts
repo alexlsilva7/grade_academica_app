@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { HomeView } from '../src/components/HomeView';
+import { FeedbackProvider } from '../src/components/FeedbackProvider';
 
 test('home admin shortcuts appear locally and stay hidden on the public site', () => {
   const previousWindow = (globalThis as any).window;
@@ -17,11 +18,12 @@ test('home admin shortcuts appear locally and stay hidden on the public site', (
   };
   try {
     (globalThis as any).window = { location: { hostname: 'localhost' } };
-    const local = renderToStaticMarkup(React.createElement(HomeView, props));
+    const renderHome = () => renderToStaticMarkup(React.createElement(FeedbackProvider, { context: {}, children: React.createElement(HomeView, props) }));
+    const local = renderHome();
     assert.match(local, /Gerenciador &amp; Importador IA de Cursos/);
 
     (globalThis as any).window = { location: { hostname: 'my-ufape.vercel.app' } };
-    const publicHome = renderToStaticMarkup(React.createElement(HomeView, props));
+    const publicHome = renderHome();
     assert.doesNotMatch(publicHome, /Gerenciador &amp; Importador IA de Cursos/);
     assert.doesNotMatch(publicHome, /Painel do Administrador/);
   } finally {

@@ -7,6 +7,7 @@ import { CoursesVisibilityModal } from './CoursesVisibilityModal';
 import { apiFetch } from '../utils/api';
 import { getCurricularProfileIds } from '../utils/curriculumProfiles';
 import type { AppView } from '../utils/appLocation';
+import { ProjectFooter } from './ProjectFooter';
 
 interface HomeViewProps {
   loadPredefinedGrade: (type: string, semesterToLoad?: string) => void;
@@ -517,6 +518,9 @@ export function HomeView({
             <ArrowRight className="w-5 h-5 text-indigo-500 shrink-0 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
+      </div>
+      <div className="w-full max-w-4xl pb-4">
+        <ProjectFooter />
       </div>
       {/* MODAL: CONFIRM DELETE ACTIVE COURSE IN HOME */}
       {showDeleteCourseModal && selectedCourse && (

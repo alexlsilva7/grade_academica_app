@@ -10,6 +10,20 @@ Aplicação web da UFAPE para consultar disciplinas e matrizes curriculares, pla
 - Painel administrativo autenticado pelo Supabase Auth para editar os dados publicados e revisar extrações.
 - Extração assistida por IA com revisão humana obrigatória antes de publicar os dados.
 
+## Autor e feedback
+
+Desenvolvido por [Alex Lopes](https://github.com/alexlsilva7). O código está disponível no [repositório GitHub](https://github.com/alexlsilva7/grade_academica_app).
+
+O rodapé da página inicial e o menu **Mais opções** das telas públicas oferecem **Enviar feedback**, o link do repositório e o perfil do autor. O formulário recebe sugestões, problemas, correções de dados acadêmicos e outros relatos sem exigir login. Nome e e-mail são opcionais. As mensagens são privadas e ficam no Supabase, na tabela `site_feedback`.
+
+O contexto técnico é coletado automaticamente em todos os envios, sem opção ou prévia no formulário. A API exige tela, dispositivo, família do navegador, tamanho da tela, tema e versão do site; curso, semestre e perfil são incluídos quando selecionados. A URL completa, IP bruto, notas, progresso, horário pessoal e credenciais não são gravados com a mensagem. O contexto é fornecido pelo cliente e serve para diagnóstico, não para identificar ou autorizar usuários. Registros antigos sem contexto continuam consultáveis.
+
+O envio usa `POST /api/feedback`, com limites de tamanho e validação no servidor. Uma função transacional no Supabase aceita no máximo cinco mensagens por origem em uma janela de 15 minutos e evita duplicatas quando o mesmo envio é repetido após uma falha de conexão. O controle utiliza HMAC diário do IP em uma tabela separada, sem guardar o IP bruto, e limpa entradas com mais de 24 horas na próxima submissão. Em Vercel, considera apenas `x-vercel-forwarded-for`; em servidores diretos, usa o endereço da conexão. Servidores atrás de outros proxies precisam de uma configuração confiável de origem antes de expor esse endpoint. A proteção é um limite básico de abuso; não exige CAPTCHA.
+
+A seção **Feedbacks** no painel administrativo permite consultar mensagens de todos os cursos, filtrar por tipo/curso/situação, paginar, alterar a situação e escrever notas internas. `GET /api/admin/feedback` e `PATCH /api/admin/feedback/:id` exigem a autenticação administrativa existente. As tabelas e a função de envio são inacessíveis diretamente aos papéis `anon` e `authenticated`; somente a API com a chave secreta acessa esses dados. Salvar notas não envia e-mail.
+
+A migração `site_feedback` deve estar aplicada no Supabase. O projeto usa as variáveis Supabase já existentes, sem novas credenciais obrigatórias. A versão do site nos relatos usa o commit da Vercel quando disponível, ou a data do build local. Os testes de permissões, idempotência e controle de envios estão em `supabase/tests/site_feedback_security.test.sql` e rodam com pgTAP no ambiente de testes.
+
 ## Dados acadêmicos
 
 Os dados acadêmicos estão no **Supabase**. O servidor seleciona a fonte em `ACADEMIC_DATA_SOURCE`; use `supabase` para a instalação atual. `files` é um adaptador local legado para ambientes de desenvolvimento e não representa a fonte publicada. As migrações de esquema e as políticas SQL estão em `supabase/migrations` e `supabase/tests`.
