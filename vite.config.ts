@@ -6,6 +6,7 @@ import {defineConfig} from 'vite';
 export default defineConfig(({mode}) => {
   return {
     plugins: [react(), tailwindcss()],
+    define: { __APP_VERSION__: JSON.stringify(process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 12) || new Date().toISOString()) },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

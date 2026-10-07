@@ -6,6 +6,7 @@ import { AlertCircle, Loader2 } from 'lucide-react';
 import { Analytics } from '@vercel/analytics/react';
 import { Navbar } from './components/Navbar';
 import { canAccessAdmin } from './utils/domain';
+import { FeedbackProvider } from './components/FeedbackProvider';
 
 const MatrizView = lazy(() => import('./components/MatrizView').then(module => ({ default: module.MatrizView })));
 const DisciplinesView = lazy(() => import('./components/DisciplinesView').then(module => ({ default: module.DisciplinesView })));
@@ -42,7 +43,11 @@ export default function App() {
   }, [scheduleProps.view]);
 
   return (
-    <>
+    <FeedbackProvider context={{ view: scheduleProps.view,
+      course: scheduleProps.view !== 'calendar' ? scheduleProps.selectedCourse || undefined : undefined,
+      semester: scheduleProps.view !== 'calendar' && scheduleProps.selectedCourse ? scheduleProps.selectedSemester || undefined : undefined,
+      profile: scheduleProps.view !== 'calendar' && scheduleProps.selectedCourse ? scheduleProps.selectedProfile || undefined : undefined,
+      theme: scheduleProps.darkMode ? 'Escuro' : 'Claro' }}>
       {scheduleProps.view === 'home' ? (
         <HomeView 
           loadPredefinedGrade={scheduleProps.loadPredefinedGrade}
@@ -229,6 +234,6 @@ export default function App() {
       )}
 
       <Analytics />
-    </>
+    </FeedbackProvider>
   );
 }

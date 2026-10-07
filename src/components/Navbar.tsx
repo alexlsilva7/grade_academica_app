@@ -1,7 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { ArrowLeft, Sun, Moon, Monitor, Download, Upload, MoreVertical, Camera } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, Monitor, Download, Upload, MoreVertical, Camera, Github, MessageSquare, UserRound } from 'lucide-react';
 import { exportAllUserData, importAllUserData } from '../utils/backupHelper';
 import { ThemeMode } from '../hooks/useSchedule';
+import { PROJECT_AUTHOR_NAME, PROJECT_AUTHOR_URL, PROJECT_REPOSITORY_URL } from '../utils/projectLinks';
+import { useFeedback } from './FeedbackProvider';
 
 interface NavbarProps {
   setView: (view: 'home' | 'schedule' | 'matriz' | 'disciplines') => void;
@@ -38,6 +40,7 @@ export function Navbar({
   onSemesterChange,
   onExportImage
 }: NavbarProps) {
+  const openFeedback = useFeedback();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -204,6 +207,25 @@ export function Navbar({
                   <Upload className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                   <span>Importar Dados</span>
                 </button>
+                <div className="h-px bg-slate-100 dark:bg-slate-700 my-1" />
+                <button type="button" onClick={() => { setIsMenuOpen(false); openFeedback(); }}
+                  aria-label="Abrir formulário de feedback"
+                  className="w-full px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center gap-2.5 transition-colors">
+                  <MessageSquare className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" aria-hidden="true" />
+                  <span>Enviar feedback</span>
+                </button>
+                <a href={PROJECT_REPOSITORY_URL} target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuOpen(false)}
+                  aria-label="Ver repositório no GitHub (abre em nova aba)"
+                  className="w-full px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center gap-2.5 transition-colors">
+                  <Github className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  <span>Repositório no GitHub</span>
+                </a>
+                <a href={PROJECT_AUTHOR_URL} target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuOpen(false)}
+                  aria-label={`Autor: ${PROJECT_AUTHOR_NAME} no GitHub (abre em nova aba)`}
+                  className="w-full px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center gap-2.5 transition-colors">
+                  <UserRound className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  <span>Autor: {PROJECT_AUTHOR_NAME}</span>
+                </a>
               </div>
             )}
 
